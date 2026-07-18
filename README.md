@@ -1,14 +1,14 @@
 # Local Arena
 
-A working product prototype for blind local-model comparisons joined with reproducible real-device performance evidence.
+A browser-application prototype for matching exact local-model configurations to hardware and tasks, with an optional future evidence network.
 
 ## What is implemented
 
-- Instant voting over precomputed, anonymous outputs
-- Device-fleet and artifact-level result presentation
-- An honest distinction between demonstration and published data
-- Consent-first runner positioning and early-access interaction
-- Responsive, keyboard-accessible interface
+- Hardware, context and task configuration
+- Swappable Balanced, Quality, Fastest, Long Context and Lightest strategies
+- Memory eligibility filtering and model-family deduplication
+- An honest distinction between prototype catalog data and published evidence
+- Responsive, keyboard-accessible application shell
 - Type checking, linting, product-contract tests, production build, dependency audit, and CodeQL in CI
 
 ## Local verification
@@ -31,3 +31,5 @@ This repository is the public preference and reporting surface. A compute runner
 ## Recommendation policy
 
 The recommendation and benchmarking branches are specified in [the recommendation decision system](docs/recommendation-decision-system.md). The executable policy fails closed on unknown states, and its tests enumerate all declared state combinations so new branches cannot be added without defined behavior.
+
+Implementation guidance for changing the catalog, memory model or sorting methods lives beside the engine in [lib/recommendation/README.md](lib/recommendation/README.md).

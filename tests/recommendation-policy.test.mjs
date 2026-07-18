@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { blockingConditions, decideRecommendation, dimensions } from "../lib/recommendation-policy.mjs";
+import { blockingConditions, decideRecommendation, dimensions } from "../lib/recommendation/safety-policy.mjs";
 
 function* states() {
   for (const hardware of dimensions.hardware)

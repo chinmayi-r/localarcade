@@ -1,6 +1,6 @@
 # Recommendation decision system
 
-Status: product contract. Changes to this document and `lib/recommendation-policy.mjs` must ship together.
+Status: product contract. Changes to this document and `lib/recommendation/safety-policy.mjs` must ship together.
 
 ## Core separation
 

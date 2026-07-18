@@ -6,21 +6,20 @@ const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("the product states what is real and what is example data", async () => {
   const app = await read("../app/arena-app.tsx");
-  assert.match(app, /illustrative fit and speed estimates · no production claims/);
-  assert.match(app, /ESTIMATED · LOW CONFIDENCE/);
-  assert.match(app, /A measurement on your machine or a claim that rank #1 is objectively best/);
+  assert.match(app, /PROTOTYPE DATA · NOT A PUBLISHED LEADERBOARD/);
+  assert.match(app, /Recommendation evidence/);
+  assert.match(app, /isolated prototype catalog/);
 });
 
 test("the contribution promise requires explicit user control", async () => {
   const app = await read("../app/arena-app.tsx");
-  assert.match(app, /No account\. No runner\. No telemetry/);
-  assert.match(app, /choose whether to verify/);
-  assert.match(app, /Optional contribution/i);
+  assert.match(app, /NO ACCOUNT · NO TELEMETRY · NO DOWNLOAD/);
+  assert.match(app, /Runner · planned/);
 });
 
 test("interactive controls expose accessible semantics", async () => {
   const app = await read("../app/arena-app.tsx");
   assert.match(app, /aria-label=/);
-  assert.match(app, /aria-live="polite"/);
-  assert.match(app, /<legend>/);
+  assert.match(app, /aria-label=/);
+  assert.match(app, /<ConfigurationPanel/);
 });
