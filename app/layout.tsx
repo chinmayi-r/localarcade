@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Local Arena — Real-device tests for local AI",
-  description: "Blind preference and reproducible performance data for local models on real consumer hardware.",
+  title: "Local Arena — Find what runs here",
+  description: "A rough top five local-model configurations for your hardware and task, with visible evidence and uncertainty.",
   openGraph: {
     title: "Local Arena",
-    description: "Which local model actually works on your machine?",
-    images: [{ url: "/og.png", width: 1660, height: 948, alt: "Local Arena real-device model comparison matrix" }],
+    description: "Find what runs here.",
+    images: [{ url: "/og-v2.png", width: 1664, height: 928, alt: "Local Arena orbital compute atlas" }],
   },
-  twitter: { card: "summary_large_image", images: ["/og.png"] },
+  twitter: { card: "summary_large_image", images: ["/og-v2.png"] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

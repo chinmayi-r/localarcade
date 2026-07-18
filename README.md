@@ -27,3 +27,7 @@ A change may merge only when it has a concrete user outcome, tests that would fa
 ## Product boundary
 
 This repository is the public preference and reporting surface. A compute runner must live in a separate repository and release process because it executes untrusted model artifacts on contributor hardware. See [SECURITY.md](SECURITY.md) before designing it.
+
+## Recommendation policy
+
+The recommendation and benchmarking branches are specified in [the recommendation decision system](docs/recommendation-decision-system.md). The executable policy fails closed on unknown states, and its tests enumerate all declared state combinations so new branches cannot be added without defined behavior.
