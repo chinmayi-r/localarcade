@@ -1,5 +1,7 @@
 export { validateAcceleratorRegistryRecord, validateArtifactRegistryRecord, validateRegistrySnapshot } from "./validation";
 export { buildRegistrySnapshot } from "./snapshot";
+export { assertRegistryFresh, assessRegistryFreshness, isRecommendableArtifact, REGISTRY_MAX_AGE_DAYS, REGISTRY_MAX_AGE_MS } from "./freshness";
+export type { RegistryFreshness } from "./freshness";
 export { admitHuggingFaceRepository, chatTemplateSha256, quantizationFromFilename } from "./importers/hugging-face";
 export { baseModelFromTags, selectDiscoveredRepositories } from "./discovery/hugging-face";
 export type { AdmissionResult, HuggingFaceModelResponse } from "./importers/hugging-face";

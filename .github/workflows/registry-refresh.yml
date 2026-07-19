@@ -1,0 +1,56 @@
+name: Registry refresh
+
+# Schedule syntax copied from GitHub's official workflow documentation on 2026-07-19:
+# https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule
+on:
+  schedule:
+    - cron: "17 5 * * 1,4"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: registry-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      # Source: https://github.com/step-security/harden-runner (copied 2026-07-19)
+      - name: Harden runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run discover
+      - run: npm run ingest
+      - run: npm run check
+      - name: Open or update the review branch
+        run: |
+          gh auth setup-git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B automation/catalog-refresh
+          git add registry/locks/hugging-face.json registry/generated/artifacts.json
+          git commit -m "chore: refresh artifact registry"
+          git fetch origin refs/heads/automation/catalog-refresh:refs/remotes/origin/automation/catalog-refresh || true
+          git push --force-with-lease origin HEAD:automation/catalog-refresh
+          if gh pr view automation/catalog-refresh --json number >/dev/null 2>&1; then
+            gh pr edit automation/catalog-refresh --title "chore: refresh artifact registry" --body "Scheduled immutable registry refresh. New artifacts remain in triage until reviewed and promoted."
+          else
+            gh pr create --base main --head automation/catalog-refresh --title "chore: refresh artifact registry" --body "Scheduled immutable registry refresh. New artifacts remain in triage until reviewed and promoted."
+          fi

@@ -79,6 +79,7 @@ export function admitHuggingFaceRepository(source: DiscoveredRepository, respons
       model: baseModel.split("/").at(-1) ?? baseModel,
       maxContextTokens: contextLength,
       chatTemplate,
+      status: "triage",
       license: { id: licenseId, sourceUrl: licenseSourceUrl },
       provenance: {
         id: provenance(fileUrl, retrievedAt, "identity-derivation"),

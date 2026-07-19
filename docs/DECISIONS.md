@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-19 — Refresh immutable artifacts through a review pull request
+
+- **Decision:** A pinned scheduled workflow runs discovery and ingestion every Monday and Thursday, validates the complete repository, and opens or updates `automation/catalog-refresh` for review. New immutable identities default to `triage`; existing lifecycle status and previously admitted immutable records are retained. Production requires `promoted` status.
+- **Why:** Scheduled ingestion should detect upstream change without making new artifacts recommendable or letting a moving repository revision silently remove a configuration with existing evidence. A review branch keeps promotion and generated-data changes auditable.
+- **Reversible:** Yes. The schedule, review branch and promotion adapter are explicit; automatic promotion remains forbidden.
+
+## 2026-07-19 — Gate builds on the last complete successful ingest
+
+- **Decision:** Registry schema v4 adds `lastIngestSucceededAt`. The build calls a pure freshness gate and fails after seven days, on invalid timestamps, or on materially future timestamps. `generatedAt` remains the discovery-lock timestamp.
+- **Why:** A generated file can look current while its last full admission failed. Separating discovery time from successful completion prevents silent catalog rot and preserves the last good snapshot on failure.
+- **Reversible:** Yes. The threshold is centralized, but changing the seven-day contract requires an explicit plan decision.
+
 ## 2026-07-19 — Make recommendation policy inspectable and locally editable
 
 - **Decision:** M5 splits candidate evaluation, ranking/role selection, editable policy constants, strategy formulas, state transitions and display provenance into separate named modules, with `lib/recommendation/ALGORITHM.md` as the edit map. User-visible metrics flow through a `DisplayValue` wrapper that requires provenance at compile time.

@@ -15,6 +15,7 @@ export function validateArtifactRegistryRecord(record: ArtifactRegistryRecord): 
   if (!record.baseModel.trim() || !record.family.trim() || !record.model.trim()) issues.push("Base model, family and model are required.");
   if (!Number.isInteger(record.maxContextTokens) || record.maxContextTokens <= 0) issues.push("Maximum context must be a positive integer.");
   if (!record.chatTemplate.trim()) issues.push("Chat template is required.");
+  if (record.status !== "triage" && record.status !== "promoted") issues.push("Artifact status must be triage or promoted.");
   if (!record.license.id.trim() || !isHttpUrl(record.license.sourceUrl)) issues.push("License id and source URL are required.");
   for (const field of ["id", "publisher", "repository", "revision", "fileName", "sha256", "fileSizeBytes", "format", "quantization", "baseModel", "family", "model", "maxContextTokens", "license", "chatTemplate"] as const) {
     const provenance = record.provenance[field];
@@ -42,9 +43,10 @@ export function validateAcceleratorRegistryRecord(record: AcceleratorRegistryRec
 
 export function validateRegistrySnapshot(snapshot: RegistrySnapshot): string[] {
   const issues: string[] = [];
-  if (snapshot.schemaVersion !== 3) issues.push(`Unsupported registry schema: ${String(snapshot.schemaVersion)}.`);
+  if (snapshot.schemaVersion !== 4) issues.push(`Unsupported registry schema: ${String(snapshot.schemaVersion)}.`);
   if (!snapshot.snapshotId.trim()) issues.push("Snapshot id is required.");
   if (!isTimestamp(snapshot.generatedAt)) issues.push("Snapshot generated-at must be a valid timestamp.");
+  if (!isTimestamp(snapshot.lastIngestSucceededAt)) issues.push("Snapshot last-ingest-succeeded-at must be a valid timestamp.");
   issues.push(...duplicates(snapshot.artifacts.map((record) => record.id), "artifact id"));
   issues.push(...duplicates(snapshot.accelerators.map((record) => record.id), "accelerator id"));
   for (const record of snapshot.artifacts) issues.push(...validateArtifactRegistryRecord(record).map((issue) => `${record.id}: ${issue}`));

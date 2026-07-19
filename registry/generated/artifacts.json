@@ -1,7 +1,8 @@
 {
-  "schemaVersion": 3,
-  "snapshotId": "hugging-face-49edd0518a8e3087",
+  "schemaVersion": 4,
+  "snapshotId": "hugging-face-f78d4c6f61879778",
   "generatedAt": "2026-07-19T13:47:07.121Z",
+  "lastIngestSucceededAt": "2026-07-19T13:47:07.121Z",
   "artifacts": [
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-f32.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -98,7 +99,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-IQ3_M.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -195,7 +197,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-IQ4_XS.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -292,7 +295,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q3_K_L.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -389,7 +393,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q4_K_M.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -486,7 +491,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q4_K_S.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -583,7 +589,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q5_K_M.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -680,7 +687,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q5_K_S.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -777,7 +785,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q6_K_L.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -874,7 +883,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q6_K.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -971,7 +981,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/gemma-2-2b-it-GGUF/gemma-2-2b-it-Q8_0.gguf@855f67caed130e1befc571b52bd181be2e858883",
@@ -1068,7 +1079,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-f16.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1165,7 +1177,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-IQ3_M.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1262,7 +1275,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-IQ4_XS.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1359,7 +1373,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q3_K_L.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1456,7 +1471,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q3_K_XL.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1553,7 +1569,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_0_4_4.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1650,7 +1667,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_0_4_8.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1747,7 +1765,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_0_8_8.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1844,7 +1863,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_0.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -1941,7 +1961,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_K_L.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2038,7 +2059,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_K_M.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2135,7 +2157,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_K_S.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2232,7 +2255,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q5_K_L.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2329,7 +2353,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q5_K_M.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2426,7 +2451,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q5_K_S.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2523,7 +2549,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q6_K_L.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2620,7 +2647,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q6_K.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2717,7 +2745,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q8_0.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c",
@@ -2814,7 +2843,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-f16.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -2911,7 +2941,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-IQ3_M.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3008,7 +3039,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-IQ4_XS.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3105,7 +3137,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q3_K_L.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3202,7 +3235,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q3_K_XL.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3299,7 +3333,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_0_4_4.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3396,7 +3431,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_0_4_8.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3493,7 +3529,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_0_8_8.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3590,7 +3627,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_0.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3687,7 +3725,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_K_L.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3784,7 +3823,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_K_M.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3881,7 +3921,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q4_K_S.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -3978,7 +4019,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q5_K_L.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -4075,7 +4117,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q5_K_M.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -4172,7 +4215,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q5_K_S.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -4269,7 +4313,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q6_K_L.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -4366,7 +4411,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q6_K.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -4463,7 +4509,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Llama-3.2-3B-Instruct-GGUF/Llama-3.2-3B-Instruct-Q8_0.gguf@5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
@@ -4560,7 +4607,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-f32.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -4657,7 +4705,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-IQ2_M.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -4754,7 +4803,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-IQ3_M.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -4851,7 +4901,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-IQ3_XS.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -4948,7 +4999,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-IQ4_NL.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5045,7 +5097,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-IQ4_XS.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5142,7 +5195,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q2_K_L.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5239,7 +5293,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q2_K.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5336,7 +5391,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q3_K_L.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5433,7 +5489,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q3_K_M.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5530,7 +5587,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q3_K_S.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5627,7 +5685,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q3_K_XL.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5724,7 +5783,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q4_0_4_4.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5821,7 +5881,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q4_0_4_8.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -5918,7 +5979,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q4_0_8_8.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6015,7 +6077,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q4_K_L.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6112,7 +6175,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6209,7 +6273,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q4_K_S.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6306,7 +6371,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q5_K_L.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6403,7 +6469,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q5_K_M.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6500,7 +6567,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q5_K_S.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6597,7 +6665,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q6_K_L.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6694,7 +6763,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q6_K.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6791,7 +6861,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF/Meta-Llama-3.1-8B-Instruct-Q8_0.gguf@bf5b95e96dac0462e2a09145ec66cae9a3f12067",
@@ -6888,7 +6959,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-f32.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -6985,7 +7057,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-IQ2_M.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7082,7 +7155,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-IQ3_M.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7179,7 +7253,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-IQ3_XS.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7276,7 +7351,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-IQ4_XS.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7373,7 +7449,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q2_K_L.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7470,7 +7547,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q2_K.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7567,7 +7645,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q3_K_L.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7664,7 +7743,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q3_K_M.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7761,7 +7841,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q3_K_S.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7858,7 +7939,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q3_K_XL.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -7955,7 +8037,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_0_4_4.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8052,7 +8135,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_0_4_8.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8149,7 +8233,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_0_8_8.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8246,7 +8331,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_0.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8343,7 +8429,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_K_L.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8440,7 +8527,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_K_M.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8537,7 +8625,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q4_K_S.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8634,7 +8723,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q5_K_L.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8731,7 +8821,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q5_K_M.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8828,7 +8919,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q5_K_S.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -8925,7 +9017,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q6_K_L.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -9022,7 +9115,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q6_K.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -9119,7 +9213,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Phi-3.5-mini-instruct-GGUF/Phi-3.5-mini-instruct-Q8_0.gguf@6d70da17e749a471ccb62ade694486011a75cda3",
@@ -9216,7 +9311,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-f16.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9313,7 +9409,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-IQ2_M.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9410,7 +9507,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-IQ3_M.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9507,7 +9605,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-IQ3_XS.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9604,7 +9703,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-IQ4_XS.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9701,7 +9801,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q2_K_L.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9798,7 +9899,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q2_K.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9895,7 +9997,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q3_K_L.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -9992,7 +10095,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q3_K_M.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10089,7 +10193,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q3_K_S.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10186,7 +10291,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q3_K_XL.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10283,7 +10389,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_0_4_4.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10380,7 +10487,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_0_4_8.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10477,7 +10585,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_0_8_8.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10574,7 +10683,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_0.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10671,7 +10781,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_K_L.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10768,7 +10879,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_K_M.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10865,7 +10977,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q4_K_S.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -10962,7 +11075,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q5_K_L.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -11059,7 +11173,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q5_K_M.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -11156,7 +11271,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q5_K_S.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -11253,7 +11369,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q6_K_L.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -11350,7 +11467,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q6_K.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -11447,7 +11565,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-14B-Instruct-GGUF/Qwen2.5-14B-Instruct-Q8_0.gguf@05244aa5d871c661c80082a15d3bce44714d068d",
@@ -11544,7 +11663,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ1_M.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -11641,7 +11761,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ2_M.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -11738,7 +11859,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ2_XS.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -11835,7 +11957,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ2_XXS.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -11932,7 +12055,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ3_M.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12029,7 +12153,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ3_XXS.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12126,7 +12251,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-IQ4_XS.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12223,7 +12349,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q2_K_L.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12320,7 +12447,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q2_K.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12417,7 +12545,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q3_K_L.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12514,7 +12643,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q3_K_M.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12611,7 +12741,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q3_K_S.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12708,7 +12839,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q3_K_XL.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12805,7 +12937,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q4_0.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12902,7 +13035,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "bartowski/Qwen2.5-72B-Instruct-GGUF/Qwen2.5-72B-Instruct-Q4_K_M.gguf@d43fd973131bce821f41e2df3c78c6fe15c5627a",
@@ -12999,7 +13133,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ1_M.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13096,7 +13231,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ1_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13193,7 +13329,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ2_M.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13290,7 +13427,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ2_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13387,7 +13525,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ2_XS.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13484,7 +13623,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ2_XXS.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13581,7 +13721,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ3_M.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13678,7 +13819,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ3_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13775,7 +13917,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ3_XS.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13872,7 +14015,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ3_XXS.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -13969,7 +14113,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-IQ4_XS.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14066,7 +14211,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q2_K_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14163,7 +14309,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q2_K.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14260,7 +14407,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q3_K_L.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14357,7 +14505,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q3_K_M.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14454,7 +14603,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q3_K_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14551,7 +14701,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q4_0.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14648,7 +14799,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q4_1.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14745,7 +14897,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q4_K_M.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14842,7 +14995,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q4_K_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -14939,7 +15093,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q5_K_M.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -15036,7 +15191,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q5_K_S.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -15133,7 +15289,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/copywriter-gemma4-31b-i1-GGUF/copywriter-gemma4-31b.i1-Q6_K.gguf@5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
@@ -15230,7 +15387,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.IQ4_XS.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15327,7 +15485,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q2_K.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15424,7 +15583,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q3_K_L.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15521,7 +15681,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q3_K_M.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15618,7 +15779,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q3_K_S.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15715,7 +15877,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q4_K_M.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15812,7 +15975,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q4_K_S.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -15909,7 +16073,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q5_K_M.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -16006,7 +16171,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q5_K_S.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -16103,7 +16269,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q6_K.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -16200,7 +16367,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF/Gemma-4-12B-it-AEON-Abliterated-K4-BF16.Q8_0.gguf@515bdcf5688253f253a3b96446e7acd84f0d795f",
@@ -16297,7 +16465,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ1_M.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16394,7 +16563,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ1_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16491,7 +16661,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ2_M.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16588,7 +16759,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ2_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16685,7 +16857,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ2_XS.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16782,7 +16955,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ2_XXS.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16879,7 +17053,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ3_M.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -16976,7 +17151,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ3_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17073,7 +17249,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ3_XS.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17170,7 +17347,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ3_XXS.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17267,7 +17445,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-IQ4_XS.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17364,7 +17543,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q2_K_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17461,7 +17641,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q2_K.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17558,7 +17739,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q3_K_L.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17655,7 +17837,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q3_K_M.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17752,7 +17935,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q3_K_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17849,7 +18033,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q4_0.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -17946,7 +18131,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q4_1.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -18043,7 +18229,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q4_K_M.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -18140,7 +18327,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q4_K_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -18237,7 +18425,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q5_K_M.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -18334,7 +18523,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q5_K_S.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -18431,7 +18621,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/grok-oss-Revenant-70B-i1-GGUF/grok-oss-Revenant-70B.i1-Q6_K.gguf@ae54697be2dd9c1bac7500c9e6d3c130e8955959",
@@ -18528,7 +18719,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ1_M.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -18625,7 +18817,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ1_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -18722,7 +18915,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ2_M.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -18819,7 +19013,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ2_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -18916,7 +19111,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ2_XS.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19013,7 +19209,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ2_XXS.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19110,7 +19307,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ3_M.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19207,7 +19405,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ3_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19304,7 +19503,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ3_XS.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19401,7 +19601,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ3_XXS.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19498,7 +19699,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-IQ4_XS.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19595,7 +19797,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q2_K_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19692,7 +19895,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q2_K.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19789,7 +19993,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q3_K_L.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19886,7 +20091,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q3_K_M.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -19983,7 +20189,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q3_K_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20080,7 +20287,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q4_0.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20177,7 +20385,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q4_1.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20274,7 +20483,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q4_K_M.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20371,7 +20581,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q4_K_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20468,7 +20679,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q5_K_M.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20565,7 +20777,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q5_K_S.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20662,7 +20875,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF/Omni-31B-Turkish-Reasoning-Model.i1-Q6_K.gguf@0790133cd5e85e362a280b93fa2ec3b95b545eea",
@@ -20759,7 +20973,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ1_M.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -20856,7 +21071,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ1_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -20953,7 +21169,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ2_M.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21050,7 +21267,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ2_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21147,7 +21365,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ2_XS.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21244,7 +21463,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ2_XXS.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21341,7 +21561,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ3_M.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21438,7 +21659,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ3_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21535,7 +21757,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ3_XS.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21632,7 +21855,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ3_XXS.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21729,7 +21953,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-IQ4_XS.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21826,7 +22051,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q2_K_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -21923,7 +22149,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q2_K.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22020,7 +22247,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q3_K_L.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22117,7 +22345,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q3_K_M.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22214,7 +22443,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q3_K_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22311,7 +22541,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q4_0.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22408,7 +22639,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q4_1.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22505,7 +22737,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q4_K_M.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22602,7 +22835,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q4_K_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22699,7 +22933,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q5_K_M.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22796,7 +23031,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q5_K_S.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22893,7 +23129,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF/Qwen35B-Agent-R2-Abliterated.i1-Q6_K.gguf@4da8b3ea08f022b5466b914b09dee06ad4eea28d",
@@ -22990,7 +23227,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ1_M.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23087,7 +23325,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ1_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23184,7 +23423,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ2_M.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23281,7 +23521,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ2_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23378,7 +23619,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ2_XS.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23475,7 +23717,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ2_XXS.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23572,7 +23815,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ3_M.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23669,7 +23913,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ3_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23766,7 +24011,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ3_XS.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23863,7 +24109,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ3_XXS.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -23960,7 +24207,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ4_NL.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24057,7 +24305,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-IQ4_XS.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24154,7 +24403,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q2_K_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24251,7 +24501,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q2_K.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24348,7 +24599,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q3_K_L.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24445,7 +24697,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q3_K_M.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24542,7 +24795,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q3_K_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24639,7 +24893,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q4_0.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24736,7 +24991,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q4_1.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24833,7 +25089,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q4_K_M.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -24930,7 +25187,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q4_K_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -25027,7 +25285,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q5_K_M.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -25124,7 +25383,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q5_K_S.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -25221,7 +25481,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF/STARK-WEB-12B-v1.7.i1-Q6_K.gguf@db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
@@ -25318,7 +25579,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q2_k.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25415,7 +25677,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q3_k_m.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25512,7 +25775,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q4_0.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25609,7 +25873,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q4_k_m.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25706,7 +25971,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q5_0.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25803,7 +26069,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q5_k_m.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25900,7 +26167,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q6_k.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -25997,7 +26265,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-0.5B-Instruct-GGUF/qwen2.5-0.5b-instruct-q8_0.gguf@9217f5db79a29953eb74d5343926648285ec7e67",
@@ -26094,7 +26363,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q2_k.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26191,7 +26461,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q3_k_m.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26288,7 +26559,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q4_0.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26385,7 +26657,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q4_k_m.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26482,7 +26755,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q5_0.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26579,7 +26853,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q5_k_m.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26676,7 +26951,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q6_k.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26773,7 +27049,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF/qwen2.5-1.5b-instruct-q8_0.gguf@91cad51170dc346986eccefdc2dd33a9da36ead9",
@@ -26870,7 +27147,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q2_k.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -26967,7 +27245,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q3_k_m.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27064,7 +27343,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q4_0.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27161,7 +27441,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q4_k_m.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27258,7 +27539,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q5_0.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27355,7 +27637,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q5_k_m.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27452,7 +27735,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q6_k.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27549,7 +27833,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-3B-Instruct-GGUF/qwen2.5-3b-instruct-q8_0.gguf@7dabda4d13d513e3e842b20f0d435c732f172cbe",
@@ -27646,7 +27931,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q2_k.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -27743,7 +28029,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q3_k_m.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -27840,7 +28127,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q4_0.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -27937,7 +28225,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q4_k_m.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -28034,7 +28323,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q5_0.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -28131,7 +28421,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q5_k_m.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -28228,7 +28519,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q6_k.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -28325,7 +28617,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF/qwen2.5-coder-32b-instruct-q8_0.gguf@9d3053fce650fe1cdbdb75998c2a87add9d178ef",
@@ -28422,7 +28715,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q2_k.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -28519,7 +28813,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q3_k_m.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -28616,7 +28911,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q4_0.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -28713,7 +29009,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q4_k_m.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -28810,7 +29107,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q5_k_m.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -28907,7 +29205,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q6_k.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -29004,7 +29303,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/qwen2.5-coder-7b-instruct-q8_0.gguf@13fb94bfda8c8cf22497dc57b78f391a9acb426a",
@@ -29101,7 +29401,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q4_K_M.gguf@e4d4bafdfb96a411a163846265362aceb0b9c63a",
@@ -29198,7 +29499,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q5_0.gguf@e4d4bafdfb96a411a163846265362aceb0b9c63a",
@@ -29295,7 +29597,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q5_K_M.gguf@e4d4bafdfb96a411a163846265362aceb0b9c63a",
@@ -29392,7 +29695,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q6_K.gguf@e4d4bafdfb96a411a163846265362aceb0b9c63a",
@@ -29489,7 +29793,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-30B-A3B-GGUF/Qwen3-30B-A3B-Q8_0.gguf@e4d4bafdfb96a411a163846265362aceb0b9c63a",
@@ -29586,7 +29891,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-4B-GGUF/Qwen3-4B-Q4_K_M.gguf@bc640142c66e1fdd12af0bd68f40445458f3869b",
@@ -29683,7 +29989,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-4B-GGUF/Qwen3-4B-Q5_0.gguf@bc640142c66e1fdd12af0bd68f40445458f3869b",
@@ -29780,7 +30087,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-4B-GGUF/Qwen3-4B-Q5_K_M.gguf@bc640142c66e1fdd12af0bd68f40445458f3869b",
@@ -29877,7 +30185,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-4B-GGUF/Qwen3-4B-Q6_K.gguf@bc640142c66e1fdd12af0bd68f40445458f3869b",
@@ -29974,7 +30283,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-4B-GGUF/Qwen3-4B-Q8_0.gguf@bc640142c66e1fdd12af0bd68f40445458f3869b",
@@ -30071,7 +30381,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-8B-GGUF/Qwen3-8B-Q4_K_M.gguf@7c41481f57cb95916b40956ab2f0b139b296d974",
@@ -30168,7 +30479,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-8B-GGUF/Qwen3-8B-Q5_0.gguf@7c41481f57cb95916b40956ab2f0b139b296d974",
@@ -30265,7 +30577,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-8B-GGUF/Qwen3-8B-Q5_K_M.gguf@7c41481f57cb95916b40956ab2f0b139b296d974",
@@ -30362,7 +30675,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-8B-GGUF/Qwen3-8B-Q6_K.gguf@7c41481f57cb95916b40956ab2f0b139b296d974",
@@ -30459,7 +30773,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "Qwen/Qwen3-8B-GGUF/Qwen3-8B-Q8_0.gguf@7c41481f57cb95916b40956ab2f0b139b296d974",
@@ -30556,7 +30871,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-120b-GGUF/gpt-oss-120b-F16.gguf@ff1a82da6ad466e32284fa3d2b86694db3204789",
@@ -30653,7 +30969,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-F16.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -30750,7 +31067,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q2_K_L.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -30847,7 +31165,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q2_K.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -30944,7 +31263,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q3_K_M.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31041,7 +31361,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q3_K_S.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31138,7 +31459,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q4_0.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31235,7 +31557,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q4_1.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31332,7 +31655,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q4_K_M.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31429,7 +31753,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q4_K_S.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31526,7 +31851,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q5_K_M.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31623,7 +31949,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q5_K_S.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31720,7 +32047,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q6_K.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31817,7 +32145,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-Q8_0.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -31914,7 +32243,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-UD-Q4_K_XL.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -32011,7 +32341,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-UD-Q6_K_XL.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -32108,7 +32439,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/gpt-oss-20b-GGUF/gpt-oss-20b-UD-Q8_K_XL.gguf@d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
@@ -32205,7 +32537,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-Q8_0.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32302,7 +32635,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-IQ2_M.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32399,7 +32733,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-IQ2_XXS.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32496,7 +32831,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-IQ3_S.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32593,7 +32929,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-IQ3_XXS.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32690,7 +33027,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-IQ4_NL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32787,7 +33125,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-IQ4_XS.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32884,7 +33223,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q2_K_XL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -32981,7 +33321,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q3_K_M.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33078,7 +33419,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q3_K_XL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33175,7 +33517,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q4_K_M.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33272,7 +33615,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q4_K_S.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33369,7 +33713,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q4_K_XL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33466,7 +33811,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q5_K_M.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33563,7 +33909,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q5_K_S.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33660,7 +34007,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q5_K_XL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33757,7 +34105,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q6_K_XL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33854,7 +34203,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q6_K.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -33951,7 +34301,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF/Qwen-AgentWorld-35B-A3B-UD-Q8_K_XL.gguf@3a305abf5cfd119ee999dfe929c433746edd8d63",
@@ -34048,7 +34399,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-BF16.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34145,7 +34497,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-IQ4_NL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34242,7 +34595,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-IQ4_XS.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34339,7 +34693,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q2_K_L.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34436,7 +34791,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q2_K.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34533,7 +34889,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q3_K_M.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34630,7 +34987,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q3_K_S.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34727,7 +35085,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q4_0.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34824,7 +35183,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q4_1.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -34921,7 +35281,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q4_K_M.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35018,7 +35379,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q4_K_S.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35115,7 +35477,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q5_K_M.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35212,7 +35575,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q5_K_S.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35309,7 +35673,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q6_K.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35406,7 +35771,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q8_0.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35503,7 +35869,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-IQ1_M.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35600,7 +35967,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-IQ1_S.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35697,7 +36065,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-IQ2_M.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35794,7 +36163,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-IQ2_XXS.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35891,7 +36261,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-IQ3_XXS.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -35988,7 +36359,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-Q2_K_XL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -36085,7 +36457,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-Q3_K_XL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -36182,7 +36555,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-Q4_K_XL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -36279,7 +36653,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-Q5_K_XL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -36376,7 +36751,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-Q6_K_XL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -36473,7 +36849,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-0.6B-GGUF/Qwen3-0.6B-UD-Q8_K_XL.gguf@50968a4468ef4233ed78cd7c3de230dd1d61a56b",
@@ -36570,7 +36947,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-BF16.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -36667,7 +37045,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-IQ4_NL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -36764,7 +37143,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-IQ4_XS.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -36861,7 +37241,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q2_K_L.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -36958,7 +37339,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q2_K.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37055,7 +37437,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q3_K_M.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37152,7 +37535,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q3_K_S.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37249,7 +37633,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q4_1.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37346,7 +37731,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q4_K_M.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37443,7 +37829,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q4_K_S.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37540,7 +37927,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q5_K_M.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37637,7 +38025,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q5_K_S.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37734,7 +38123,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q6_K.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37831,7 +38221,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-Q8_0.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -37928,7 +38319,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-IQ1_M.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38025,7 +38417,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-IQ1_S.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38122,7 +38515,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-IQ2_M.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38219,7 +38613,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-IQ2_XXS.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38316,7 +38711,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-IQ3_XXS.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38413,7 +38809,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-Q2_K_XL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38510,7 +38907,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-Q3_K_XL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38607,7 +39005,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-Q4_K_XL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38704,7 +39103,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-Q5_K_XL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38801,7 +39201,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-Q6_K_XL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38898,7 +39299,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-8B-GGUF/Qwen3-8B-UD-Q8_K_XL.gguf@a6adef130ffb23ddaf1a62fec9dced968c9bc482",
@@ -38995,7 +39397,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-IQ4_NL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39092,7 +39495,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-IQ4_XS.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39189,7 +39593,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q2_K_L.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39286,7 +39691,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q2_K.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39383,7 +39789,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q3_K_M.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39480,7 +39887,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q3_K_S.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39577,7 +39985,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_0.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39674,7 +40083,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_1.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39771,7 +40181,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_M.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39868,7 +40279,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q4_K_S.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -39965,7 +40377,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q5_K_M.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40062,7 +40475,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q5_K_S.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40159,7 +40573,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q6_K.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40256,7 +40671,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-Q8_0.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40353,7 +40769,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-IQ1_M.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40450,7 +40867,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-IQ1_S.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40547,7 +40965,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-IQ2_M.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40644,7 +41063,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-IQ2_XXS.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40741,7 +41161,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-IQ3_XXS.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40838,7 +41259,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-Q2_K_XL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -40935,7 +41357,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-Q3_K_XL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -41032,7 +41455,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -41129,7 +41553,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -41226,7 +41651,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-Q6_K_XL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -41323,7 +41749,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF/Qwen3-Coder-30B-A3B-Instruct-UD-Q8_K_XL.gguf@b17cb02dd882d5b6ab62fc777ad2995f19668350",
@@ -41420,7 +41847,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-IQ4_NL.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -41517,7 +41945,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-IQ4_XS.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -41614,7 +42043,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q2_K_L.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -41711,7 +42141,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q2_K.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -41808,7 +42239,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q3_K_M.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -41905,7 +42337,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q3_K_S.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42002,7 +42435,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q4_0.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42099,7 +42533,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q4_K_M.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42196,7 +42631,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-Q4_K_S.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42293,7 +42729,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ1_M.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42390,7 +42827,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ1_S.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42487,7 +42925,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ2_M.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42584,7 +43023,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ2_XXS.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42681,7 +43121,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ3_S.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42778,7 +43219,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ3_XXS.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42875,7 +43317,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ4_NL.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -42972,7 +43415,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-IQ4_XS.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43069,7 +43513,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q2_K_XL.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43166,7 +43611,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q3_K_M.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43263,7 +43709,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q3_K_S.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43360,7 +43807,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q3_K_XL.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43457,7 +43905,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_M.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43554,7 +44003,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_S.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43651,7 +44101,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     },
     {
       "id": "unsloth/Qwen3-Coder-Next-GGUF/Qwen3-Coder-Next-UD-Q4_K_XL.gguf@ce09c67b53bc8739eef83fe67b2f5d293c270632",
@@ -43748,7 +44199,8 @@
           "retrievedAt": "2026-07-19T13:47:07.121Z",
           "kind": "gguf-metadata"
         }
-      }
+      },
+      "status": "promoted"
     }
   ],
   "quarantine": [

@@ -33,6 +33,7 @@ test("bulk admission creates immutable records with field-level provenance", () 
   assert.equal(artifact.fileSizeBytes, 4_000_000_000);
   assert.equal(artifact.maxContextTokens, 32_768);
   assert.equal(artifact.chatTemplate, "{{ messages }}");
+  assert.equal(artifact.status, "triage");
   assert.match(artifact.license.sourceUrl, new RegExp(revision));
   assert.equal(Object.keys(artifact.provenance).length, 15);
   assert.equal(artifact.provenance.sha256.kind, "hub-lfs");

@@ -11,4 +11,6 @@ test("generated registry clears M1 scale and provenance gates", () => {
   assert.ok(snapshot.artifacts.length >= 40);
   assert.ok(new Set(snapshot.artifacts.map((artifact) => artifact.family)).size >= 8);
   assert.ok(snapshot.artifacts.every((artifact) => Object.keys(artifact.provenance).length === 15));
+  assert.ok(snapshot.artifacts.every((artifact) => artifact.status === "promoted"));
+  assert.ok(snapshot.lastIngestSucceededAt);
 });

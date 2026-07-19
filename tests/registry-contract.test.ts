@@ -19,6 +19,7 @@ const artifact: ArtifactRegistryRecord = {
   fileSizeBytes: 4_000_000_000,
   maxContextTokens: 32_768,
   chatTemplate: "{{ messages }}",
+  status: "promoted",
   license: { id: "apache-2.0", sourceUrl: "https://example.com/license" },
   provenance: {
     id: provenance("identity-derivation"), publisher: provenance(), repository: provenance(), revision: provenance(),
@@ -57,12 +58,12 @@ test("accelerator admission never infers memory from an ambiguous product name",
 });
 
 test("snapshot validation rejects duplicate identities", () => {
-  const snapshot: RegistrySnapshot = { schemaVersion: 3, snapshotId: "registry-2026-07-18", generatedAt: "2026-07-18T20:00:00.000Z", artifacts: [artifact, artifact], quarantine: [], accelerators: [accelerator, accelerator], compatibilityAssertions: [] };
+  const snapshot: RegistrySnapshot = { schemaVersion: 4, snapshotId: "registry-2026-07-18", generatedAt: "2026-07-18T20:00:00.000Z", lastIngestSucceededAt: "2026-07-18T20:00:00.000Z", artifacts: [artifact, artifact], quarantine: [], accelerators: [accelerator, accelerator], compatibilityAssertions: [] };
   const issues = validateRegistrySnapshot(snapshot).join(" ");
   assert.match(issues, /Duplicate artifact id/);
   assert.match(issues, /Duplicate accelerator id/);
 });
 
 test("snapshot generation is deterministic for the same lock timestamp and records", () => {
-  assert.deepEqual(buildRegistrySnapshot("2026-07-18T20:00:00.000Z", [artifact], []), buildRegistrySnapshot("2026-07-18T20:00:00.000Z", [artifact], []));
+  assert.deepEqual(buildRegistrySnapshot("2026-07-18T20:00:00.000Z", "2026-07-19T00:00:00.000Z", [artifact], []), buildRegistrySnapshot("2026-07-18T20:00:00.000Z", "2026-07-19T00:00:00.000Z", [artifact], []));
 });

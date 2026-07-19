@@ -4,6 +4,7 @@ import { admitHuggingFaceRepository } from "../lib/registry/importers/hugging-fa
 import type { HuggingFaceModelResponse } from "../lib/registry/importers/hugging-face";
 import { buildRegistrySnapshot } from "../lib/registry/snapshot";
 import type { HuggingFaceDiscoveryLock, HuggingFaceDiscoveryPolicy } from "../lib/registry/discovery/hugging-face";
+import type { ArtifactRegistryRecord, RegistrySnapshot } from "../lib/registry";
 
 const policyPath = new URL("../registry/policy/hugging-face.json", import.meta.url);
 const lockPath = new URL("../registry/locks/hugging-face.json", import.meta.url);
@@ -12,6 +13,7 @@ const policyText = await readFile(policyPath, "utf8");
 const policy = JSON.parse(policyText) as HuggingFaceDiscoveryPolicy;
 const lock = JSON.parse(await readFile(lockPath, "utf8")) as HuggingFaceDiscoveryLock;
 const policySha256 = createHash("sha256").update(policyText).digest("hex");
+const previous = await readPreviousSnapshot(outputPath);
 if (lock.schemaVersion !== 1 || lock.policySha256 !== policySha256) throw new Error("Discovery lock does not match the current policy; run npm run discover first.");
 if (!lock.repositories.length) throw new Error("Discovery lock is empty; the previous snapshot was preserved.");
 
@@ -28,7 +30,11 @@ for (const repository of lock.repositories) {
 const families = new Set(artifacts.map((artifact) => artifact.family));
 if (artifacts.length < policy.minimumArtifacts) throw new Error(`Admission produced ${artifacts.length} artifacts; policy requires ${policy.minimumArtifacts}. Previous snapshot preserved.`);
 if (families.size < policy.minimumFamilies) throw new Error(`Admission produced ${families.size} families; policy requires ${policy.minimumFamilies}. Previous snapshot preserved.`);
-const snapshot = buildRegistrySnapshot(lock.discoveredAt, artifacts, quarantine);
+const previousById = new Map(previous?.artifacts.map((artifact) => [artifact.id, artifact]));
+const reconciled: ArtifactRegistryRecord[] = artifacts.map((artifact) => ({ ...artifact, status: previousById.get(artifact.id)?.status ?? "triage" }));
+const admittedIds = new Set(reconciled.map((artifact) => artifact.id));
+for (const artifact of previous?.artifacts ?? []) if (!admittedIds.has(artifact.id)) reconciled.push(artifact);
+const snapshot = buildRegistrySnapshot(lock.discoveredAt, new Date().toISOString(), reconciled, quarantine);
 await writeAtomically(outputPath, `${JSON.stringify(snapshot, null, 2)}\n`);
 console.log(`Admitted ${snapshot.artifacts.length} artifacts across ${families.size} families; quarantined ${snapshot.quarantine.length} records.`);
 
@@ -46,6 +52,15 @@ async function fetchJsonWithRetry<T>(url: string): Promise<T> {
     if (attempt < 3) await new Promise((resolve) => setTimeout(resolve, attempt * 500));
   }
   throw lastError instanceof Error ? lastError : new Error(`Unable to fetch ${url}.`);
+}
+
+async function readPreviousSnapshot(path: URL) {
+  try {
+    return JSON.parse(await readFile(path, "utf8")) as RegistrySnapshot;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return undefined;
+    throw error;
+  }
 }
 
 async function writeAtomically(path: URL, contents: string) {

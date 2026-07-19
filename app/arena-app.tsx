@@ -20,7 +20,7 @@ export function ArenaApp() {
   const resultsRef = useRef<HTMLElement>(null);
   const outcome = useMemo(() => submittedQuery ? recommend(submittedQuery) : null, [submittedQuery]);
   const strategy = submittedQuery ? rankingStrategies[submittedQuery.strategy] : null;
-  const catalogAge = catalogAgeValue(recommendationCatalogMetadata.generatedAt, recommendationCatalogMetadata.sourceUrl);
+  const catalogAge = catalogAgeValue(recommendationCatalogMetadata.lastIngestSucceededAt, recommendationCatalogMetadata.sourceUrl);
 
   function submitQuery() {
     setSubmittedQuery(draftQuery);

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "vinext dev",
-    "build": "vinext build",
+    "build": "npm run registry:freshness && vinext build",
     "start": "vinext start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts tests/*.test.tsx && node --test tests/*.test.mjs",
@@ -15,6 +15,7 @@
     "ingest": "tsx scripts/ingest.ts",
     "registry:discover:hf": "npm run discover",
     "registry:import:hf": "npm run ingest",
+    "registry:freshness": "tsx scripts/check-registry-freshness.ts",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
     "lint": "eslint app lib tests worker public/design-system/constellation.js eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
   },

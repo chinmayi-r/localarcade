@@ -41,6 +41,7 @@ export type ArtifactRegistryRecord = {
   model: string;
   maxContextTokens: number;
   chatTemplate: string;
+  status: "triage" | "promoted";
   license: {
     id: string;
     sourceUrl: string;
@@ -93,9 +94,10 @@ export type AcceleratorRegistryRecord = {
 };
 
 export type RegistrySnapshot = {
-  schemaVersion: 3;
+  schemaVersion: 4;
   snapshotId: string;
   generatedAt: string;
+  lastIngestSucceededAt: string;
   artifacts: ArtifactRegistryRecord[];
   quarantine: QuarantineRecord[];
   accelerators: AcceleratorRegistryRecord[];

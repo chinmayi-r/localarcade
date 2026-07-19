@@ -12,6 +12,7 @@ Security-sensitive automation is copied from official or project-maintainer sour
 | `.github/workflows/scorecard.yml` | OpenSSF Scorecard | https://github.com/ossf/scorecard/blob/main/.github/workflows/scorecard-analysis.yml | 2026-07-19 | Pinned |
 | All workflow jobs | Harden Runner audit mode | https://github.com/step-security/harden-runner | 2026-07-19 | Pinned |
 | `.github/dependabot.yml` | Dependabot npm and Actions updates | https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference | 2026-07-19 | Copied |
+| `.github/workflows/registry-refresh.yml` | Scheduled workflow syntax, checkout, Node setup and GitHub CLI pull-request flow | https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule · https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request | 2026-07-19 | Pinned |
 
 ## Hand-written, needs review
 

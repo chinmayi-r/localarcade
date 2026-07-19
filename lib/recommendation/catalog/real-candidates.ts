@@ -1,10 +1,11 @@
 import registryJson from "../../../registry/generated/artifacts.json";
 import type { RegistrySnapshot } from "../../registry";
+import { isRecommendableArtifact } from "../../registry/freshness";
 import type { RecommendationCandidate } from "../types";
 
 const registry = registryJson as RegistrySnapshot;
 const LLAMA_32_1B_Q4_ID = "bartowski/Llama-3.2-1B-Instruct-GGUF/Llama-3.2-1B-Instruct-Q4_K_M.gguf@067b946cf014b7c697f3654f621d577a3e3afd1c";
-const artifact = registry.artifacts.find((item) => item.id === LLAMA_32_1B_Q4_ID);
+const artifact = registry.artifacts.find((item) => item.id === LLAMA_32_1B_Q4_ID && isRecommendableArtifact(item));
 if (!artifact) throw new Error(`Registry artifact missing: ${LLAMA_32_1B_Q4_ID}`);
 
 const mib = 1024 * 1024;
@@ -36,6 +37,7 @@ export const realCandidates: RecommendationCandidate[] = [{
 export const recommendationCatalogMetadata = {
   snapshotId: registry.snapshotId,
   generatedAt: registry.generatedAt,
+  lastIngestSucceededAt: registry.lastIngestSucceededAt,
   admittedArtifactCount: registry.artifacts.length,
   sourceUrl: artifact.provenance.repository.sourceUrl,
 } as const;

@@ -19,4 +19,12 @@ The Hugging Face flow has two deliberately separate commands:
 
 Each admitted record includes field-level source URLs and retrieval timestamps. Missing hashes, byte sizes, base-model relations, licenses, context metadata or chat templates quarantine the individual artifact. Split GGUF packages and helper/projector files are also quarantined until package-level identity is modeled. A fetch, revision, validation or scale failure occurs before the atomic rename, so the previous valid snapshot remains active.
 
-The generated registry is not imported by the website before M4. Catalog metadata establishes artifact identity and compatibility inputs; it does not establish real speed, stability, task quality or a ranking.
+Catalog metadata establishes artifact identity and compatibility inputs; it does not establish real speed, stability, task quality or a ranking.
+
+## Freshness and promotion
+
+- `lastIngestSucceededAt` records the latest complete successful admission run; `npm run build` fails once it is older than seven days.
+- The scheduled workflow refreshes discovery and admission every Monday and Thursday and opens or updates a review pull request.
+- Newly observed immutable artifact identities enter as `triage`. Existing lifecycle status is preserved across refreshes.
+- Promotion is intentionally human-readable: change one artifact's `status` from `triage` to `promoted` in the generated snapshot after review. Production candidate adapters also require promoted status.
+- Previously admitted immutable records are retained when mutable discovery moves to a new upstream revision, preventing an evidence-backed production configuration from disappearing silently.

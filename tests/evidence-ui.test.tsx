@@ -38,8 +38,8 @@ test("Tree A outcome states have distinct rendered messages", () => {
 });
 
 test("catalog freshness is source-bearing and deterministic", () => {
-  const generated = Date.parse(recommendationCatalogMetadata.generatedAt);
-  const value = catalogAgeValue(recommendationCatalogMetadata.generatedAt, recommendationCatalogMetadata.sourceUrl, generated + 5 * 3_600_000);
+  const generated = Date.parse(recommendationCatalogMetadata.lastIngestSucceededAt);
+  const value = catalogAgeValue(recommendationCatalogMetadata.lastIngestSucceededAt, recommendationCatalogMetadata.sourceUrl, generated + 5 * 3_600_000);
   assert.equal(value.text, "Updated 5 hours ago");
   assert.equal(value.provenance.badge, "sourced");
   assert.ok(value.provenance.sourceUrls.length);
