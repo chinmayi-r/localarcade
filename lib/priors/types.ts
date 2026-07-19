@@ -54,7 +54,9 @@ export type ThroughputPriorSnapshot = {
 export type ThroughputQuery = {
   acceleratorId?: string;
   acceleratorFamily?: string;
+  acceleratorKind: "cpu" | "gpu" | "integrated";
   sizeBand: ArtifactSizeBand;
+  product: string;
   engine: string;
 };
 

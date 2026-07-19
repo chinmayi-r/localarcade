@@ -1,68 +1,59 @@
-import type { Artifact, Eligibility, RecommendationQuery, StrategyId } from "./types";
-
-export type ScoreInputs = {
-  artifact: Artifact;
-  eligibility: Eligibility;
-  query: RecommendationQuery;
-  estimatedSpeed: number;
-};
+import type { RecommendationItem, StrategyId, TaskId } from "./types";
 
 export type RankingStrategy = {
   id: StrategyId;
   label: string;
-  shortLabel: string;
   description: string;
-  score(inputs: ScoreInputs): number;
+  score(item: RecommendationItem, all: RecommendationItem[], task: TaskId): number | undefined;
 };
 
-const quality = ({ artifact, query }: ScoreInputs) => artifact.taskScores[query.task] / 100;
-const speed = ({ estimatedSpeed }: ScoreInputs) => Math.min(estimatedSpeed / 80, 1);
-const context = ({ artifact }: ScoreInputs) => Math.min(artifact.maxContextK / 128, 1);
-const headroom = ({ eligibility }: ScoreInputs) => Math.max(0, 1 - eligibility.requiredMemoryGb / eligibility.usableMemoryGb);
-const stability = ({ artifact }: ScoreInputs) => artifact.stabilityScore;
+const rangeMidpoint = (item: RecommendationItem) => item.throughput.kind === "range"
+  ? (item.throughput.ranges.generationTokensPerSecond.min + item.throughput.ranges.generationTokensPerSecond.max) / 2
+  : undefined;
+const quality = (item: RecommendationItem, task: TaskId) => item.candidate.comparativeQuality?.[task]?.value;
+const memoryHeadroom = (item: RecommendationItem) => 1 - item.fit.requiredBytes / item.fit.physicalMemoryBytes;
+const normalize = (value: number, values: number[]) => {
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  return min === max ? 0.5 : (value - min) / (max - min);
+};
 
-function weighted(parts: Array<[number, (inputs: ScoreInputs) => number]>) {
-  return (inputs: ScoreInputs) => parts.reduce((total, [weight, metric]) => total + weight * metric(inputs), 0);
-}
-
-/** Add, remove or tune user-selectable sorting methods here. */
 export const rankingStrategies: Record<StrategyId, RankingStrategy> = {
   balanced: {
-    id: "balanced",
-    label: "Balanced",
-    shortLabel: "Balanced",
-    description: "A compromise between task quality, speed, context, stability and memory headroom.",
-    score: weighted([[0.43, quality], [0.2, speed], [0.12, context], [0.12, stability], [0.13, headroom]]),
+    id: "balanced", label: "Balanced",
+    description: "Uses comparable task, speed, context and memory evidence; otherwise results stay unranked.",
+    score(item, all, task) {
+      const q = quality(item, task); const s = rangeMidpoint(item);
+      if (q === undefined || s === undefined) return undefined;
+      const qs = all.map((candidate) => quality(candidate, task)).filter((value): value is number => value !== undefined);
+      const ss = all.map(rangeMidpoint).filter((value): value is number => value !== undefined);
+      return 0.45 * normalize(q, qs) + 0.25 * normalize(s, ss) + 0.15 * normalize(item.candidate.artifact.maxContextTokens, all.map((x) => x.candidate.artifact.maxContextTokens)) + 0.15 * memoryHeadroom(item);
+    },
   },
   quality: {
-    id: "quality",
-    label: "Highest quality",
-    shortLabel: "Quality",
-    description: "Prioritizes seeded task evidence while retaining minimum stability and fit headroom.",
-    score: weighted([[0.72, quality], [0.08, speed], [0.06, context], [0.09, stability], [0.05, headroom]]),
+    id: "quality", label: "Highest quality",
+    description: "Requires comparable task evidence for the selected use.",
+    score: (item, _all, task) => quality(item, task),
   },
   speed: {
-    id: "speed",
-    label: "Fastest response",
-    shortLabel: "Fastest",
-    description: "Prioritizes predicted generation speed without ignoring task usefulness.",
-    score: weighted([[0.25, quality], [0.58, speed], [0.03, context], [0.07, stability], [0.07, headroom]]),
+    id: "speed", label: "Fastest response",
+    description: "Uses sourced generation-throughput ranges for the same hardware kind, product and engine.",
+    score: (item) => rangeMidpoint(item),
   },
   "long-context": {
-    id: "long-context",
-    label: "Longest context",
-    shortLabel: "Long context",
-    description: "Rewards context capacity and the memory headroom needed to use it safely.",
-    score: weighted([[0.25, quality], [0.08, speed], [0.47, context], [0.08, stability], [0.12, headroom]]),
+    id: "long-context", label: "Longest context",
+    description: "Uses the sourced artifact context limit after the requested fit check.",
+    score: (item) => item.candidate.artifact.maxContextTokens,
   },
   lightest: {
-    id: "lightest",
-    label: "Lowest memory",
-    shortLabel: "Lightest",
-    description: "Favors small memory requirements, leaving room for other applications.",
-    score: weighted([[0.22, quality], [0.16, speed], [0.03, context], [0.09, stability], [0.5, headroom]]),
+    id: "lightest", label: "Lowest memory",
+    description: "Uses the explicit fit calculation for the selected context.",
+    score: (item) => -item.fit.requiredBytes,
   },
 };
 
-export const strategyOptions = Object.values(rankingStrategies);
+export function strategyScore(strategy: StrategyId, task: string, item: RecommendationItem, all: RecommendationItem[]) {
+  return rankingStrategies[strategy].score(item, all, task as TaskId);
+}
 
+export const strategyOptions = Object.values(rankingStrategies);

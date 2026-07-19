@@ -2,8 +2,13 @@ import type { NumericRange, ThroughputEstimate, ThroughputPrior, ThroughputQuery
 
 /** Returns ranges only. No branch in this module produces a point estimate. */
 export function estimateThroughput(query: ThroughputQuery, priors: ThroughputPrior[]): ThroughputEstimate {
-  const compatible = priors.filter((prior) => prior.artifact.sizeBand === query.sizeBand && prior.runtime.engine === query.engine);
-  if (!compatible.length) return { kind: "unavailable", confidence: "none", reason: "No sourced prior covers this artifact-size band and engine." };
+  const compatible = priors.filter((prior) =>
+    prior.artifact.sizeBand === query.sizeBand
+    && prior.accelerator.kind === query.acceleratorKind
+    && prior.runtime.product === query.product
+    && prior.runtime.engine === query.engine
+  );
+  if (!compatible.length) return { kind: "unavailable", confidence: "none", reason: "No sourced prior covers this hardware kind, artifact-size band, product, and engine." };
 
   const exact = query.acceleratorId ? compatible.filter((prior) => prior.accelerator.id === query.acceleratorId) : [];
   if (exact.length) return aggregate(exact, "medium", "exact");

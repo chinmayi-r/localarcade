@@ -1,3 +1,3 @@
 export { recommend } from "./engine";
 export { rankingStrategies, strategyOptions } from "./strategies";
-export type { PlatformId, Recommendation, RecommendationQuery, RecommendedConfiguration, StrategyId, TaskId } from "./types";
+export type { PlatformId, RecommendationCandidate, RecommendationItem, RecommendationOutcome, RecommendationQuery, StrategyId, TaskId } from "./types";

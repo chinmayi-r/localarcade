@@ -4,11 +4,11 @@ import test from "node:test";
 
 const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
-test("the product states what is real and what is example data", async () => {
+test("the product states what is sourced and what remains unavailable", async () => {
   const app = await read("../app/arena-app.tsx");
-  assert.match(app, /PROTOTYPE DATA · NOT A PUBLISHED LEADERBOARD/);
-  assert.match(app, /Recommendation evidence/);
-  assert.match(app, /isolated prototype catalog/);
+  assert.match(app, /SOURCED CATALOG · ESTIMATES ARE LABELLED/);
+  assert.match(app, /Ranking evidence/);
+  assert.match(app, /Results remain unranked/);
 });
 
 test("the contribution promise requires explicit user control", async () => {

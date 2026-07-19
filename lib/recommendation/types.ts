@@ -1,13 +1,18 @@
+import type { FitArtifact, FitResult, KvCacheSelection } from "../fit";
+import type { ArtifactSizeBand, ThroughputEstimate } from "../priors";
 import type { ArtifactRegistryRecord } from "../registry";
-import type { EngineId, ProductId } from "../runtime";
+import type { AccelerationBackend, EngineId, ProductId } from "../runtime";
 
 export type PlatformId = "nvidia" | "apple" | "amd" | "cpu";
 export type TaskId = "coding" | "general" | "writing" | "extraction";
 export type StrategyId = "balanced" | "quality" | "speed" | "long-context" | "lightest";
+export type AcceleratorKind = "cpu" | "gpu" | "integrated";
 
 export type HardwareProfile = {
   platform: PlatformId;
   availableMemoryGb: number;
+  acceleratorId?: string;
+  acceleratorFamily?: string;
 };
 
 export type RecommendationQuery = {
@@ -17,60 +22,44 @@ export type RecommendationQuery = {
   strategy: StrategyId;
 };
 
-export type TaskScores = Record<TaskId, number>;
+export type ComparativeValue = {
+  value: number;
+  sourceUrl: string;
+};
 
-/**
- * Prototype artifact record. Production records must add an immutable source
- * revision, hash, license evidence and source URLs before becoming eligible.
- */
-export type Artifact = {
+/** A candidate exists only when artifact, fit profile and runtime identity are explicit. */
+export type RecommendationCandidate = {
   id: string;
-  family: string;
-  model: string;
-  quantization: string;
-  format: "GGUF" | "MLX";
-  engine: EngineId;
-  weightSizeGb: number;
-  kvCacheGbPer8K: number;
-  maxContextK: number;
-  baselineTokensPerSecond: number;
-  stabilityScore: number;
-  taskScores: TaskScores;
-  evidenceLevel: "prototype";
-  identity?: ArtifactRegistryRecord;
+  artifact: ArtifactRegistryRecord;
+  fitArtifact: FitArtifact;
+  fitProfileSourceUrl: string;
+  hardwareKinds: AcceleratorKind[];
+  sizeBand: ArtifactSizeBand;
+  runtime: {
+    product: ProductId;
+    engine: EngineId;
+    build: string;
+    backend: AccelerationBackend;
+    kvCache: KvCacheSelection;
+    gpuLayers: number | "all";
+    batchSize: number;
+  };
+  comparativeQuality?: Partial<Record<TaskId, ComparativeValue>>;
 };
 
-export type Eligibility = {
-  eligible: boolean;
-  requiredMemoryGb: number;
-  usableMemoryGb: number;
-  reasons: string[];
+export type RecommendationRole = "primary-match" | "quality-option" | "fast-option" | "long-context-option" | "memory-efficient-option";
+
+export type RecommendationItem = {
+  candidate: RecommendationCandidate;
+  fit: FitResult;
+  throughput: ThroughputEstimate;
+  role?: RecommendationRole;
+  contextTokens: number;
+  alternatives: RecommendationCandidate[];
 };
 
-export type Recommendation = {
-  artifact: Artifact;
-  rank: number;
-  score: number;
-  estimatedTokensPerSecond: [number, number];
-  requiredMemoryGb: number;
-  configuration: RecommendedConfiguration;
-  explanation: string[];
-};
-
-export type RecommendedConfiguration = {
-  contextK: number;
-  product?: ProductId;
-  engine: EngineId;
-  runtimeBuild?: string;
-  backend?: string;
-  kvCacheQuantization?: string;
-  gpuLayers?: number | "all";
-  batchSize?: number;
-  artifactRepository?: string;
-  artifactRevision?: string;
-  artifactFileName?: string;
-  artifactSha256?: string;
-  artifactSourceUrl?: string;
-  licenseId?: string;
-  licenseSourceUrl?: string;
-};
+export type RecommendationOutcome =
+  | { kind: "ranked"; items: RecommendationItem[]; message: string }
+  | { kind: "unranked"; items: RecommendationItem[]; message: string }
+  | { kind: "contradictory"; items: RecommendationItem[]; message: string }
+  | { kind: "nothing-fits"; items: []; message: string };

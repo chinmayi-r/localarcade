@@ -2,23 +2,14 @@
   "query": {
     "acceleratorId": "unknown-gpu",
     "acceleratorFamily": "unknown-gpu-family",
+    "acceleratorKind": "gpu",
     "sizeBand": "tiny-1b",
+    "product": "llamafile",
     "engine": "llama.cpp"
   },
   "expected": {
-    "kind": "range",
-    "confidence": "low",
-    "hardwareMatch": "coarse-bucket",
-    "ranges": {
-      "promptTokensPerSecond": { "min": 28, "max": 372 },
-      "generationTokensPerSecond": { "min": 9.7, "max": 55.4 },
-      "timeToFirstTokenMs": { "min": 73, "max": 142900 }
-    },
-    "sampleCount": 27,
-    "sourceUrls": [
-      "https://www.localscore.ai/result/3932",
-      "https://www.localscore.ai/result/3937",
-      "https://www.localscore.ai/result/3938"
-    ]
+    "kind": "unavailable",
+    "confidence": "none",
+    "reason": "No sourced prior covers this hardware kind, artifact-size band, product, and engine."
   }
 }

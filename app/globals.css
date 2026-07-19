@@ -62,6 +62,8 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .result-summary b { color: var(--la-lavender); font-size: 13px; }
 .result-summary span { color: var(--la-muted); font: 9px "Courier New", monospace; text-transform: uppercase; }
 .recommendation-list { display: grid; gap: 10px; }
+.outcome-note { display: flex; gap: 14px; align-items: baseline; margin: 0 0 14px; color: var(--la-muted); font-size: 11px; line-height: 1.5; }
+.outcome-note b { color: var(--la-tobacco); font: 8px "Courier New", monospace; letter-spacing: 0.1em; white-space: nowrap; }
 .recommendation-card { border: 1px solid var(--la-line); background: var(--la-surface); }
 .recommendation-card:hover, .recommendation-card.selected { border-color: var(--la-line-strong); background: var(--la-raised); }
 .recommendation-card.selected { box-shadow: inset 3px 0 var(--la-forest); }
@@ -79,6 +81,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .card-evidence span { color: var(--la-forest); font: 8px "Courier New", monospace; letter-spacing: 0.1em; }
 .card-evidence b { display: block; color: var(--la-tobacco); font-size: 12px; margin-top: 11px; }
 .card-evidence p { color: var(--la-muted); font-size: 10px; line-height: 1.55; margin: 10px 0 0; }
+.card-evidence a { color: var(--la-tobacco); font-size: 9px; }
 .card-evidence > .configuration-identity { grid-column: span 2; }
 .configuration-identity dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; margin: 12px 0 0; }
 .configuration-identity dl > div { display: grid; grid-template-columns: minmax(86px, 0.7fr) 1.3fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--la-line); }

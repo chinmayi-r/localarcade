@@ -16,7 +16,7 @@ test("every throughput prior is fully scoped and sourced", () => {
 });
 
 test("an exact accelerator match preserves the observed range", () => {
-  const result = estimateThroughput({ acceleratorId: "intel-core-i5-1240p-cpu", sizeBand: "medium-14b", engine: "llama.cpp" }, throughputPriors);
+  const result = estimateThroughput({ acceleratorId: "intel-core-i5-1240p-cpu", acceleratorKind: "cpu", sizeBand: "medium-14b", product: "llamafile", engine: "llama.cpp" }, throughputPriors);
   assert.equal(result.kind, "range");
   if (result.kind !== "range") return;
   assert.equal(result.hardwareMatch, "exact");
@@ -25,7 +25,7 @@ test("an exact accelerator match preserves the observed range", () => {
 });
 
 test("a family match widens across every compatible family member", () => {
-  const result = estimateThroughput({ acceleratorFamily: "intel-alder-lake-mobile-cpu", sizeBand: "tiny-1b", engine: "llama.cpp" }, throughputPriors);
+  const result = estimateThroughput({ acceleratorFamily: "intel-alder-lake-mobile-cpu", acceleratorKind: "cpu", sizeBand: "tiny-1b", product: "llamafile", engine: "llama.cpp" }, throughputPriors);
   assert.equal(result.kind, "range");
   if (result.kind !== "range") return;
   assert.equal(result.hardwareMatch, "family");
@@ -34,7 +34,7 @@ test("a family match widens across every compatible family member", () => {
   assert.equal(result.sampleCount, 18);
 });
 
-test("unknown hardware returns the committed low-confidence range golden and no point estimate", () => {
+test("unknown GPU does not inherit CPU evidence", () => {
   const fixture = unknownGoldenJson as { query: ThroughputQuery; expected: unknown };
   const result = estimateThroughput(fixture.query, throughputPriors);
   assert.deepEqual(result, fixture.expected);
@@ -42,10 +42,10 @@ test("unknown hardware returns the committed low-confidence range golden and no 
 });
 
 test("an unsupported engine and size combination returns no estimate", () => {
-  assert.deepEqual(estimateThroughput({ acceleratorId: "unknown", sizeBand: "medium-14b", engine: "vllm-native" }, throughputPriors), {
+  assert.deepEqual(estimateThroughput({ acceleratorId: "unknown", acceleratorKind: "gpu", sizeBand: "medium-14b", product: "vllm", engine: "vllm-native" }, throughputPriors), {
     kind: "unavailable",
     confidence: "none",
-    reason: "No sourced prior covers this artifact-size band and engine.",
+    reason: "No sourced prior covers this hardware kind, artifact-size band, product, and engine.",
   });
 });
 

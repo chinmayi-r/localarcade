@@ -1,70 +1,97 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { recommend, strategyOptions } from "../lib/recommendation/index";
-import type { Artifact, RecommendationQuery, StrategyId } from "../lib/recommendation/types";
-import type { ArtifactRegistryRecord, FieldProvenance } from "../lib/registry";
+import registryJson from "../registry/generated/artifacts.json";
+import { recommend } from "../lib/recommendation";
+import type { RecommendationCandidate, RecommendationQuery } from "../lib/recommendation";
+import type { ArtifactSizeBand, ThroughputPrior } from "../lib/priors";
+import type { RegistrySnapshot } from "../lib/registry";
+import goldens from "./fixtures/recommendation-engine-goldens.json";
 
-const baseQuery: RecommendationQuery = {
-  hardware: { platform: "nvidia", availableMemoryGb: 24 },
-  task: "coding",
-  desiredContextK: 32,
-  strategy: "balanced",
-};
+const artifact = (registryJson as RegistrySnapshot).artifacts[0];
+const baseQuery: RecommendationQuery = { hardware: { platform: "cpu", availableMemoryGb: 32 }, task: "coding", desiredContextK: 8, strategy: "long-context" };
 
-test("every visible strategy is implemented and returns bounded results", () => {
-  for (const strategy of strategyOptions) {
-    const results = recommend({ ...baseQuery, strategy: strategy.id });
-    assert.ok(results.length > 0, strategy.id);
-    assert.ok(results.length <= 5, strategy.id);
-    assert.deepEqual(results.map((result) => result.rank), results.map((_, index) => index + 1));
-  }
+function candidate(id: string, family: string, options: { maxContextK?: number; weightGb?: number; runtimeGb?: number; kvMibPer8K?: number; hardwareKinds?: RecommendationCandidate["hardwareKinds"]; quality?: number; sizeBand?: ArtifactSizeBand } = {}): RecommendationCandidate {
+  const maxContextK = options.maxContextK ?? 32;
+  return {
+    id,
+    artifact: { ...artifact, id: `${id}@revision`, family, model: id, fileSizeBytes: Math.round((options.weightGb ?? 1) * 1024 ** 3), maxContextTokens: maxContextK * 1024 },
+    fitArtifact: {
+      id,
+      weightBytes: Math.round((options.weightGb ?? 1) * 1024 ** 3),
+      maxContextTokens: maxContextK * 1024,
+      runtimeComputeBufferBytes: Math.round((options.runtimeGb ?? 0.5) * 1024 ** 3),
+      kvCache: {
+        key: [{ quantization: "f16", referenceContextTokens: 8 * 1024, bytesAtReferenceContext: (options.kvMibPer8K ?? 128) * 1024 ** 2 }],
+        value: [{ quantization: "f16", referenceContextTokens: 8 * 1024, bytesAtReferenceContext: (options.kvMibPer8K ?? 128) * 1024 ** 2 }],
+      },
+    },
+    fitProfileSourceUrl: "https://example.com/test-profile",
+    hardwareKinds: options.hardwareKinds ?? ["cpu"],
+    sizeBand: options.sizeBand ?? "tiny-1b",
+    runtime: { product: "llama-cpp", engine: "llama.cpp", build: "test-build", backend: options.hardwareKinds?.includes("gpu") ? "cuda" : "cpu", kvCache: "f16", gpuLayers: options.hardwareKinds?.includes("gpu") ? "all" : 0, batchSize: 512 },
+    comparativeQuality: options.quality === undefined ? undefined : { coding: { value: options.quality, sourceUrl: "https://example.com/test-quality" } },
+  };
+}
+
+const testPriors: ThroughputPrior[] = (["tiny-1b", "small-8b", "medium-14b"] as ArtifactSizeBand[]).map((sizeBand, index) => ({
+  id: `test-${sizeBand}`,
+  accelerator: { id: "test-cpu", family: "test-cpu-family", kind: "cpu", memoryGb: 32 },
+  artifact: { family: `test-${sizeBand}`, sizeBand, parameterCountBillion: index + 1, quantization: "Q4_K_M" },
+  runtime: { product: "llama-cpp", engine: "llama.cpp", version: "test", commit: "a".repeat(40), backend: "cpu" },
+  conditions: { operatingSystem: "test", architecture: "x86_64", protocol: "test" },
+  ranges: { promptTokensPerSecond: { min: 10 + index, max: 20 + index }, generationTokensPerSecond: { min: 5 + index * 5, max: 7 + index * 5 }, timeToFirstTokenMs: { min: 50, max: 100 } },
+  sampleCount: 2,
+  evidenceTier: "tier-1",
+  sourceUrl: "https://example.com/test-prior",
+  observedAt: "2026-07-19T00:00:00.000Z",
+  retrievedAt: "2026-07-19T00:00:00.000Z",
+}));
+
+test("M4 golden outcomes cover every honest ranking leaf", () => {
+  const cases = {
+    unknownGpu: recommend({ ...baseQuery, hardware: { platform: "nvidia", availableMemoryGb: 24 }, strategy: "speed" }, [candidate("gpu", "gpu-family", { hardwareKinds: ["gpu"] })]),
+    nothingFits: recommend({ ...baseQuery, hardware: { platform: "cpu", availableMemoryGb: 4 } }, [candidate("huge", "huge-family", { runtimeGb: 20 })]),
+    contradictory: recommend({ ...baseQuery, desiredContextK: 64 }, [candidate("context-bound", "context-family", { maxContextK: 128, kvMibPer8K: 2_000 })]),
+    tie: recommend(baseQuery, [candidate("tie-a", "tie-a", { maxContextK: 32 }), candidate("tie-b", "tie-b", { maxContextK: 32 })]),
+    shortlist: recommend({ ...baseQuery, strategy: "quality" }, [candidate("short-a", "short-a"), candidate("short-b", "short-b", { maxContextK: 64 })]),
+  };
+  for (const [name, result] of Object.entries(cases)) assert.equal(result.kind, goldens[name as keyof typeof goldens].kind, name);
+  assert.equal(cases.unknownGpu.items[0].throughput.kind, "unavailable");
+  assert.match(cases.contradictory.message, /conflicts|silently dropped/);
+  assert.match(cases.tie.message, /tied|range/);
 });
 
-test("recommendations never exceed the configured memory safety envelope", () => {
-  for (const memory of [4, 8, 12, 16, 24, 32, 64, 128]) {
-    const results = recommend({ ...baseQuery, hardware: { ...baseQuery.hardware, availableMemoryGb: memory } });
-    for (const result of results) assert.ok(result.requiredMemoryGb <= memory * 0.86, `${result.artifact.id} at ${memory} GB`);
-  }
+test("family variants nest and cannot occupy multiple slots", () => {
+  const result = recommend(baseQuery, [
+    candidate("family-a-heavy", "family-a", { weightGb: 2, maxContextK: 64 }),
+    candidate("family-a-light", "family-a", { weightGb: 1, maxContextK: 64 }),
+    candidate("family-b", "family-b", { maxContextK: 32 }),
+  ]);
+  assert.equal(result.items.length, 2);
+  assert.equal(new Set(result.items.map((item) => item.candidate.artifact.family)).size, 2);
+  assert.equal(result.items.find((item) => item.candidate.artifact.family === "family-a")?.alternatives.length, 1);
 });
 
-test("recommendations satisfy desired context", () => {
-  for (const desiredContextK of [8, 16, 32, 64]) {
-    const results = recommend({ ...baseQuery, desiredContextK });
-    for (const result of results) {
-      assert.ok(result.artifact.maxContextK >= desiredContextK);
-      assert.equal(result.configuration.contextK, desiredContextK);
-      assert.equal(result.configuration.engine, result.artifact.engine);
-    }
-  }
-});
-
-test("one model family cannot occupy multiple top-five slots", () => {
-  const results = recommend(baseQuery);
-  const families = results.map((result) => result.artifact.family);
-  assert.equal(new Set(families).size, families.length);
-});
-
-test("strategy changes can change ordering without changing eligibility", () => {
-  const order = (strategy: StrategyId) => recommend({ ...baseQuery, strategy }).map((result) => result.artifact.id);
-  assert.notDeepEqual(order("quality"), order("speed"));
-  assert.notDeepEqual(order("long-context"), order("lightest"));
+test("an evidence-supported top five is role labelled and family deduped", () => {
+  const query = { ...baseQuery, hardware: { ...baseQuery.hardware, acceleratorId: "test-cpu" } };
+  const bands: ArtifactSizeBand[] = ["tiny-1b", "small-8b", "medium-14b", "tiny-1b", "small-8b"];
+  const result = recommend(query, [16, 32, 48, 64, 96].map((context, index) => candidate(`model-${index}`, `family-${index}`, { maxContextK: context, weightGb: index + 1, quality: 50 + index, sizeBand: bands[index] })), 5, testPriors);
+  assert.equal(result.kind, "ranked");
+  assert.equal(result.items.length, 5);
+  assert.equal(new Set(result.items.map((item) => item.candidate.artifact.family)).size, 5);
+  assert.deepEqual(result.items.map((item) => item.role), ["primary-match", "quality-option", "fast-option", "long-context-option", "memory-efficient-option"]);
 });
 
 test("unknown strategies fail closed", () => {
-  assert.throws(() => recommend({ ...baseQuery, strategy: "mystery" as StrategyId }), /Unknown ranking strategy/);
+  assert.throws(() => recommend({ ...baseQuery, strategy: "mystery" as RecommendationQuery["strategy"] }, []), /Unknown ranking strategy/);
 });
 
-test("a sourced artifact keeps immutable identity attached to its recommendation", () => {
-  const source = (kind: FieldProvenance["kind"]): FieldProvenance => ({ sourceUrl: "https://example.com/source", retrievedAt: "2026-07-19T00:00:00.000Z", kind });
-  const identity: ArtifactRegistryRecord = {
-    id: "Qwen/Qwen3-0.6B-GGUF/model-Q8_0.gguf@revision", publisher: "Qwen", repository: "Qwen3-0.6B-GGUF", revision: "a".repeat(40), fileName: "model-Q8_0.gguf", sha256: "b".repeat(64), fileSizeBytes: 800_000_000, format: "GGUF", quantization: "Q8_0", baseModel: "Qwen/Qwen3-0.6B", family: "Qwen/Qwen3-0.6B", model: "Qwen3-0.6B", maxContextTokens: 32_768, chatTemplate: "{{ messages }}", license: { id: "apache-2.0", sourceUrl: "https://example.com/license" },
-    provenance: { id: source("identity-derivation"), publisher: source("hub-api"), repository: source("hub-api"), revision: source("hub-api"), fileName: source("hub-lfs"), sha256: source("hub-lfs"), fileSizeBytes: source("hub-lfs"), format: source("schema-constant"), quantization: source("filename-derivation"), baseModel: source("model-card"), family: source("base-model-derivation"), model: source("base-model-derivation"), license: source("model-card"), maxContextTokens: source("gguf-metadata"), chatTemplate: source("gguf-metadata") },
-  };
-  const artifact: Artifact = { id: "sourced", family: "Qwen3", model: "Qwen3 0.6B", quantization: "Q8_0", format: "GGUF", engine: "llama.cpp", weightSizeGb: 0.8, kvCacheGbPer8K: 0.08, maxContextK: 32, baselineTokensPerSecond: 98, stabilityScore: 0.76, taskScores: { coding: 42, general: 48, writing: 44, extraction: 62 }, evidenceLevel: "prototype", identity };
-  const result = recommend({ ...baseQuery, hardware: { platform: "nvidia", availableMemoryGb: 2 }, desiredContextK: 8 }, [artifact])[0];
-  assert.ok(result);
-  assert.equal(result.configuration.artifactRepository, "Qwen/Qwen3-0.6B-GGUF");
-  assert.equal(result.configuration.artifactRevision?.length, 40);
-  assert.equal(result.configuration.artifactSha256?.length, 64);
-  assert.equal(result.configuration.licenseId, "apache-2.0");
+test("production recommendations retain real registry identity and explicit runtime configuration", () => {
+  const result = recommend({ ...baseQuery, hardware: { platform: "cpu", availableMemoryGb: 32 }, strategy: "balanced" });
+  assert.equal(result.kind, "unranked");
+  const item = result.items[0];
+  assert.ok(item.candidate.artifact.sha256.length === 64);
+  assert.equal(item.candidate.runtime.product, "llama-cpp");
+  assert.equal(item.candidate.runtime.engine, "llama.cpp");
+  assert.equal(item.throughput.kind, "unavailable", "llamafile priors must not cross into direct llama.cpp");
 });

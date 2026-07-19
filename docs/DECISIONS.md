@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-19 — Keep incomplete real configurations unranked
+
+- **Decision:** M4 removes the demo catalog and admits only configurations that combine an immutable registry artifact, an explicit sourced fit profile and an exact runtime identity. Comparative ordering is emitted only when the selected strategy has compatible evidence; otherwise the website returns an unranked shortlist, a named constraint conflict or a nothing-fits state. The initial production adapter is intentionally limited to the sourced Llama 3.2 1B CPU llama.cpp profile.
+- **Why:** Registry breadth alone cannot supply architecture-specific KV memory, runtime buffers, product compatibility, task quality or hardware-scoped throughput. Generalizing one allocation log or LocalScore's llamafile CPU results to GPUs, Ollama, LM Studio or direct llama.cpp would manufacture certainty.
+- **Reversible:** Yes. New sourced profile and compatibility adapters can expand production coverage without changing outcome semantics.
+
+## 2026-07-19 — Isolate throughput by accelerator kind and product
+
+- **Decision:** Throughput lookup now requires accelerator kind and runtime product in addition to size band and engine. Coarse fallback stays inside those boundaries; an unknown GPU cannot inherit CPU measurements, and a wrapper such as llamafile cannot be silently merged with direct llama.cpp.
+- **Why:** M4 integration exposed that the M3 query shape could pool evidence across materially different hardware and product configurations despite exact rows retaining those fields.
+- **Reversible:** Yes. A documented equivalence policy could later authorize specific cross-product transforms, but the default remains fail-closed.
+
 ## 2026-07-19 — Seed throughput only from fully identified result pages
 
 - **Decision:** M3 admits LocalScore result pages only when they expose accelerator and memory, model/quantization, runtime version/commit, backend, operating system and the detailed workload samples. Summary-only GPU leaderboard rows remain excluded. Priors store observed min/max envelopes and the query API never returns a point estimate.

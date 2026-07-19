@@ -1,0 +1,7 @@
+{
+  "unknownGpu": { "kind": "unranked" },
+  "nothingFits": { "kind": "nothing-fits" },
+  "contradictory": { "kind": "contradictory" },
+  "tie": { "kind": "unranked" },
+  "shortlist": { "kind": "unranked" }
+}
