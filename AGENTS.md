@@ -1,4 +1,4 @@
-# Local Arena product and interface contract
+# Local Arcade product and interface contract
 
 These instructions apply to the entire repository.
 
@@ -21,6 +21,8 @@ These instructions apply to the entire repository.
 - Clearly distinguish estimates, community evidence, and measurements from the current machine.
 - A recommendation is a complete configuration: model revision/artifact, quantization, runtime build, backend, context, KV cache, GPU layers, and relevant batch settings when evidence exists.
 - Do not claim one configuration is certainly better than another outside the hardware, task, metric, and settings scope supported by evidence.
+- Recommend a context target from the novice user's task. Keep raw token counts in optional advanced settings because context changes memory and speed but most newcomers cannot choose it meaningfully.
+- When an exact accelerator registry exists, selecting a GPU or Apple chip should derive its memory variants. Until then, explicitly request manually confirmed VRAM or unified memory rather than pretending a platform label identifies the device.
 - Preserve fail-closed behavior: showing no safe match is better than padding a ranking with configurations unlikely to run.
 - Do not present prototype catalog values as a published leaderboard.
 

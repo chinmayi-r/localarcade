@@ -1,4 +1,4 @@
-/* Local Arena's decorative configuration field. Forest palette by default. */
+/* Local Arcade's decorative configuration field. Forest palette by default. */
 (function () {
   const defaults = {
     line: "#3a4028",

@@ -1,4 +1,4 @@
-# Local Arena
+# Local Arcade
 
 A browser-application prototype for matching exact local-model configurations to hardware and tasks, with an optional future evidence network.
 

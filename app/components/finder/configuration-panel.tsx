@@ -22,6 +22,13 @@ const tasks: Array<{ id: TaskId; label: string }> = [
   { id: "extraction", label: "Structured data" },
 ];
 
+const recommendedContextByTask: Record<TaskId, number> = {
+  coding: 32,
+  general: 16,
+  writing: 32,
+  extraction: 32,
+};
+
 export function ConfigurationPanel({ query, onChange, onSubmit, hasResults }: Props) {
   const patch = (change: Partial<RecommendationQuery>) => onChange({ ...query, ...change });
   const patchHardware = (change: Partial<RecommendationQuery["hardware"]>) => patch({ hardware: { ...query.hardware, ...change } });
@@ -31,7 +38,7 @@ export function ConfigurationPanel({ query, onChange, onSubmit, hasResults }: Pr
     <form className="finder-form" id="finder" onSubmit={(event) => { event.preventDefault(); onSubmit(); }}>
       <div className="finder-form-heading"><div><span>YOUR COMPUTER</span><h2>Tell us what you’re working with</h2></div><small>Manual input · unverified</small></div>
       <div className="finder-fields">
-        <Field label="Hardware">
+        <Field label="Compute hardware">
           <select value={query.hardware.platform} onChange={(event) => patchHardware({ platform: event.target.value as PlatformId })}>
             {platforms.map((platform) => <option key={platform.id} value={platform.id}>{platform.label}</option>)}
           </select>
@@ -41,14 +48,12 @@ export function ConfigurationPanel({ query, onChange, onSubmit, hasResults }: Pr
             {[4, 8, 12, 16, 24, 32, 48, 64, 96, 128].map((value) => <option key={value} value={value}>{value} GB</option>)}
           </select>
         </Field>
-        <Field label="Main use">
-          <select value={query.task} onChange={(event) => patch({ task: event.target.value as TaskId })}>
+        <Field label="What will you use it for?">
+          <select value={query.task} onChange={(event) => {
+            const task = event.target.value as TaskId;
+            patch({ task, desiredContextK: recommendedContextByTask[task] });
+          }}>
             {tasks.map((task) => <option key={task.id} value={task.id}>{task.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Context needed">
-          <select value={query.desiredContextK} onChange={(event) => patch({ desiredContextK: Number(event.target.value) })}>
-            {[8, 16, 32, 64].map((value) => <option key={value} value={value}>{value}K tokens</option>)}
           </select>
         </Field>
         <Field label="What matters most?">
@@ -57,6 +62,17 @@ export function ConfigurationPanel({ query, onChange, onSubmit, hasResults }: Pr
           </select>
         </Field>
       </div>
+      <details className="advanced-options">
+        <summary>Advanced settings <span>Context target: {query.desiredContextK}K</span></summary>
+        <div>
+          <Field label="Override context target">
+            <select value={query.desiredContextK} onChange={(event) => patch({ desiredContextK: Number(event.target.value) })}>
+              {[8, 16, 32, 64].map((value) => <option key={value} value={value}>{value}K tokens</option>)}
+            </select>
+          </Field>
+          <p>We choose a practical starting context from your main use. Increase it only when you regularly work with long codebases or documents; larger contexts consume more memory.</p>
+        </div>
+      </details>
       <div className="finder-action"><p>We reserve memory headroom and omit configurations unlikely to load.</p><button type="submit">{hasResults ? "Update recommendations" : "Find compatible setups"}<span>→</span></button></div>
     </form>
   );

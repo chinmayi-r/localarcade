@@ -3,12 +3,12 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Local Arena — Configuration Finder",
+  title: "Local Arcade — Configuration Finder",
   description: "Match local-model artifacts, runtimes and settings to your hardware and task with visible evidence and uncertainty.",
   openGraph: {
-    title: "Local Arena",
+    title: "Local Arcade",
     description: "Find what runs here.",
-    images: [{ url: "/og-forest.png", width: 1672, height: 941, alt: "Local Arena sprawling configuration field" }],
+    images: [{ url: "/og-forest.png", width: 1672, height: 941, alt: "Local Arcade sprawling configuration field" }],
   },
   twitter: { card: "summary_large_image", images: ["/og-forest.png"] },
 };

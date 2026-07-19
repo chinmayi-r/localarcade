@@ -30,7 +30,7 @@ export function ArenaApp() {
   return (
     <div className="website-shell">
       <header className="site-header">
-        <a href="#top" className="site-brand" aria-label="Local Arena home"><span>LA</span><b>Local Arena</b></a>
+        <a href="#top" className="site-brand" aria-label="Local Arcade home"><span>LA</span><b>Local Arcade</b></a>
         <nav aria-label="Website navigation">
           <a href="#finder">Find models</a>
           <a href="#method">How it works</a>
@@ -64,7 +64,7 @@ export function ArenaApp() {
         )}
 
         <section className="method-section" id="method">
-          <div className="method-intro"><span className="eyebrow">WHAT THE RESULT MEANS</span><h2>A recommendation is a complete setup.</h2><p>Quantization, runtime, context and memory settings can change whether the same model fits or performs well. Local Arena keeps them attached to the recommendation.</p></div>
+          <div className="method-intro"><span className="eyebrow">WHAT THE RESULT MEANS</span><h2>A recommendation is a complete setup.</h2><p>Quantization, runtime, context and memory settings can change whether the same model fits or performs well. Local Arcade keeps them attached to the recommendation.</p></div>
           <div className="confidence-panel">
             <div><span>BACKED NOW</span><b>Fit and ranking logic</b><p>Memory constraints, ranking preferences, context eligibility, family deduplication and fail-closed behavior are implemented and tested.</p></div>
             <div><span>NOT BACKED YET</span><b>Recommendation evidence</b><p>Artifact sizes, task scores and speed ranges currently come from an isolated prototype catalog, not machine measurements.</p></div>
@@ -73,7 +73,7 @@ export function ArenaApp() {
         </section>
       </main>
 
-      <footer className="site-footer"><span>LOCAL ARENA / PUBLIC PROTOTYPE</span><span>NO ACCOUNT · NO TELEMETRY · NO DOWNLOAD</span><a href="mailto:hello@localarena.dev">CONTACT ↗</a></footer>
+      <footer className="site-footer"><span>LOCAL ARCADE / PUBLIC PROTOTYPE</span><span>NO ACCOUNT · NO TELEMETRY · NO DOWNLOAD</span><a href="mailto:hello@localarcade.dev">CONTACT ↗</a></footer>
     </div>
   );
 }
