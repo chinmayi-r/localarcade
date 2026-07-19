@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — Seed throughput only from fully identified result pages
+
+- **Decision:** M3 admits LocalScore result pages only when they expose accelerator and memory, model/quantization, runtime version/commit, backend, operating system and the detailed workload samples. Summary-only GPU leaderboard rows remain excluded. Priors store observed min/max envelopes and the query API never returns a point estimate.
+- **Why:** The same apparent GPU/model pair can vary substantially with runtime and settings. A smaller CPU-only seed with exact scope is more useful than a broad table that silently blends unlike configurations. Unknown hardware widens across compatible envelopes and is explicitly low confidence.
+- **Reversible:** Yes. Identified GPU or other-runtime result imports can expand the table without changing its range-only contract.
+
 ## 2026-07-19 — Make fit inputs explicit and runtime-scoped
 
 - **Decision:** The M2 fit function consumes exact weight bytes, sourced per-model K/V cache profiles, runtime/compute-buffer bytes, physical memory, OS/display reserves and a caller-selected safety margin. Missing KV types fail closed; the library does not infer these values from model parameters, GPU names or product labels.
