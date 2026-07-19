@@ -2,7 +2,7 @@
 
 > **Gate status (Global Invariant I8):**
 >
-> - [ ] **Human review sign-off (product owner).** Until this box is checked by the product owner, no download, model-execution, scanning, upload, or update feature may be implemented or shipped. This document existing does NOT open the gate.
+> - [x] **Human review sign-off (product owner).** Approved by the product owner via chat on 2026-07-19 ("read through, threat seems reasonable"). The I8 gate is now open for milestone work that implements download/execution features, subject to the OPEN stop-and-ask items in T2, T7 and T8 — those still require explicit decisions before their specific features are built.
 
 This document is the M8 deliverable required by `agent-plan.md`. It defines what the future desktop runner is allowed to be, what can attack it, and which vetted mechanism answers each threat. Per repository policy (§3, I7), mitigations are mapped to Tier-1 sources; nothing here is a novel security design. Where no Tier-1 mechanism exists, the item is marked **OPEN** and is a blocker for the affected feature, not a footnote.
 

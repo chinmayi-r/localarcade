@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — M9 rating policy: vote weights, tie handling, and the live threshold
+
+- **Decision:** Prompter votes weigh 1.0 and third-party votes 0.5 in the Bradley–Terry tally; ties enter the solver as half-wins per side while both-bad votes are recorded but carry no preference signal; a bucket's table goes `live` at 50 effective (weighted) votes and is `collecting` below that; confidence bands use a seeded 200-resample percentile bootstrap so results are deterministic. All four values live in `lib/battles/policy.ts` as editable product policy, not in the math.
+- **Why:** The prompter knows the intent and standard behind their prompt (the own-prompt design's core rationale), so third-party judgments on curated pairs are discounted rather than equal or excluded. The specific 1.0/0.5 ratio and the 50-vote threshold are product policy choices without empirical backing yet — which is exactly why they are isolated in a policy module where changing them is a one-line, logged edit.
+- **Reversible:** Yes. Weights and thresholds are data; tie/both-bad semantics are documented behavior with dedicated tests.
+
 ## 2026-07-19 — M8 threat model treats the backend as untrusted and defers two hard choices
 
 - **Decision:** The runner threat model (T6) assumes a fully hostile backend: jobs are data-only, engines arrive exclusively through the signed release channel, and unknown job fields/versions fail closed. Two hard-to-reverse choices are explicitly deferred as OPEN stop-and-asks rather than decided: the TUF-conformant updater implementation (T2-M7) and the Windows GPU-compatible sandbox depth (T7). Consumer hardware attestation (T8) is recorded as an accepted residual risk for the volunteer fleet and a blocker for the vetted enterprise tier.
