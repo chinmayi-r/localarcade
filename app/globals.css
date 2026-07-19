@@ -85,6 +85,8 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .configuration-identity dt, .configuration-identity dd { margin: 0; font: 9px/1.45 "Courier New", monospace; }
 .configuration-identity dt { color: var(--la-faint); text-transform: uppercase; }
 .configuration-identity dd { color: var(--la-text); overflow-wrap: anywhere; }
+.configuration-identity dd a { color: inherit; text-decoration-color: var(--la-line-strong); text-underline-offset: 3px; }
+.configuration-identity dd a:hover { color: var(--la-tobacco); }
 .configuration-identity dd.not-sourced { color: var(--la-faint); font-style: italic; }
 .empty-state { min-height: 230px; display: grid; place-content: center; border: 1px dashed var(--la-line-strong); padding: 50px; }
 .empty-state span { color: var(--la-tobacco); font: 8px "Courier New", monospace; }

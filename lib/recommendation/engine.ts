@@ -51,6 +51,13 @@ export function recommend(
       configuration: {
         contextK: query.desiredContextK,
         runtime: item.artifact.runtime,
+        artifactRepository: item.artifact.identity ? `${item.artifact.identity.publisher}/${item.artifact.identity.repository}` : undefined,
+        artifactRevision: item.artifact.identity?.revision,
+        artifactFileName: item.artifact.identity?.fileName,
+        artifactSha256: item.artifact.identity?.sha256,
+        artifactSourceUrl: item.artifact.identity?.source.url,
+        licenseId: item.artifact.identity?.license.id,
+        licenseSourceUrl: item.artifact.identity?.license.sourceUrl,
       },
       explanation: item.explanation,
     }));

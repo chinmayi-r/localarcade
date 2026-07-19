@@ -1,3 +1,5 @@
+import type { ArtifactRegistryRecord } from "../registry";
+
 export type PlatformId = "nvidia" | "apple" | "amd" | "cpu";
 export type TaskId = "coding" | "general" | "writing" | "extraction";
 export type StrategyId = "balanced" | "quality" | "speed" | "long-context" | "lightest";
@@ -34,6 +36,7 @@ export type Artifact = {
   stabilityScore: number;
   taskScores: TaskScores;
   evidenceLevel: "prototype";
+  identity?: ArtifactRegistryRecord;
 };
 
 export type Eligibility = {
@@ -65,4 +68,7 @@ export type RecommendedConfiguration = {
   artifactRevision?: string;
   artifactFileName?: string;
   artifactSha256?: string;
+  artifactSourceUrl?: string;
+  licenseId?: string;
+  licenseSourceUrl?: string;
 };

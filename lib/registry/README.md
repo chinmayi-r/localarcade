@@ -13,3 +13,5 @@ An accelerator name alone is not enough to infer memory. Each desktop, laptop, i
 ## Refresh flow
 
 Future importers should create a complete `RegistrySnapshot`, validate it, and publish it atomically. A failed or partial refresh leaves the previous snapshot active. Ranking evidence remains a separate layer because catalog metadata cannot establish real speed, stability or task quality.
+
+The first importer is `npm run registry:import:hf`. Its source manifest pins an exact Hugging Face revision and filename. The importer requests blob metadata, verifies the returned revision, LFS SHA-256, byte size, parsed GGUF context, license file and runtime source, then replaces the generated snapshot only after the whole snapshot validates.

@@ -52,3 +52,13 @@ test("strategy changes can change ordering without changing eligibility", () => 
 test("unknown strategies fail closed", () => {
   assert.throws(() => recommend({ ...baseQuery, strategy: "mystery" as StrategyId }), /Unknown ranking strategy/);
 });
+
+test("a sourced artifact keeps immutable identity attached to its recommendation", () => {
+  const result = recommend({ ...baseQuery, hardware: { platform: "nvidia", availableMemoryGb: 2 }, desiredContextK: 8 })
+    .find((candidate) => candidate.artifact.id === "qwen3-06b-q8");
+  assert.ok(result);
+  assert.equal(result.configuration.artifactRepository, "Qwen/Qwen3-0.6B-GGUF");
+  assert.equal(result.configuration.artifactRevision?.length, 40);
+  assert.equal(result.configuration.artifactSha256?.length, 64);
+  assert.equal(result.configuration.licenseId, "apache-2.0");
+});
