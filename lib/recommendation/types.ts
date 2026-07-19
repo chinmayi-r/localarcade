@@ -49,6 +49,20 @@ export type Recommendation = {
   score: number;
   estimatedTokensPerSecond: [number, number];
   requiredMemoryGb: number;
+  configuration: RecommendedConfiguration;
   explanation: string[];
 };
 
+export type RecommendedConfiguration = {
+  contextK: number;
+  runtime: string;
+  runtimeBuild?: string;
+  backend?: string;
+  kvCacheQuantization?: string;
+  gpuLayers?: number | "all";
+  batchSize?: number;
+  artifactRepository?: string;
+  artifactRevision?: string;
+  artifactFileName?: string;
+  artifactSha256?: string;
+};

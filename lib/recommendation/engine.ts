@@ -48,6 +48,10 @@ export function recommend(
       score: item.score,
       estimatedTokensPerSecond: [Math.max(1, Math.round(item.estimatedSpeed * 0.88)), Math.max(2, Math.round(item.estimatedSpeed * 1.12))],
       requiredMemoryGb: item.eligibility.requiredMemoryGb,
+      configuration: {
+        contextK: query.desiredContextK,
+        runtime: item.artifact.runtime,
+      },
       explanation: item.explanation,
     }));
 }
@@ -56,4 +60,3 @@ function estimateSpeed(artifact: Artifact, query: RecommendationQuery) {
   const memoryScale = (24 / Math.max(query.hardware.availableMemoryGb, 4)) ** 0.16;
   return artifact.baselineTokensPerSecond * PLATFORM_SPEED_FACTOR[query.hardware.platform] * memoryScale;
 }
-

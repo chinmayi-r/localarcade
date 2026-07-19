@@ -29,7 +29,11 @@ test("recommendations never exceed the configured memory safety envelope", () =>
 test("recommendations satisfy desired context", () => {
   for (const desiredContextK of [8, 16, 32, 64]) {
     const results = recommend({ ...baseQuery, desiredContextK });
-    for (const result of results) assert.ok(result.artifact.maxContextK >= desiredContextK);
+    for (const result of results) {
+      assert.ok(result.artifact.maxContextK >= desiredContextK);
+      assert.equal(result.configuration.contextK, desiredContextK);
+      assert.equal(result.configuration.runtime, result.artifact.runtime);
+    }
   }
 });
 
@@ -48,4 +52,3 @@ test("strategy changes can change ordering without changing eligibility", () => 
 test("unknown strategies fail closed", () => {
   assert.throws(() => recommend({ ...baseQuery, strategy: "mystery" as StrategyId }), /Unknown ranking strategy/);
 });
-
