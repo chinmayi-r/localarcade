@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — Require explicit milestone checkpoints
+
+- **Decision:** Every milestone transition begins with a user-visible scope checkpoint and ends with an audited status update. Adjacent milestones may be batched only when each has separately listed work and gates.
+- **Why:** The product owner wants autonomous progress without reviewing tiny increments, while retaining a clear account of what each milestone includes and preventing out-of-order implementation.
+- **Reversible:** Yes. The checkpoint format can evolve without changing product data or APIs.
+
 ## 2026-07-19 — Separate products, engines and artifact packages
 
 - **Decision:** Local Arcade supports multiple local-model products and engines. Ollama, LM Studio, Jan, llama.cpp, MLX LM and vLLM are modeled as distinct products/routes; engines and exact builds remain separate configuration identity.

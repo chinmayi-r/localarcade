@@ -31,3 +31,19 @@ These instructions apply to the entire repository.
 - Prefer small, readable modules and explicit data boundaries so ranking, evidence, runtime, and UI processes can be replaced independently.
 - Preserve the existing architecture unless a change has a concrete product or maintenance benefit.
 - Keep accessibility, responsive behavior, tests, and the private Sites deployment working.
+
+## Milestone execution and checkpoints
+
+- `docs/agent-plan.md` is the execution contract and `docs/MILESTONE-STATUS.md` is the current audited state. Read both, plus every milestone-specific required document, before changing code.
+- Execute milestones in dependency order. Adjacent milestones may share one work session only when the checkpoint names each milestone separately, earlier acceptance gates remain satisfied, and no later milestone consumes unfinished earlier work.
+- Before starting or advancing milestone work, post a user-visible checkpoint in this exact shape:
+  - `Checkpoint — Completing M<N>` or `Checkpoint — Completing M<N> + M<N+1>`
+  - current audited status;
+  - exact deliverables under each milestone;
+  - explicit exclusions/forbidden work;
+  - acceptance commands and completion evidence;
+  - stop conditions or hard-to-reverse decisions requiring user input.
+- A checkpoint is a scope contract, not a progress slogan. Do not add work that is absent from it. If new required work is discovered, amend the checkpoint visibly before continuing.
+- Close every checkpoint with: completed deliverables, gate results, remaining work, milestone status changes, commits, and the exact next checkpoint.
+- Never call a milestone complete because some of its code exists. Audit every acceptance and forbidden clause mechanically, record the evidence in `docs/MILESTONE-STATUS.md`, and run the full gate suite first.
+- If the written order or milestone definition conflicts with dependencies or the product owner's latest direction, stop implementation, explain the conflict, update the plan and decision log, then issue a corrected checkpoint before resuming.

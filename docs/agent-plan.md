@@ -11,6 +11,9 @@ This document is written to be handed to an autonomous coding agent (of any capa
 5. **Never fabricate data.** No invented benchmark numbers, no placeholder scores presented as real, no demo values without a `demo`/`estimated` marker enforced in types. Empty states are designed states — render them.
 6. Log every non-trivial decision you made without asking in `docs/DECISIONS.md` (date, decision, why, reversible? yes/no). This is how the human audits a 5-hour unattended run.
 7. Session end: summarize what changed, what's green, what's not, and the exact next action.
+8. **Checkpoint before implementation:** before starting or advancing milestone work, post the checkpoint required by root `AGENTS.md`. It names every included milestone and lists its deliverables, exclusions, gates, and stop conditions. No milestone code is written before that checkpoint.
+9. **Status is audited:** read and update `docs/MILESTONE-STATUS.md`. A milestone changes to `complete` only after every acceptance and forbidden clause is checked against repository evidence and the full gate suite passes.
+10. **Batching is explicit:** adjacent milestones may be worked in one session, but each remains an independently gated scope inside the checkpoint. Never use batching to bypass milestone order or let unfinished earlier data flow into later production code.
 
 ## 1. Ambiguity protocol
 
