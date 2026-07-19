@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — M8 threat model treats the backend as untrusted and defers two hard choices
+
+- **Decision:** The runner threat model (T6) assumes a fully hostile backend: jobs are data-only, engines arrive exclusively through the signed release channel, and unknown job fields/versions fail closed. Two hard-to-reverse choices are explicitly deferred as OPEN stop-and-asks rather than decided: the TUF-conformant updater implementation (T2-M7) and the Windows GPU-compatible sandbox depth (T7). Consumer hardware attestation (T8) is recorded as an accepted residual risk for the volunteer fleet and a blocker for the vetted enterprise tier.
+- **Why:** "Jobs are data" removes the largest single-point compromise (server → fleet code execution) structurally instead of operationally. The deferred items are the two places where a premature pick would be expensive to reverse and where the product owner's platform priorities matter.
+- **Reversible:** The OPEN items are by definition undecided; the data-only job contract is a security invariant and should be treated as irreversible without a new threat-model revision and sign-off.
+
 ## 2026-07-19 — Keep M7 measurements browser-direct and ephemeral
 
 - **Decision:** The quick-task suite accepts only exact HTTP(S) loopback hosts, calls the OpenAI-compatible chat-completions route directly from the browser after explicit action, runs three requests sequentially, and retains results and optional API credentials only in component memory. Model, product, engine, build and self-reported hardware remain attached to every report.

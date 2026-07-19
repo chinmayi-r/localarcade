@@ -19,3 +19,4 @@ Security-sensitive automation is copied from official or project-maintainer sour
 | File | Mechanism | Why hand-written | Review state |
 |---|---|---|---|
 | `lib/quick-test/endpoint-policy.ts` | Exact loopback URL allowlist for browser benchmark requests | No Tier-1 application template exists for this product-specific boundary; URL parsing uses the browser platform API and fails closed before `fetch`. | Needs review |
+| `docs/runner-threat-model.md` | M8 runner threat model — download/execution gate (I8) | Product-specific threat enumeration; every mitigation cites a Tier-1 mechanism, but the composition is hand-written. The gate stays closed until the sign-off box at the top of that document is checked by the product owner. | Needs product-owner sign-off |
