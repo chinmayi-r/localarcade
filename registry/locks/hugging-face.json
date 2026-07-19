@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "discoveredAt": "2026-07-19T13:47:07.121Z",
+  "policySha256": "3f275eba9d8a2af36c9df2f60211c92b3bad6f07fc73e5eb9a6f02ab670a03b7",
+  "repositories": [
+    {
+      "repoId": "bartowski/DeepSeek-V4-Flash-GGUF",
+      "revision": "f9815d70824d68364c5a3c5136ff9672883394e0",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "deepseek-ai/DeepSeek-V4-Flash"
+    },
+    {
+      "repoId": "bartowski/gemma-2-2b-it-GGUF",
+      "revision": "855f67caed130e1befc571b52bd181be2e858883",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "google/gemma-2-2b-it"
+    },
+    {
+      "repoId": "bartowski/Llama-3.2-1B-Instruct-GGUF",
+      "revision": "067b946cf014b7c697f3654f621d577a3e3afd1c",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "meta-llama/Llama-3.2-1B-Instruct"
+    },
+    {
+      "repoId": "bartowski/Llama-3.2-3B-Instruct-GGUF",
+      "revision": "5ab33fa94d1d04e903623ae72c95d1696f09f9e8",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "meta-llama/Llama-3.2-3B-Instruct"
+    },
+    {
+      "repoId": "bartowski/Meta-Llama-3.1-8B-Instruct-GGUF",
+      "revision": "bf5b95e96dac0462e2a09145ec66cae9a3f12067",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "meta-llama/Llama-3.1-8B-Instruct"
+    },
+    {
+      "repoId": "bartowski/Phi-3.5-mini-instruct-GGUF",
+      "revision": "6d70da17e749a471ccb62ade694486011a75cda3",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "microsoft/Phi-3.5-mini-instruct"
+    },
+    {
+      "repoId": "bartowski/Qwen2.5-14B-Instruct-GGUF",
+      "revision": "05244aa5d871c661c80082a15d3bce44714d068d",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen2.5-14B-Instruct"
+    },
+    {
+      "repoId": "bartowski/Qwen2.5-72B-Instruct-GGUF",
+      "revision": "d43fd973131bce821f41e2df3c78c6fe15c5627a",
+      "publisher": "bartowski",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen2.5-72B-Instruct"
+    },
+    {
+      "repoId": "google/DiarizationLM-13b-Fisher-v1",
+      "revision": "a39f66ac61a55526921de54e9e204ff983ea835d",
+      "publisher": "google",
+      "publisherKind": "official-model-org"
+    },
+    {
+      "repoId": "google/DiarizationLM-8b-Fisher-v1",
+      "revision": "4315b6bdf038ab5440d52b9e9607b3e08b30cb34",
+      "publisher": "google",
+      "publisherKind": "official-model-org"
+    },
+    {
+      "repoId": "microsoft/bitnet-b1.58-2B-4T-gguf",
+      "revision": "a1f2f1c765812aa8af3f6eda4a313707064bba15",
+      "publisher": "microsoft",
+      "publisherKind": "official-model-org"
+    },
+    {
+      "repoId": "microsoft/Phi-3-mini-4k-instruct-gguf",
+      "revision": "a64113399c2f6b8ad3e11c394733a2ddadaa7f33",
+      "publisher": "microsoft",
+      "publisherKind": "official-model-org"
+    },
+    {
+      "repoId": "microsoft/phi-4-gguf",
+      "revision": "6edc2ef6664b739a8e11e62f2672ff6afe0c15ac",
+      "publisher": "microsoft",
+      "publisherKind": "official-model-org"
+    },
+    {
+      "repoId": "mradermacher/copywriter-gemma4-31b-i1-GGUF",
+      "revision": "5bfb68836f99f2c585ceeb7dea6456df2082c3cc",
+      "publisher": "mradermacher",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "akwin123/copywriter-gemma4-31b"
+    },
+    {
+      "repoId": "mradermacher/Gemma-4-12B-it-AEON-Abliterated-K4-BF16-GGUF",
+      "revision": "515bdcf5688253f253a3b96446e7acd84f0d795f",
+      "publisher": "mradermacher",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "AEON-7/Gemma-4-12B-it-AEON-Abliterated-K4-BF16"
+    },
+    {
+      "repoId": "mradermacher/grok-oss-Revenant-70B-i1-GGUF",
+      "revision": "ae54697be2dd9c1bac7500c9e6d3c130e8955959",
+      "publisher": "mradermacher",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "c4tdr0ut/grok-oss-Revenant-70B"
+    },
+    {
+      "repoId": "mradermacher/Omni-31B-Turkish-Reasoning-Model-i1-GGUF",
+      "revision": "0790133cd5e85e362a280b93fa2ec3b95b545eea",
+      "publisher": "mradermacher",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "bugrabilge/Omni-31B-Turkish-Reasoning-Model"
+    },
+    {
+      "repoId": "mradermacher/Qwen35B-Agent-R2-Abliterated-i1-GGUF",
+      "revision": "4da8b3ea08f022b5466b914b09dee06ad4eea28d",
+      "publisher": "mradermacher",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "hotdogs/Qwen35B-Agent-R2-Abliterated"
+    },
+    {
+      "repoId": "mradermacher/STARK-WEB-12B-v1.7-i1-GGUF",
+      "revision": "db6fcb3f3f609c7820e87a554aea677c6a1c74ed",
+      "publisher": "mradermacher",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Situus/STARK-WEB-12B-v1.7"
+    },
+    {
+      "repoId": "Qwen/Qwen2.5-0.5B-Instruct-GGUF",
+      "revision": "9217f5db79a29953eb74d5343926648285ec7e67",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen2.5-0.5B-Instruct"
+    },
+    {
+      "repoId": "Qwen/Qwen2.5-1.5B-Instruct-GGUF",
+      "revision": "91cad51170dc346986eccefdc2dd33a9da36ead9",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen2.5-1.5B-Instruct"
+    },
+    {
+      "repoId": "Qwen/Qwen2.5-3B-Instruct-GGUF",
+      "revision": "7dabda4d13d513e3e842b20f0d435c732f172cbe",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen2.5-3B-Instruct"
+    },
+    {
+      "repoId": "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF",
+      "revision": "9d3053fce650fe1cdbdb75998c2a87add9d178ef",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen2.5-Coder-32B-Instruct"
+    },
+    {
+      "repoId": "Qwen/Qwen2.5-Coder-7B-Instruct-GGUF",
+      "revision": "13fb94bfda8c8cf22497dc57b78f391a9acb426a",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen2.5-Coder-7B-Instruct"
+    },
+    {
+      "repoId": "Qwen/Qwen3-30B-A3B-GGUF",
+      "revision": "e4d4bafdfb96a411a163846265362aceb0b9c63a",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen3-30B-A3B"
+    },
+    {
+      "repoId": "Qwen/Qwen3-4B-GGUF",
+      "revision": "bc640142c66e1fdd12af0bd68f40445458f3869b",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen3-4B"
+    },
+    {
+      "repoId": "Qwen/Qwen3-8B-GGUF",
+      "revision": "7c41481f57cb95916b40956ab2f0b139b296d974",
+      "publisher": "Qwen",
+      "publisherKind": "official-model-org",
+      "baseModelHint": "Qwen/Qwen3-8B"
+    },
+    {
+      "repoId": "unsloth/GLM-5.2-GGUF",
+      "revision": "abc55e72527792c6e77069c99b4cb7de16fa9f23",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "zai-org/GLM-5.2"
+    },
+    {
+      "repoId": "unsloth/gpt-oss-120b-GGUF",
+      "revision": "ff1a82da6ad466e32284fa3d2b86694db3204789",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "openai/gpt-oss-120b"
+    },
+    {
+      "repoId": "unsloth/gpt-oss-20b-GGUF",
+      "revision": "d449b42d93e1c2c7bda5312f5c25c8fb91dfa9b4",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "openai/gpt-oss-20b"
+    },
+    {
+      "repoId": "unsloth/Qwen-AgentWorld-35B-A3B-GGUF",
+      "revision": "3a305abf5cfd119ee999dfe929c433746edd8d63",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen-AgentWorld-35B-A3B"
+    },
+    {
+      "repoId": "unsloth/Qwen3-0.6B-GGUF",
+      "revision": "50968a4468ef4233ed78cd7c3de230dd1d61a56b",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen3-0.6B"
+    },
+    {
+      "repoId": "unsloth/Qwen3-8B-GGUF",
+      "revision": "a6adef130ffb23ddaf1a62fec9dced968c9bc482",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen3-8B"
+    },
+    {
+      "repoId": "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF",
+      "revision": "b17cb02dd882d5b6ab62fc777ad2995f19668350",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen3-Coder-30B-A3B-Instruct"
+    },
+    {
+      "repoId": "unsloth/Qwen3-Coder-Next-GGUF",
+      "revision": "ce09c67b53bc8739eef83fe67b2f5d293c270632",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen3-Coder-Next"
+    }
+  ]
+}

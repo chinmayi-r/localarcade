@@ -12,6 +12,11 @@ An accelerator name alone is not enough to infer memory. Each desktop, laptop, i
 
 ## Refresh flow
 
-Future importers should create a complete `RegistrySnapshot`, validate it, and publish it atomically. A failed or partial refresh leaves the previous snapshot active. Ranking evidence remains a separate layer because catalog metadata cannot establish real speed, stability or task quality.
+The Hugging Face flow has two deliberately separate commands:
 
-The first importer is `npm run registry:import:hf`. Its source manifest pins an exact Hugging Face revision and filename. The importer requests blob metadata, verifies the returned revision, LFS SHA-256, byte size, parsed GGUF context, license file and runtime source, then replaces the generated snapshot only after the whole snapshot validates.
+1. `npm run discover` queries the documented Hub API using the editable trusted-publisher policy in `registry/policy/hugging-face.json`. It writes a lock containing immutable repository revisions. Discovery is mutable and is the review boundary.
+2. `npm run ingest` reads only that lock, requests the pinned revisions, bulk-enumerates GGUF files and writes `registry/generated/artifacts.json` only after the complete snapshot validates and clears the policy scale floor.
+
+Each admitted record includes field-level source URLs and retrieval timestamps. Missing hashes, byte sizes, base-model relations, licenses, context metadata or chat templates quarantine the individual artifact. Split GGUF packages and helper/projector files are also quarantined until package-level identity is modeled. A fetch, revision, validation or scale failure occurs before the atomic rename, so the previous valid snapshot remains active.
+
+The generated registry is not imported by the website before M4. Catalog metadata establishes artifact identity and compatibility inputs; it does not establish real speed, stability, task quality or a ranking.

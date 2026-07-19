@@ -11,7 +11,10 @@
     "start": "vinext start",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts tests/*.test.tsx && node --test tests/*.test.mjs",
-    "registry:import:hf": "tsx scripts/import-hugging-face.ts",
+    "discover": "tsx scripts/discover-hugging-face.ts",
+    "ingest": "tsx scripts/ingest.ts",
+    "registry:discover:hf": "npm run discover",
+    "registry:import:hf": "npm run ingest",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
     "lint": "eslint app lib tests worker public/design-system/constellation.js eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
   },

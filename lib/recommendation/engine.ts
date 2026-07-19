@@ -55,7 +55,7 @@ export function recommend(
         artifactRevision: item.artifact.identity?.revision,
         artifactFileName: item.artifact.identity?.fileName,
         artifactSha256: item.artifact.identity?.sha256,
-        artifactSourceUrl: item.artifact.identity?.source.url,
+        artifactSourceUrl: item.artifact.identity?.provenance.sha256.sourceUrl,
         licenseId: item.artifact.identity?.license.id,
         licenseSourceUrl: item.artifact.identity?.license.sourceUrl,
       },

@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-19 — Pin discovery separately from deterministic admission
+
+- **Decision:** Hugging Face discovery is a mutable, explicit operation governed by an editable trusted-publisher policy. It produces a revision lock; deterministic ingestion consumes only that lock and atomically publishes a fully validated snapshot.
+- **Why:** Broad discovery and reproducible builds are different jobs. Separating them prevents upstream catalog movement or partial refresh failures from changing or erasing the last valid artifact registry.
+- **Reversible:** Yes. Publishers, discovery ordering and upstream adapters remain data/module choices; admitted artifact identity remains stable.
+
+## 2026-07-19 — Quarantine unsupported GGUF packages in M1
+
+- **Decision:** M1 admits standalone GGUF artifacts and quarantines split packages, projector/helper files, unknown filename quantizations and records missing required evidence. Every admitted artifact stores the parsed chat template and field-level provenance.
+- **Why:** Split packages need package-level identity and install semantics that the M1 artifact schema does not yet represent. Inventing or silently inferring missing values would violate the evidence contract.
+- **Reversible:** Yes. A later schema version can admit package manifests without changing existing standalone identities.
+
 ## 2026-07-19 — Require explicit milestone checkpoints
 
 - **Decision:** Every milestone transition begins with a user-visible scope checkpoint and ends with an audited status update. Adjacent milestones may be batched only when each has separately listed work and gates.

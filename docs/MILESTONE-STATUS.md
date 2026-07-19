@@ -6,7 +6,7 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 |---|---|---|---|
 | M-1 — Evidence foundation | Complete | Evidence types, scope policy and fail-closed contract tests landed in `1426c86`; full gate suite subsequently remains green. | None. |
 | M0 — Trusted CI hardening | Complete | Pinned CodeQL, dependency review, Scorecard, Harden Runner, Dependabot, security ledger and zero-data test landed in `6859a07`; no floating `@v` action tags; full gate suite green. | Hosted workflow runs will provide operational confirmation once this source is mirrored to GitHub, but the repository acceptance clauses are satisfied. |
-| M1 — Artifact registry | In progress | Registry contracts (`935af8b`), pinned Hub importer (`a192d49`) and runtime-neutral artifact separation (`9d28bee`) exist beside the demo catalog. | Replace per-file manifest with trusted-publisher discovery and bulk admission; add base model, chat template and field-level provenance; deterministic `npm run ingest`; quarantine individual failures; admit at least 40 artifacts across 8 families; audit every M1 acceptance and forbidden clause. |
+| M1 — Artifact registry | Complete | Trusted-publisher Hub discovery pins 35 repository revisions; deterministic bulk admission produces 451 artifacts across 27 families with complete field provenance and quarantines 426 invalid/unsupported records. Two consecutive ingests produced SHA-256 `1F9BFF8DAC8B8E8D6A009EC7A0205E65C134F34A7CF073B95608BC51E474FC04`; importer, schema, provenance, scale, quarantine and production-boundary tests pass. | None. Generated data remains beside the production demo catalog until M4, as required. |
 | M2 — Fit math | Not started | Existing prototype memory arithmetic is production-ineligible and does not satisfy M2. | Entire milestone. |
 | M3 — Throughput priors | Not started | Existing seeded speed values are explicitly prototype data. | Entire milestone. |
 | M4 — Engine on real data | Not started | Production still imports the demo catalog. | Entire milestone. |
@@ -18,4 +18,4 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 
 ## Current checkpoint
 
-Process correction only: checkpoint protocol and audited status ledger. The next implementation checkpoint is **Completing M1 — Versioned artifact registry + ingestion**.
+**Completing M1 — Versioned artifact registry + ingestion: closed.** The next implementation checkpoint is **Completing M2 — Fit math library**; no M2 work has started.

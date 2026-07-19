@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "publishers": [
+    { "id": "bartowski", "kind": "trusted-quantizer", "maxRepositories": 8 },
+    { "id": "unsloth", "kind": "trusted-quantizer", "maxRepositories": 8 },
+    { "id": "mradermacher", "kind": "trusted-quantizer", "maxRepositories": 6 },
+    { "id": "Qwen", "kind": "official-model-org", "maxRepositories": 8 },
+    { "id": "google", "kind": "official-model-org", "maxRepositories": 6 },
+    { "id": "microsoft", "kind": "official-model-org", "maxRepositories": 6 },
+    { "id": "MistralAI", "kind": "official-model-org", "maxRepositories": 6 }
+  ],
+  "requiredTag": "gguf",
+  "pipelineTag": "text-generation",
+  "excludeNamePatterns": [
+    "embed",
+    "rerank",
+    "reward",
+    "classifier",
+    "vision-projector"
+  ],
+  "minimumArtifacts": 40,
+  "minimumFamilies": 8
+}
