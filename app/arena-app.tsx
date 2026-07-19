@@ -1,6 +1,6 @@
 "use client";
 
-import { createElement, useMemo, useState } from "react";
+import { createElement, useMemo, useRef, useState } from "react";
 import { ConfigurationPanel } from "./components/finder/configuration-panel";
 import { RecommendationList } from "./components/finder/recommendation-list";
 import { recommend, rankingStrategies } from "@/lib/recommendation";
@@ -14,47 +14,66 @@ const initialQuery: RecommendationQuery = {
 };
 
 export function ArenaApp() {
-  const [query, setQuery] = useState(initialQuery);
+  const [draftQuery, setDraftQuery] = useState(initialQuery);
+  const [submittedQuery, setSubmittedQuery] = useState<RecommendationQuery | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const recommendations = useMemo(() => recommend(query), [query]);
-  const strategy = rankingStrategies[query.strategy];
+  const resultsRef = useRef<HTMLElement>(null);
+  const recommendations = useMemo(() => submittedQuery ? recommend(submittedQuery) : [], [submittedQuery]);
+  const strategy = submittedQuery ? rankingStrategies[submittedQuery.strategy] : null;
 
-  function changeQuery(next: RecommendationQuery) {
-    setQuery(next);
+  function submitQuery() {
+    setSubmittedQuery(draftQuery);
     setSelectedId(null);
+    window.setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 0);
   }
 
   return (
-    <main className="application-shell">
-      <header className="app-header">
-        <a href="#results" className="app-brand" aria-label="Local Arena home"><span>LA</span><div><b>LOCAL ARENA</b><small>MODEL + CONFIGURATION FINDER</small></div></a>
-        <div className="prototype-flag"><i /> PROTOTYPE DATA · NOT A PUBLISHED LEADERBOARD</div>
-        <nav aria-label="Application navigation"><a className="active" href="#results">Finder</a><a href="#method">Method</a><span>Runner · planned</span></nav>
+    <div className="website-shell">
+      <header className="site-header">
+        <a href="#top" className="site-brand" aria-label="Local Arena home"><span>LA</span><b>Local Arena</b></a>
+        <nav aria-label="Website navigation">
+          <a href="#finder">Find models</a>
+          <a href="#method">How it works</a>
+          <span>Runner · planned</span>
+        </nav>
       </header>
 
-      <div className="app-body">
-        <ConfigurationPanel query={query} onChange={changeQuery} />
-        <section className="workspace" id="results">
+      <main id="top">
+        <section className="finder-hero" aria-labelledby="finder-title">
           <div className="configuration-field">
-            {createElement("la-constellation", { seed: "19", density: "155", bloom: "0.38" })}
+            {createElement("la-constellation", { seed: "19", density: "145", bloom: "0.34" })}
           </div>
-          <div className="workspace-heading">
-            <div className="workspace-intro"><span className="section-code">WEB FINDER / LIVE</span><h1>Find a configuration for this machine.</h1><p>Choose the hardware you have and what you want to do. Results update immediately; no download required.</p></div>
-            <div className="result-provenance"><span>RANKING MODE</span><b>{strategy.label}</b><p>{strategy.description}</p></div>
+          <div className="finder-intro">
+            <span className="eyebrow">LOCAL MODEL FINDER</span>
+            <h1 id="finder-title">What should you run on your computer?</h1>
+            <p>Enter the hardware you have and what you need the model to do. We’ll return configurations that fit—not just model names.</p>
           </div>
 
-          <div className="list-header"><span>RANK / ARTIFACT</span><span>MEMORY</span><span>SPEED</span><span>CONTEXT</span><span /></div>
-          <RecommendationList recommendations={recommendations} selectedId={selectedId} onSelect={(id) => setSelectedId(selectedId === id ? null : id)} />
-
-          <section className="confidence-panel" id="method">
-            <div><span>WHAT IS BACKED</span><b>Application logic</b><p>Memory constraints, strategy selection, family deduplication and fail-closed safety behavior are implemented and tested.</p></div>
-            <div><span>WHAT IS NOT BACKED YET</span><b>Recommendation evidence</b><p>Artifact sizes, task scores and speed ranges currently come from an isolated prototype catalog.</p></div>
-            <div><span>NEXT DATA MILESTONE</span><b>Versioned artifact registry</b><p>Immutable revisions, hashes, licenses, sources, runtime support and field-level confidence.</p></div>
-          </section>
+          <ConfigurationPanel query={draftQuery} onChange={setDraftQuery} onSubmit={submitQuery} hasResults={submittedQuery !== null} />
+          <p className="prototype-note"><i /> PROTOTYPE DATA · NOT A PUBLISHED LEADERBOARD · No measurements from your machine. No account or download required.</p>
         </section>
-      </div>
 
-      <footer className="app-footer"><span>LOCAL ARENA / PUBLIC PROTOTYPE</span><span>NO ACCOUNT · NO TELEMETRY · NO DOWNLOAD</span><a href="mailto:hello@localarena.dev">CONTACT ↗</a></footer>
-    </main>
+        {submittedQuery && strategy && (
+          <section className="results-section" id="results" ref={resultsRef}>
+            <div className="results-heading">
+              <div><span className="eyebrow">YOUR MATCHES</span><h2>{recommendations.length} configurations fit</h2></div>
+              <div className="result-summary"><b>{strategy.label}</b><span>{submittedQuery.hardware.availableMemoryGb} GB · {submittedQuery.desiredContextK}K context · {submittedQuery.task}</span></div>
+            </div>
+            <RecommendationList recommendations={recommendations} selectedId={selectedId} onSelect={(id) => setSelectedId(selectedId === id ? null : id)} />
+          </section>
+        )}
+
+        <section className="method-section" id="method">
+          <div className="method-intro"><span className="eyebrow">WHAT THE RESULT MEANS</span><h2>A recommendation is a complete setup.</h2><p>Quantization, runtime, context and memory settings can change whether the same model fits or performs well. Local Arena keeps them attached to the recommendation.</p></div>
+          <div className="confidence-panel">
+            <div><span>BACKED NOW</span><b>Fit and ranking logic</b><p>Memory constraints, ranking preferences, context eligibility, family deduplication and fail-closed behavior are implemented and tested.</p></div>
+            <div><span>NOT BACKED YET</span><b>Recommendation evidence</b><p>Artifact sizes, task scores and speed ranges currently come from an isolated prototype catalog, not machine measurements.</p></div>
+            <div><span>DESKTOP APP</span><b>Detection and benchmarks</b><p>The future runner will detect exact hardware and let people run or contribute measurements with explicit consent.</p></div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer"><span>LOCAL ARENA / PUBLIC PROTOTYPE</span><span>NO ACCOUNT · NO TELEMETRY · NO DOWNLOAD</span><a href="mailto:hello@localarena.dev">CONTACT ↗</a></footer>
+    </div>
   );
 }

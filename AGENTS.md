@@ -4,7 +4,7 @@ These instructions apply to the entire repository.
 
 ## Two related products
 
-- **Website:** a useful, no-install model and configuration finder. Its first viewport must contain working controls and recommendation results. Do not put a marketing hero in front of the utility.
+- **Website:** a useful, no-install model and configuration finder. Follow the familiar hardware-advisor pattern: normal website header, short explanation, one contained hardware form, one primary action, results below, and methodology later. Do not use persistent side rails, app chrome, or a leaderboard table on arrival. Do not put a marketing hero in front of the utility.
 - **Desktop app / runner:** a separate, future product for hardware detection, downloads, local benchmarks, and contributed measurements. Never imply that the website has detected hardware or run a benchmark when it has not.
 
 ## Visual direction
@@ -29,4 +29,3 @@ These instructions apply to the entire repository.
 - Prefer small, readable modules and explicit data boundaries so ranking, evidence, runtime, and UI processes can be replaced independently.
 - Preserve the existing architecture unless a change has a concrete product or maintenance benefit.
 - Keep accessibility, responsive behavior, tests, and the private Sites deployment working.
-
