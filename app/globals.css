@@ -75,6 +75,10 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .metric small, .metric b { display: block; }
 .metric small { color: var(--la-faint); font: 7px "Courier New", monospace; text-transform: uppercase; margin-bottom: 6px; }
 .metric b { font: 10px "Courier New", monospace; font-weight: 400; }
+.evidence-badge { display: inline-block; width: max-content; margin-top: 5px; padding: 2px 4px; border: 1px solid var(--la-line-strong); color: var(--la-muted); font: 6px "Courier New", monospace; font-style: normal; letter-spacing: 0.08em; text-transform: uppercase; }
+.evidence-badge.evidence { color: var(--la-forest); }
+.evidence-badge.unavailable { color: var(--la-faint); }
+.catalog-age { color: var(--la-forest) !important; }
 .disclosure { color: var(--la-lavender); font-size: 18px; text-align: right; }
 .card-evidence { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--la-line); border-top: 1px solid var(--la-line); }
 .card-evidence > div { min-height: 116px; padding: 18px; background: #14170f; }
@@ -83,11 +87,14 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .card-evidence p { color: var(--la-muted); font-size: 10px; line-height: 1.55; margin: 10px 0 0; }
 .card-evidence a { color: var(--la-tobacco); font-size: 9px; }
 .card-evidence > .configuration-identity { grid-column: span 2; }
+.request-configuration button { margin-top: 12px; border: 1px solid var(--la-tobacco); background: transparent; color: var(--la-tobacco); padding: 8px 10px; font-size: 9px; cursor: pointer; }
+.request-configuration button:disabled { border-color: var(--la-line-strong); color: var(--la-faint); cursor: default; }
 .configuration-identity dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; margin: 12px 0 0; }
 .configuration-identity dl > div { display: grid; grid-template-columns: minmax(86px, 0.7fr) 1.3fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--la-line); }
 .configuration-identity dt, .configuration-identity dd { margin: 0; font: 9px/1.45 "Courier New", monospace; }
 .configuration-identity dt { color: var(--la-faint); text-transform: uppercase; }
 .configuration-identity dd { color: var(--la-text); overflow-wrap: anywhere; }
+.configuration-identity dd .evidence-badge { margin-left: 7px; }
 .configuration-identity dd a { color: inherit; text-decoration-color: var(--la-line-strong); text-underline-offset: 3px; }
 .configuration-identity dd a:hover { color: var(--la-tobacco); }
 .configuration-identity dd.not-sourced { color: var(--la-faint); font-style: italic; }

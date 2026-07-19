@@ -1,7 +1,12 @@
-import type { RecommendationOutcome } from "@/lib/recommendation";
+"use client";
+
+import { useState } from "react";
+import { presentRecommendation } from "@/lib/recommendation";
+import type { DisplayValue, RecommendationOutcome, RecommendationQuery } from "@/lib/recommendation";
 
 type Props = {
   outcome: RecommendationOutcome;
+  query: RecommendationQuery;
   selectedId: string | null;
   onSelect(id: string): void;
 };
@@ -14,50 +19,33 @@ const roleLabels = {
   "memory-efficient-option": "Memory-efficient option",
 };
 
-export function RecommendationList({ outcome, selectedId, onSelect }: Props) {
+export function RecommendationList({ outcome, query, selectedId, onSelect }: Props) {
   if (outcome.kind === "nothing-fits") return <EmptyState eyebrow="NO SAFE MATCHES" title="No sourced configuration fits these constraints." message={outcome.message} />;
 
   return <>
     <div className="outcome-note"><b>{outcome.kind === "ranked" ? "RANKED" : outcome.kind === "contradictory" ? "CONSTRAINT CONFLICT" : "UNRANKED SHORTLIST"}</b><span>{outcome.message}</span></div>
     <div className="recommendation-list">
       {outcome.items.map((item, index) => {
-        const { artifact } = item.candidate;
+        const view = presentRecommendation(item, outcome.kind, index);
         const selected = selectedId === item.candidate.id;
-        const speed = item.throughput.kind === "range"
-          ? `${item.throughput.ranges.generationTokensPerSecond.min}–${item.throughput.ranges.generationTokensPerSecond.max} tok/s`
-          : "No matched evidence";
         return <article className={`recommendation-card ${selected ? "selected" : ""}`} key={item.candidate.id}>
           <button type="button" className="card-main" onClick={() => onSelect(item.candidate.id)} aria-expanded={selected}>
-            <span className="rank">{outcome.kind === "ranked" ? String(index + 1).padStart(2, "0") : "—"}</span>
-            <span className="artifact-name"><b>{artifact.model}</b><small>{artifact.quantization} · {artifact.format} · {item.candidate.runtime.product}</small></span>
-            <Metric label="Estimated fit" value={`${(item.fit.requiredBytes / 1024 ** 3).toFixed(1)} GB`} />
-            <Metric label="Community speed" value={speed} />
-            <Metric label={item.role ? "Role" : "Context"} value={item.role ? roleLabels[item.role] : `${item.contextTokens / 1024}K tokens`} />
+            <span className="rank">{view.rank.text}</span>
+            <span className="artifact-name"><b>{view.model}</b><small>{view.summary} · download {view.downloadSize.text}</small></span>
+            <EvidenceMetric label="Estimated fit" value={view.fit} />
+            <EvidenceMetric label="Generation speed" value={view.speed} />
+            <EvidenceMetric label={item.role ? "Role" : "Max feasible context"} value={item.role ? configurationDisplay(roleLabels[item.role]) : view.maxContext} />
             <span className="disclosure">{selected ? "−" : "+"}</span>
           </button>
           {selected && <div className="card-evidence">
             <div className="configuration-identity">
               <span>CONFIGURATION IDENTITY</span>
-              <dl>
-                <ConfigurationValue label="Model" value={artifact.model} />
-                <ConfigurationValue label="Quantization" value={artifact.quantization} />
-                <ConfigurationValue label="Artifact" value={`${artifact.publisher}/${artifact.repository}/${artifact.fileName}`} href={artifact.provenance.sha256.sourceUrl} />
-                <ConfigurationValue label="Revision" value={artifact.revision} />
-                <ConfigurationValue label="Artifact hash" value={`sha256:${artifact.sha256}`} />
-                <ConfigurationValue label="License" value={artifact.license.id} href={artifact.license.sourceUrl} />
-                <ConfigurationValue label="Product" value={item.candidate.runtime.product} />
-                <ConfigurationValue label="Engine" value={item.candidate.runtime.engine} />
-                <ConfigurationValue label="Runtime build" value={item.candidate.runtime.build} />
-                <ConfigurationValue label="Backend" value={item.candidate.runtime.backend} />
-                <ConfigurationValue label="Context" value={`${item.contextTokens / 1024}K tokens`} />
-                <ConfigurationValue label="KV cache" value={typeof item.candidate.runtime.kvCache === "string" ? item.candidate.runtime.kvCache : `${item.candidate.runtime.kvCache.key}/${item.candidate.runtime.kvCache.value}`} />
-                <ConfigurationValue label="GPU layers" value={item.candidate.runtime.gpuLayers.toString()} />
-                <ConfigurationValue label="Batch" value={item.candidate.runtime.batchSize.toString()} />
-              </dl>
+              <dl>{view.fields.map((field) => <ConfigurationValue key={field.label} label={field.label} value={field.value} />)}</dl>
             </div>
-            <div><span>FIT EVIDENCE</span><b>Estimated · sourced profile</b><p>Byte-level fit combines the exact artifact size with a cited runtime allocation profile and a 10% safety margin.</p><a href={item.candidate.fitProfileSourceUrl} target="_blank" rel="noreferrer">Allocation source ↗</a></div>
-            <div><span>THROUGHPUT EVIDENCE</span><b>{item.throughput.kind === "range" ? `${item.throughput.confidence} confidence` : "Unavailable"}</b><p>{item.throughput.kind === "range" ? `Observed range from ${item.throughput.sampleCount} samples; not measured on this machine.` : item.throughput.reason}</p></div>
-            <div><span>ALTERNATE CONFIGURATIONS</span><b>{item.alternatives.length}</b><p>Variants from the same model family are nested here rather than occupying additional result slots.</p></div>
+            <EvidencePanel title="FIT EVIDENCE" value={view.fit} body="Weights, KV cache, runtime buffers and the editable safety policy are included." />
+            <EvidencePanel title="THROUGHPUT EVIDENCE" value={view.speed} body="Prompt speed, generation speed and time-to-first-token stay separate in the stored prior." />
+            <div><span>ALTERNATE CONFIGURATIONS</span><b>{view.alternativeCount.text} <EvidenceBadge value={view.alternativeCount} /></b><p>{view.alternativeCount.provenance.note}</p></div>
+            <RequestConfigurationButton candidateId={item.candidate.id} query={query} />
           </div>}
         </article>;
       })}
@@ -65,14 +53,40 @@ export function RecommendationList({ outcome, selectedId, onSelect }: Props) {
   </>;
 }
 
+function EvidenceMetric({ label, value }: { label: string; value: DisplayValue }) {
+  return <span className="metric"><small>{label}</small><b>{value.text}</b><EvidenceBadge value={value} /></span>;
+}
+
+function EvidencePanel({ title, value, body }: { title: string; value: DisplayValue; body: string }) {
+  const href = value.provenance.sourceUrls[0];
+  return <div><span>{title}</span><b>{value.text} <EvidenceBadge value={value} /></b><p>{body} {value.provenance.note}</p>{href && <a href={href} target="_blank" rel="noreferrer">Evidence source ↗</a>}</div>;
+}
+
+function EvidenceBadge({ value }: { value: DisplayValue }) {
+  return <em className={`evidence-badge ${value.provenance.kind}`}>{value.provenance.badge}</em>;
+}
+
 function EmptyState({ eyebrow, title, message }: { eyebrow: string; title: string; message: string }) {
   return <div className="empty-state"><span>{eyebrow}</span><h2>{title}</h2><p>{message} The list is not padded with configurations lacking the required evidence.</p></div>;
 }
 
-function Metric({ label, value }: { label: string; value: string }) {
-  return <span className="metric"><small>{label}</small><b>{value}</b></span>;
+function ConfigurationValue({ label, value }: { label: string; value: DisplayValue }) {
+  const href = value.provenance.sourceUrls[0];
+  return <div><dt>{label}</dt><dd>{href ? <a href={href} target="_blank" rel="noreferrer">{value.text} ↗</a> : value.text}<EvidenceBadge value={value} /></dd></div>;
 }
 
-function ConfigurationValue({ label, value, href }: { label: string; value: string; href?: string }) {
-  return <div><dt>{label}</dt><dd>{href ? <a href={href} target="_blank" rel="noreferrer">{value} ↗</a> : value}</dd></div>;
+function RequestConfigurationButton({ candidateId, query }: { candidateId: string; query: RecommendationQuery }) {
+  const [saved, setSaved] = useState(false);
+  function saveLocally() {
+    const key = "local-arcade:configuration-requests:v1";
+    const current = JSON.parse(window.localStorage.getItem(key) ?? "[]") as unknown[];
+    current.push({ candidateId, hardware: query.hardware, task: query.task, strategy: query.strategy, contextK: query.desiredContextK, requestedAt: new Date().toISOString() });
+    window.localStorage.setItem(key, JSON.stringify(current.slice(-100)));
+    setSaved(true);
+  }
+  return <div className="request-configuration"><span>EVIDENCE COVERAGE</span><b>{saved ? "Saved on this device" : "Need a better-matched benchmark?"}</b><p>This request stays in this browser. It is not submitted or uploaded.</p><button type="button" onClick={saveLocally} disabled={saved}>{saved ? "Saved locally" : "Save evidence request"}</button></div>;
+}
+
+function configurationDisplay(text: string): DisplayValue {
+  return { text, provenance: { kind: "configuration", badge: "configuration", sourceUrls: [], note: "Role assigned by the selected ranking strategy." } };
 }

@@ -55,6 +55,7 @@ export type RecommendationItem = {
   throughput: ThroughputEstimate;
   role?: RecommendationRole;
   contextTokens: number;
+  maxFeasibleContextTokens: number;
   alternatives: RecommendationCandidate[];
 };
 

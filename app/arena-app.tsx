@@ -3,13 +3,13 @@
 import { createElement, useMemo, useRef, useState } from "react";
 import { ConfigurationPanel } from "./components/finder/configuration-panel";
 import { RecommendationList } from "./components/finder/recommendation-list";
-import { recommend, rankingStrategies } from "@/lib/recommendation";
+import { catalogAgeValue, recommend, rankingStrategies, recommendationCatalogMetadata } from "@/lib/recommendation";
 import type { RecommendationQuery } from "@/lib/recommendation";
 
 const initialQuery: RecommendationQuery = {
-  hardware: { platform: "nvidia", availableMemoryGb: 24 },
-  task: "coding",
-  desiredContextK: 32,
+  hardware: { platform: "cpu", availableMemoryGb: 32 },
+  task: "general",
+  desiredContextK: 16,
   strategy: "balanced",
 };
 
@@ -20,6 +20,7 @@ export function ArenaApp() {
   const resultsRef = useRef<HTMLElement>(null);
   const outcome = useMemo(() => submittedQuery ? recommend(submittedQuery) : null, [submittedQuery]);
   const strategy = submittedQuery ? rankingStrategies[submittedQuery.strategy] : null;
+  const catalogAge = catalogAgeValue(recommendationCatalogMetadata.generatedAt, recommendationCatalogMetadata.sourceUrl);
 
   function submitQuery() {
     setSubmittedQuery(draftQuery);
@@ -50,16 +51,16 @@ export function ArenaApp() {
           </div>
 
           <ConfigurationPanel query={draftQuery} onChange={setDraftQuery} onSubmit={submitQuery} hasResults={submittedQuery !== null} />
-          <p className="prototype-note"><i /> SOURCED CATALOG · ESTIMATES ARE LABELLED · No measurements from your machine. No account or download required.</p>
+          <p className="prototype-note"><i /> CURRENT COVERAGE: CPU · LLAMA.CPP · LLAMA 3.2 1B · No measurements from your machine. No account or download required.</p>
         </section>
 
         {submittedQuery && strategy && outcome && (
           <section className="results-section" id="results" ref={resultsRef}>
             <div className="results-heading">
               <div><span className="eyebrow">YOUR MATCHES</span><h2>{outcome.items.length} sourced configurations</h2></div>
-              <div className="result-summary"><b>{strategy.label}</b><span>{submittedQuery.hardware.availableMemoryGb} GB · {submittedQuery.desiredContextK}K context · {submittedQuery.task}</span></div>
+              <div className="result-summary"><b>{strategy.label}</b><span>{submittedQuery.hardware.availableMemoryGb} GB · {submittedQuery.desiredContextK}K context · {submittedQuery.task}</span><span className="catalog-age">{catalogAge.text} · {catalogAge.provenance.badge}</span></div>
             </div>
-            <RecommendationList outcome={outcome} selectedId={selectedId} onSelect={(id) => setSelectedId(selectedId === id ? null : id)} />
+            <RecommendationList outcome={outcome} query={submittedQuery} selectedId={selectedId} onSelect={(id) => setSelectedId(selectedId === id ? null : id)} />
           </section>
         )}
 

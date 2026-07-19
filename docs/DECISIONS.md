@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-19 — Make recommendation policy inspectable and locally editable
+
+- **Decision:** M5 splits candidate evaluation, ranking/role selection, editable policy constants, strategy formulas, state transitions and display provenance into separate named modules, with `lib/recommendation/ALGORITHM.md` as the edit map. User-visible metrics flow through a `DisplayValue` wrapper that requires provenance at compile time.
+- **Why:** Ranking logic will evolve as evidence grows. Keeping product policy separate from observations makes later changes reviewable and prevents benchmark numbers from becoming hidden scoring constants.
+- **Reversible:** Yes. Each process has a narrow typed boundary and can be replaced independently.
+
+## 2026-07-19 — Keep configuration requests browser-local in M5
+
+- **Decision:** “Save evidence request” stores a bounded record in browser local storage and explicitly says it is not submitted or uploaded.
+- **Why:** M5 requires a request stub, but selecting a durable server queue or public API would create an external data contract and consent surface outside this milestone.
+- **Reversible:** Yes. A later consented backend can import or replace the local request adapter.
+
 ## 2026-07-19 — Keep incomplete real configurations unranked
 
 - **Decision:** M4 removes the demo catalog and admits only configurations that combine an immutable registry artifact, an explicit sourced fit profile and an exact runtime identity. Comparative ordering is emitted only when the selected strategy has compatible evidence; otherwise the website returns an unranked shortlist, a named constraint conflict or a nothing-fits state. The initial production adapter is intentionally limited to the sourced Llama 3.2 1B CPU llama.cpp profile.

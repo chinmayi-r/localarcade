@@ -2,6 +2,8 @@
 
 This folder owns recommendation behavior. UI components call `recommend()` and do not recreate fit or ranking logic. The engine consumes exact registry records, explicit runtime-scoped fit profiles and product-isolated throughput priors.
 
+Start with [`ALGORITHM.md`](ALGORITHM.md) for the full pipeline and the safest file to edit for each kind of behavior change.
+
 ## Where to change things
 
 | Change | File |

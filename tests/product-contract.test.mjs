@@ -6,7 +6,7 @@ const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
 
 test("the product states what is sourced and what remains unavailable", async () => {
   const app = await read("../app/arena-app.tsx");
-  assert.match(app, /SOURCED CATALOG · ESTIMATES ARE LABELLED/);
+  assert.match(app, /CURRENT COVERAGE: CPU · LLAMA\.CPP · LLAMA 3\.2 1B/);
   assert.match(app, /Ranking evidence/);
   assert.match(app, /Results remain unranked/);
 });

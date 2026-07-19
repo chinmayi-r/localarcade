@@ -32,3 +32,10 @@ export const realCandidates: RecommendationCandidate[] = [{
   sizeBand: "tiny-1b",
   runtime: { product: "llama-cpp", engine: "llama.cpp", build: "b72c20b8", backend: "cpu", kvCache: "f16", gpuLayers: 0, batchSize: 2_048 },
 }];
+
+export const recommendationCatalogMetadata = {
+  snapshotId: registry.snapshotId,
+  generatedAt: registry.generatedAt,
+  admittedArtifactCount: registry.artifacts.length,
+  sourceUrl: artifact.provenance.repository.sourceUrl,
+} as const;
