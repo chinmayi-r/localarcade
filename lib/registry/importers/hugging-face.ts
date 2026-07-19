@@ -1,4 +1,4 @@
-import type { ArtifactRegistryRecord, RuntimeCompatibility } from "../types";
+import type { ArtifactRegistryRecord } from "../types";
 import { validateArtifactRegistryRecord } from "../validation";
 
 export type HuggingFaceArtifactSource = {
@@ -8,7 +8,6 @@ export type HuggingFaceArtifactSource = {
   family: string;
   model: string;
   quantization: string;
-  runtimeCompatibility: RuntimeCompatibility[];
 };
 
 type HuggingFaceSibling = {
@@ -64,7 +63,6 @@ export function artifactFromHuggingFace(
       id: response.cardData.license,
       sourceUrl: `${revisionRoot}/blob/${source.revision}/LICENSE`,
     },
-    runtimeCompatibility: source.runtimeCompatibility,
     source: {
       url: `${revisionRoot}/tree/${source.revision}`,
       retrievedAt,

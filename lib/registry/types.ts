@@ -1,11 +1,8 @@
+import type { CompatibilityAssertion } from "../runtime";
+
 export type RegistrySource = {
   url: string;
   retrievedAt: string;
-};
-
-export type RuntimeCompatibility = {
-  runtime: "llama.cpp" | "MLX" | "Ollama" | "vLLM";
-  sourceUrl: string;
 };
 
 export type ArtifactRegistryRecord = {
@@ -25,7 +22,6 @@ export type ArtifactRegistryRecord = {
     id: string;
     sourceUrl: string;
   };
-  runtimeCompatibility: RuntimeCompatibility[];
   source: RegistrySource;
 };
 
@@ -48,9 +44,10 @@ export type AcceleratorRegistryRecord = {
 };
 
 export type RegistrySnapshot = {
-  schemaVersion: 1;
+  schemaVersion: 2;
   snapshotId: string;
   generatedAt: string;
   artifacts: ArtifactRegistryRecord[];
   accelerators: AcceleratorRegistryRecord[];
+  compatibilityAssertions: CompatibilityAssertion[];
 };

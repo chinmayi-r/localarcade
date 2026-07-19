@@ -21,7 +21,7 @@ This is a **maintained artifact**, not documentation-after-the-fact. Rules:
 | C1 | No unbacked claims. Front-page recommendations must have visible backing (fit math, sourced priors). |
 | C2 | Day-1 value with zero users: rough top-5 immediately from hardware input alone. |
 | C3 | The 5-minute benchmark upgrades speed/fit numbers from estimated → measured. It never manufactures quality claims. |
-| C4 | llama.cpp is the canonical runtime. Ollama / LM Studio are **detection sources only** (find models people already have), never dependencies. |
+| C4 | Artifacts, products and engines are separate. Support llama.cpp, Ollama, LM Studio, Jan, MLX LM and vLLM through sourced, versioned routes; benchmark results remain scoped to the exact product + engine build and are never silently merged. |
 | C5 | No signup required. No telemetry by default. Contribution is explicit opt-in with visible payload. |
 | C6 | Top-5 is five different model families. Best config (quant/context/runtime flags) is chosen *within* each card — never "same model × 3 configs." |
 | C7 | Human preference votes are core. Response preference pools by exact configuration + task; experience preference is scoped by hardware evidence. Missing data is shown, never faked. |
@@ -84,7 +84,7 @@ This is a *first-class page*, not an error: show the least-demanding viable arti
 - **Gap demand signal:** any configuration or bucket without evidence gets a one-click "request this configuration" — the queue of requests decides what the backbone fleet benchmarks next. Cold-start prioritization becomes user-driven instead of guessed.
 
 ### What the estimator page shows per card (and what it refuses to show)
-Shown: model family + recommended quant, fits ✓/✗ with the math expandable, estimated tok/s **range** with source link, max feasible context, download size, license, copy-paste `llama.cpp` command. Refused: TTFT point-estimates, stability, thermal behavior, any `measured` badge — those belong to Tree B, because the website only knows about hardware *like* yours.
+Shown: model family + recommended quant, fits ✓/✗ with the math expandable, estimated tok/s **range** with source link, max feasible context, download size, license, and a setup route for the selected supported product when compatibility evidence exists. Refused: TTFT point-estimates, stability, thermal behavior, any `measured` badge — those belong to Tree B, because the website only knows about hardware *like* yours.
 
 **Optional middle tier — "point us at your llama-server":** a user already running `llama-server` (OpenAI-compatible, localhost) can let the web page run the quick-task suite against it directly from *their own browser* — no install, deterministic scoring client-side, results earn a `measured` badge for speed/task numbers (hardware still self-reported, so no `verified`). Pattern proven by browser-run benchmarks (DuckDB-WASM style); localhost CORS constraints apply and the page must degrade gracefully when the endpoint is unreachable.
 
@@ -94,7 +94,7 @@ Shown: model family + recommended quant, fits ✓/✗ with the math expandable, 
 
 Owning modules: `worker/detect`, `worker/bench`, `lib/bench`.
 
-Runtime substrate: the app **bundles a pinned llama.cpp build** (canonical benchmark runtime — no install/compile step, reproducible results keyed to artifact sha256 + build + backend + settings). **MLX is the second canonical engine on Apple Silicon.** Ollama/LM Studio remain detection adapters; their results are recorded but tagged by runtime and never silently merged with canonical-runtime results — runtime is part of the tested configuration.
+Runtime substrate: reproducible baseline runs use pinned engine builds (initially llama.cpp and MLX LM on Apple Silicon), keyed to artifact sha256 + product + engine build + backend + settings. Ollama, LM Studio, Jan and vLLM are supported product routes through explicit adapters. Their measurements are tagged by exact product and engine build and never silently merged with another route.
 
 **Network is a first-class state axis, not an edge case:** every download/upload decision branches on `unmetered / metered / offline`, and offline mode still yields the full estimate experience. Time promises never include download time ("~5 minutes *after* the download"), and any download states its size before consent.
 
@@ -119,7 +119,7 @@ flowchart TD
 | Node | Edge case | Outcome |
 |---|---|---|
 | B1 | Detected hardware ≠ what user claimed on web | Trust detection; show the diff ("you said 16 GB, we found 8 GB usable") |
-| B2 | Ollama store found but Ollama's blob format lacks a plain GGUF path | Read via manifest; if unreadable, treat as "found but unusable" with reason — never shell out to Ollama itself (C4) |
+| B2 | Ollama store found but Ollama's blob format lacks a plain GGUF path | Read via manifest; if unreadable, treat as "found but unusable" with reason. Execute through Ollama only when it is the explicitly selected product route, never as a hidden dependency (C4). |
 | B2Y | Metered/slow connection | Download is resumable, hash-verified, size stated before consent (C5) |
 | B4 | Thermal throttle mid-run | Result flagged `throttled`; offer cooled re-run; flagged runs never overwrite clean measured values |
 | B5X | Crash on this hardware | Uploaded (if opted in) as a DNF stability datapoint — for the community this is one of the most valuable signals |
@@ -216,7 +216,7 @@ flowchart TD
   N1 --> N2[Instant estimated top-5\nfrom detected specs]
   N2 --> N3{Set up first model?\nDownload = their no.1 rec,\nsize+hash+source shown}
   N3 -->|declined| N3X[Estimates-only mode;\nrevisitable, no nagging]
-  N3 -->|accepted| N4[Download via bundled\nllama.cpp - no other\ninstalls, resumable]
+  N3 -->|accepted| N4[Set up through selected\nsupported product route;\nsize + identity retained]
   N4 --> N5[Benchmark runs AS PART\nOF SETUP - speed, memory,\nstability, quick-tasks]
   N5 --> N6[Verified card + calibration\nrescales whole catalog]
   N6 --> N7[Built-in playground:\nactually USE the model]

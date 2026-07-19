@@ -4,7 +4,7 @@ This module is the admission gate for real artifact and accelerator data. It is 
 
 ## Artifact admission
 
-A downloadable artifact cannot enter a published recommendation until the record includes its publisher/repository, immutable revision, exact filename, SHA-256, byte size, format, quantization, maximum context, license source, runtime-compatibility source and retrieval time.
+A downloadable artifact cannot enter a published recommendation until the record includes its publisher/repository, immutable revision, exact filename, SHA-256, byte size, format, quantization, maximum context, license source and retrieval time. Artifact identity is runtime-neutral. Product/engine compatibility is stored as separate versioned assertions.
 
 ## Hardware admission
 

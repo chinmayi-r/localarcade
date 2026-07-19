@@ -11,7 +11,6 @@ const source: HuggingFaceArtifactSource = {
   family: "Model",
   model: "Model Instruct",
   quantization: "Q4_K_M",
-  runtimeCompatibility: [{ runtime: "llama.cpp", sourceUrl: `https://huggingface.co/publisher/repository/blob/${revision}/README.md` }],
 };
 const response: HuggingFaceModelResponse = {
   id: source.repoId,

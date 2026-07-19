@@ -49,7 +49,7 @@ function artifact(
     model,
     quantization,
     format: "GGUF",
-    runtime: "llama.cpp",
+    engine: "llama.cpp",
     weightSizeGb,
     kvCacheGbPer8K,
     maxContextK,

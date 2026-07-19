@@ -17,7 +17,7 @@ export function RecommendationList({ recommendations, selectedId, onSelect }: Pr
       return <article className={`recommendation-card ${selected ? "selected" : ""}`} key={recommendation.artifact.id}>
         <button type="button" className="card-main" onClick={() => onSelect(recommendation.artifact.id)} aria-expanded={selected}>
           <span className="rank">{String(recommendation.rank).padStart(2, "0")}</span>
-          <span className="artifact-name"><b>{recommendation.artifact.model}</b><small>{recommendation.artifact.quantization} · {recommendation.artifact.format} · {recommendation.artifact.runtime}</small></span>
+          <span className="artifact-name"><b>{recommendation.artifact.model}</b><small>{recommendation.artifact.quantization} · {recommendation.artifact.format} · {recommendation.artifact.engine} engine</small></span>
           <Metric label="Est. memory" value={`${recommendation.requiredMemoryGb.toFixed(1)} GB`} />
           <Metric label="Est. speed" value={`${recommendation.estimatedTokensPerSecond[0]}–${recommendation.estimatedTokensPerSecond[1]} tok/s`} />
           <Metric label="Run at" value={`${recommendation.configuration.contextK}K context`} />
@@ -30,7 +30,8 @@ export function RecommendationList({ recommendations, selectedId, onSelect }: Pr
               <ConfigurationValue label="Model" value={recommendation.artifact.model} />
               <ConfigurationValue label="Quantization" value={recommendation.artifact.quantization} />
               <ConfigurationValue label="Format" value={recommendation.artifact.format} />
-              <ConfigurationValue label="Runtime" value={recommendation.configuration.runtime} />
+              <ConfigurationValue label="App / runner" value={recommendation.configuration.product} />
+              <ConfigurationValue label="Engine" value={recommendation.configuration.engine} />
               <ConfigurationValue label="Context" value={`${recommendation.configuration.contextK}K recommended · ${recommendation.artifact.maxContextK}K catalog maximum`} />
               <ConfigurationValue label="Artifact" value={recommendation.configuration.artifactRepository && recommendation.configuration.artifactFileName ? `${recommendation.configuration.artifactRepository}/${recommendation.configuration.artifactFileName}` : undefined} href={recommendation.configuration.artifactSourceUrl} />
               <ConfigurationValue label="Revision" value={recommendation.configuration.artifactRevision} />

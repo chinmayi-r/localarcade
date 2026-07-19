@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "snapshotId": "hugging-face-69a3ac0c4ea4efe3",
-  "generatedAt": "2026-07-19T07:06:52.902Z",
+  "generatedAt": "2026-07-19T13:30:22.244Z",
   "artifacts": [
     {
       "id": "Qwen/Qwen3-0.6B-GGUF/Qwen3-0.6B-Q8_0.gguf@23749fefcc72300e3a2ad315e1317431b06b590a",
@@ -20,15 +20,9 @@
         "id": "apache-2.0",
         "sourceUrl": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/blob/23749fefcc72300e3a2ad315e1317431b06b590a/LICENSE"
       },
-      "runtimeCompatibility": [
-        {
-          "runtime": "llama.cpp",
-          "sourceUrl": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/blob/23749fefcc72300e3a2ad315e1317431b06b590a/README.md"
-        }
-      ],
       "source": {
         "url": "https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/tree/23749fefcc72300e3a2ad315e1317431b06b590a",
-        "retrievedAt": "2026-07-19T07:06:52.902Z"
+        "retrievedAt": "2026-07-19T13:30:22.244Z"
       }
     },
     {
@@ -48,17 +42,12 @@
         "id": "apache-2.0",
         "sourceUrl": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/blob/90862c4b9d2787eaed51d12237eafdfe7c5f6077/LICENSE"
       },
-      "runtimeCompatibility": [
-        {
-          "runtime": "llama.cpp",
-          "sourceUrl": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/blob/90862c4b9d2787eaed51d12237eafdfe7c5f6077/README.md"
-        }
-      ],
       "source": {
         "url": "https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/tree/90862c4b9d2787eaed51d12237eafdfe7c5f6077",
-        "retrievedAt": "2026-07-19T07:06:52.902Z"
+        "retrievedAt": "2026-07-19T13:30:22.244Z"
       }
     }
   ],
-  "accelerators": []
+  "accelerators": [],
+  "compatibilityAssertions": []
 }

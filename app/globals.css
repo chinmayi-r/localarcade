@@ -49,8 +49,8 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .advanced-options p { max-width: 630px; color: var(--la-muted); font-size: 11px; line-height: 1.55; padding: 16px 20px; margin: 0; }
 .finder-action { min-height: 76px; padding: 14px 17px 14px 22px; border-top: 1px solid var(--la-line); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .finder-action p { color: var(--la-muted); font-size: 11px; margin: 0; }
-.finder-action button { min-width: 238px; height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--la-forest); background: var(--la-forest); color: #10120c; padding: 0 17px; font-weight: 650; cursor: pointer; }
-.finder-action button:hover { background: var(--la-sage); border-color: var(--la-sage); }
+.finder-action button { min-width: 238px; height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--la-tobacco); background: var(--la-tobacco); color: #10120c; padding: 0 17px; font-weight: 650; cursor: pointer; }
+.finder-action button:hover { filter: brightness(1.08); }
 .finder-action button span { font-size: 19px; font-weight: 400; }
 .prototype-note { display: flex; align-items: center; gap: 9px; color: var(--la-faint); font: 9px "Courier New", monospace; margin: 12px 2px 0; }
 .prototype-note i { width: 5px; height: 5px; border-radius: 50%; background: var(--la-tobacco); box-shadow: 0 0 8px rgba(193, 137, 78, 0.7); }

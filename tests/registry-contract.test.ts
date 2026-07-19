@@ -17,7 +17,6 @@ const artifact: ArtifactRegistryRecord = {
   fileSizeBytes: 4_000_000_000,
   maxContextTokens: 32_768,
   license: { id: "apache-2.0", sourceUrl: "https://example.com/license" },
-  runtimeCompatibility: [{ runtime: "llama.cpp", sourceUrl: "https://example.com/runtime" }],
   source: { url: "https://example.com/artifact", retrievedAt: "2026-07-18T20:00:00.000Z" },
 };
 
@@ -37,10 +36,9 @@ test("complete sourced registry records pass admission", () => {
 });
 
 test("artifact admission rejects mutable identity and missing provenance", () => {
-  const issues = validateArtifactRegistryRecord({ ...artifact, revision: "main", sha256: "unknown", runtimeCompatibility: [] }).join(" ");
+  const issues = validateArtifactRegistryRecord({ ...artifact, revision: "main", sha256: "unknown" }).join(" ");
   assert.match(issues, /immutable/);
   assert.match(issues, /full 64-character hash/);
-  assert.match(issues, /runtime compatibility/);
 });
 
 test("accelerator admission never infers memory from an ambiguous product name", () => {
@@ -50,11 +48,12 @@ test("accelerator admission never infers memory from an ambiguous product name",
 
 test("snapshot validation rejects duplicate identities", () => {
   const snapshot: RegistrySnapshot = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     snapshotId: "registry-2026-07-18",
     generatedAt: "2026-07-18T20:00:00.000Z",
     artifacts: [artifact, artifact],
     accelerators: [accelerator, accelerator],
+    compatibilityAssertions: [],
   };
   const issues = validateRegistrySnapshot(snapshot).join(" ");
   assert.match(issues, /Duplicate artifact id/);

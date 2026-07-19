@@ -46,7 +46,7 @@ export function ArenaApp() {
           <div className="finder-intro">
             <span className="eyebrow">LOCAL MODEL FINDER</span>
             <h1 id="finder-title">What should you run on your computer?</h1>
-            <p>Enter the hardware you have and what you need the model to do. We’ll return configurations that fit—not just model names.</p>
+            <p>Enter the available hardware and the job the model needs to do. Local Arcade returns configurations that fit—not just model names.</p>
           </div>
 
           <ConfigurationPanel query={draftQuery} onChange={setDraftQuery} onSubmit={submitQuery} hasResults={submittedQuery !== null} />
@@ -64,11 +64,11 @@ export function ArenaApp() {
         )}
 
         <section className="method-section" id="method">
-          <div className="method-intro"><span className="eyebrow">WHAT THE RESULT MEANS</span><h2>A recommendation is a complete setup.</h2><p>Quantization, runtime, context and memory settings can change whether the same model fits or performs well. Local Arcade keeps them attached to the recommendation.</p></div>
+          <div className="method-intro"><span className="eyebrow">WHAT THE RESULT MEANS</span><h2>A recommendation is a complete setup.</h2><p>Quantization, app, engine build, context and memory settings can change whether the same model fits or performs well. Local Arcade keeps them separate and attached to the recommendation.</p></div>
           <div className="confidence-panel">
             <div><span>BACKED NOW</span><b>Fit and ranking logic</b><p>Memory constraints, ranking preferences, context eligibility, family deduplication and fail-closed behavior are implemented and tested.</p></div>
             <div><span>NOT BACKED YET</span><b>Recommendation evidence</b><p>Artifact sizes, task scores and speed ranges currently come from an isolated prototype catalog, not machine measurements.</p></div>
-            <div><span>DESKTOP APP</span><b>Detection and benchmarks</b><p>The future runner will detect exact hardware and let people run or contribute measurements with explicit consent.</p></div>
+            <div><span>SUPPORTED ROUTES</span><b>Apps and engines stay separate</b><p>Adapters cover llama.cpp, Ollama, LM Studio, Jan, MLX LM and vLLM. Compatibility is evaluated per route; no app is silently assumed.</p></div>
           </div>
         </section>
       </main>

@@ -24,7 +24,7 @@ This document is written to be handed to an autonomous coding agent (of any capa
 - I1 **Evidence typing:** every user-visible number carries `estimated | community | verified | preference` provenance, enforced at the type level. A bare number in a card component must not compile.
 - I2 **No unbacked ordering:** if evidence can't support ranking, output the unranked compatible shortlist (decision-tree A6X).
 - I3 **Dedupe + roles:** top-5 = five model families, role-labeled; quant/runtime variants nest inside cards.
-- I4 **llama.cpp canonical; Ollama/LM Studio are detection adapters only.** No feature may depend on Ollama.
+- I4 **Artifacts are runtime-neutral; products and engines are separate.** Local Arcade supports llama.cpp, Ollama, LM Studio, Jan, MLX LM and vLLM through versioned compatibility/install adapters. Reproducible benchmark baselines may use pinned canonical engines, but no recommendation may silently treat an app, engine and artifact package as the same thing or depend exclusively on one third-party app.
 - I5 **No signup, no telemetry, no upload without explicit per-action consent.** Consent language is tested (the product-contract tests must keep passing).
 - I6 **Fail closed:** unknown states in the policy layer block the action with a reason; they never fall through to a default.
 - I7 **Security-sensitive workflows are copied from Tier-1 sources, pinned, and attributed (§3). Hand-written security code carries a warning header and is listed in `docs/SECURITY-LEDGER.md`.**
@@ -65,7 +65,7 @@ Execute in order unless the human says otherwise. Each is independently shippabl
 
 ### M1 — Versioned artifact registry + ingestion
 **Goal:** replace nothing yet — build the sourced catalog *beside* the demo one.
-**Steps:** define the artifact record (see decision-tree + Codex's schema in `docs/recommendation-decision-system.md` if present): repo, revision, filename, sha256, bytes, quantization, base model, license, context, chat template — every field with source URL + retrieval timestamp. Write an ingestion script for the HF Hub API restricted to a whitelist file of trusted quantizer orgs (start: `bartowski`, `unsloth`, `mradermacher` + official model orgs; whitelist is data, editable). Ingest ≥40 artifacts across ≥8 model families. Validation: schema-check every record; reject records missing hash or license.
+**Steps:** define the artifact record (see decision-tree + Codex's schema in `docs/recommendation-decision-system.md` if present): repo, revision, filename, sha256, bytes, quantization, base model, license, context, chat template — every field with source URL + retrieval timestamp. Artifact identity is runtime-neutral; compatibility and install routes are separate sourced records. Write a discovery + ingestion pipeline for the HF Hub API restricted to a whitelist file of trusted quantizer orgs (start: `bartowski`, `unsloth`, `mradermacher` + official model orgs; whitelist is data, editable). Discovery is broad and mutable; admission pins each repository revision, enumerates eligible artifacts in bulk, and quarantines individual invalid records without discarding the last good snapshot. Ingest ≥40 artifacts across ≥8 model families. Validation: schema-check every record; reject records missing hash or license.
 **Accept:** `npm run ingest` (new script) produces/updates the registry deterministically; a test proves every record has provenance fields; gate suite green.
 **Forbidden:** wiring the UI to it; scraping HTML (use the documented Hub API); inventing any field value.
 **Refs:** HF Hub API docs (https://huggingface.co/docs/hub/en/api), GGUF spec in llama.cpp repo.
@@ -100,7 +100,7 @@ Execute in order unless the human says otherwise. Each is independently shippabl
 
 ### M7 — Localhost middle tier
 **Goal:** measured quick-tasks with zero install for llama-server users.
-**Steps:** browser page that, with explicit user action, calls `http://localhost:<port>/v1/...` (user-entered port), runs the deterministic quick-task suite (JSON-schema validity, format constraints, small fact-preservation checks — all mechanically scored client-side), reports speed + task results badged `measured` (hardware stays self-reported → never `verified`). Degrade gracefully when unreachable; document the CORS requirement (`llama-server --api` CORS flags) from official llama.cpp server README only.
+**Steps:** browser page that, with explicit user action, calls a user-entered localhost OpenAI-compatible endpoint, runs the deterministic quick-task suite (JSON-schema validity, format constraints, small fact-preservation checks — all mechanically scored client-side), reports speed + task results badged `measured` (hardware stays self-reported → never `verified`). The selected product and engine/build remain part of the configuration identity. Degrade gracefully when unreachable; document product-specific CORS requirements from official sources only.
 **Accept:** suite runs against a mocked OpenAI-compatible endpoint in tests; unreachable-endpoint state has a designed UI; no request leaves the browser except to user-entered localhost (test asserts no external calls).
 **Forbidden:** proxying user prompts through any server of ours.
 

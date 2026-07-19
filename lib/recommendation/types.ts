@@ -1,4 +1,5 @@
 import type { ArtifactRegistryRecord } from "../registry";
+import type { EngineId, ProductId } from "../runtime";
 
 export type PlatformId = "nvidia" | "apple" | "amd" | "cpu";
 export type TaskId = "coding" | "general" | "writing" | "extraction";
@@ -28,7 +29,7 @@ export type Artifact = {
   model: string;
   quantization: string;
   format: "GGUF" | "MLX";
-  runtime: "llama.cpp" | "MLX";
+  engine: EngineId;
   weightSizeGb: number;
   kvCacheGbPer8K: number;
   maxContextK: number;
@@ -58,7 +59,8 @@ export type Recommendation = {
 
 export type RecommendedConfiguration = {
   contextK: number;
-  runtime: string;
+  product?: ProductId;
+  engine: EngineId;
   runtimeBuild?: string;
   backend?: string;
   kvCacheQuantization?: string;

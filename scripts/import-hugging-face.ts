@@ -19,11 +19,12 @@ for (const source of sources) {
 
 const digest = createHash("sha256").update(sources.map((source) => `${source.repoId}@${source.revision}:${source.fileName}`).join("\n")).digest("hex").slice(0, 16);
 const snapshot: RegistrySnapshot = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   snapshotId: `hugging-face-${digest}`,
   generatedAt: retrievedAt,
   artifacts,
   accelerators: [],
+  compatibilityAssertions: [],
 };
 
 const issues = validateRegistrySnapshot(snapshot);

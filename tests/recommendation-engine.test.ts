@@ -32,7 +32,7 @@ test("recommendations satisfy desired context", () => {
     for (const result of results) {
       assert.ok(result.artifact.maxContextK >= desiredContextK);
       assert.equal(result.configuration.contextK, desiredContextK);
-      assert.equal(result.configuration.runtime, result.artifact.runtime);
+      assert.equal(result.configuration.engine, result.artifact.engine);
     }
   }
 });

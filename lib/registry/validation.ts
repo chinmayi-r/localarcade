@@ -13,10 +13,6 @@ export function validateArtifactRegistryRecord(record: ArtifactRegistryRecord): 
   if (!Number.isInteger(record.fileSizeBytes) || record.fileSizeBytes <= 0) issues.push("Artifact file size must be a positive integer.");
   if (!Number.isInteger(record.maxContextTokens) || record.maxContextTokens <= 0) issues.push("Maximum context must be a positive integer.");
   if (!record.license.id.trim() || !isHttpUrl(record.license.sourceUrl)) issues.push("License id and source URL are required.");
-  if (record.runtimeCompatibility.length === 0) issues.push("At least one sourced runtime compatibility claim is required.");
-  for (const claim of record.runtimeCompatibility) {
-    if (!isHttpUrl(claim.sourceUrl)) issues.push(`Runtime ${claim.runtime} requires a source URL.`);
-  }
   issues.push(...validateSource(record.source.url, record.source.retrievedAt, "Artifact"));
   return issues;
 }
@@ -39,7 +35,7 @@ export function validateAcceleratorRegistryRecord(record: AcceleratorRegistryRec
 
 export function validateRegistrySnapshot(snapshot: RegistrySnapshot): string[] {
   const issues: string[] = [];
-  if (snapshot.schemaVersion !== 1) issues.push(`Unsupported registry schema: ${String(snapshot.schemaVersion)}.`);
+  if (snapshot.schemaVersion !== 2) issues.push(`Unsupported registry schema: ${String(snapshot.schemaVersion)}.`);
   if (!snapshot.snapshotId.trim()) issues.push("Snapshot id is required.");
   if (!isTimestamp(snapshot.generatedAt)) issues.push("Snapshot generated-at must be a valid timestamp.");
   issues.push(...duplicates(snapshot.artifacts.map((record) => record.id), "artifact id"));

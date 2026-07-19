@@ -17,6 +17,12 @@ test("the contribution promise requires explicit user control", async () => {
   assert.match(app, /Runner · planned/);
 });
 
+test("the website describes multi-product support without conflating apps and engines", async () => {
+  const app = await read("../app/arena-app.tsx");
+  assert.match(app, /llama\.cpp, Ollama, LM Studio, Jan, MLX LM and vLLM/);
+  assert.match(app, /Apps and engines stay separate/);
+});
+
 test("interactive controls expose accessible semantics", async () => {
   const app = await read("../app/arena-app.tsx");
   assert.match(app, /aria-label=/);

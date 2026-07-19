@@ -36,7 +36,7 @@ export function ConfigurationPanel({ query, onChange, onSubmit, hasResults }: Pr
 
   return (
     <form className="finder-form" id="finder" onSubmit={(event) => { event.preventDefault(); onSubmit(); }}>
-      <div className="finder-form-heading"><div><span>YOUR COMPUTER</span><h2>Tell us what you’re working with</h2></div><small>Manual input · unverified</small></div>
+      <div className="finder-form-heading"><div><span>YOUR COMPUTER</span><h2>Describe the machine</h2></div><small>Manual input · unverified</small></div>
       <div className="finder-fields">
         <Field label="Compute hardware">
           <select value={query.hardware.platform} onChange={(event) => patchHardware({ platform: event.target.value as PlatformId })}>
@@ -70,10 +70,10 @@ export function ConfigurationPanel({ query, onChange, onSubmit, hasResults }: Pr
               {[8, 16, 32, 64].map((value) => <option key={value} value={value}>{value}K tokens</option>)}
             </select>
           </Field>
-          <p>We choose a practical starting context from your main use. Increase it only when you regularly work with long codebases or documents; larger contexts consume more memory.</p>
+          <p>A practical starting context is selected from the main use. Increase it only for regularly working with long codebases or documents; larger contexts consume more memory.</p>
         </div>
       </details>
-      <div className="finder-action"><p>We reserve memory headroom and omit configurations unlikely to load.</p><button type="submit">{hasResults ? "Update recommendations" : "Find compatible setups"}<span>→</span></button></div>
+      <div className="finder-action"><p>Memory headroom is reserved. Configurations unlikely to load are omitted.</p><button type="submit">{hasResults ? "Update results" : "Get recommendations"}<span>→</span></button></div>
     </form>
   );
 }

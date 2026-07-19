@@ -50,7 +50,7 @@ export function recommend(
       requiredMemoryGb: item.eligibility.requiredMemoryGb,
       configuration: {
         contextK: query.desiredContextK,
-        runtime: item.artifact.runtime,
+        engine: item.artifact.engine,
         artifactRepository: item.artifact.identity ? `${item.artifact.identity.publisher}/${item.artifact.identity.repository}` : undefined,
         artifactRevision: item.artifact.identity?.revision,
         artifactFileName: item.artifact.identity?.fileName,
