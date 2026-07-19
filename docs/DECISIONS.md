@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-19 — Keep M7 measurements browser-direct and ephemeral
+
+- **Decision:** The quick-task suite accepts only exact HTTP(S) loopback hosts, calls the OpenAI-compatible chat-completions route directly from the browser after explicit action, runs three requests sequentially, and retains results and optional API credentials only in component memory. Model, product, engine, build and self-reported hardware remain attached to every report.
+- **Why:** This delivers measured local evidence without a Local Arcade prompt proxy, account, upload, install or runner. Exact loopback validation prevents the benchmark surface from becoming a general-purpose request client. Sequential requests avoid unnecessary concurrent memory pressure.
+- **Reversible:** Yes. The endpoint adapter, suite definitions, scorers and presentation are separate modules. Adding persistence or contribution later requires a new consent and data-contract milestone.
+
+## 2026-07-19 — Withhold generation throughput unless the endpoint reports it
+
+- **Decision:** M7 measures wall-clock request duration for every task. It displays generation tokens per second only when the local endpoint returns a finite positive `timings.predicted_per_second`; token counts alone are not divided by total request time and presented as generation speed.
+- **Why:** Total request time includes prompt processing, scheduling, time-to-first-token and generation. Treating it as generation throughput would manufacture a metric, and client-side word or character estimates are tokenizer-dependent.
+- **Reversible:** Yes. A future streaming adapter can measure TTFT and token cadence when the exact tokenizer and protocol are pinned.
+
 ## 2026-07-19 — Refresh immutable artifacts through a review pull request
 
 - **Decision:** A pinned scheduled workflow runs discovery and ingestion every Monday and Thursday, validates the complete repository, and opens or updates `automation/catalog-refresh` for review. New immutable identities default to `triage`; existing lifecycle status and previously admitted immutable records are retained. Production requires `promoted` status.

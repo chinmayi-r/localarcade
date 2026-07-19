@@ -88,6 +88,23 @@ Shown: model family + recommended quant, fits ✓/✗ with the math expandable, 
 
 **Optional middle tier — "point us at your llama-server":** a user already running `llama-server` (OpenAI-compatible, localhost) can let the web page run the quick-task suite against it directly from *their own browser* — no install, deterministic scoring client-side, results earn a `measured` badge for speed/task numbers (hardware still self-reported, so no `verified`). Pattern proven by browser-run benchmarks (DuckDB-WASM style); localhost CORS constraints apply and the page must degrade gracefully when the endpoint is unreachable.
 
+### A8/A9 — Localhost quick test
+
+```mermaid
+flowchart TD
+  A8{User explicitly starts test\nwith an exact loopback endpoint?} -->|no| A8I[Idle: no request made]
+  A8 -->|invalid or non-loopback| A8X[Block before network request\nand retain the form]
+  A8 -->|yes| A9{Three sequential OpenAI-compatible\nrequests complete?}
+  A9 -->|unreachable, CORS, HTTP,\nor response-contract failure| A9X[Designed error state;\nrecord no measurement]
+  A9 -->|yes| A9Y[Mechanically score each task;\nshow measured latency and outcomes]
+```
+
+Product, engine, runtime build and model ID remain part of the result identity.
+Hardware is user-entered and labeled `self-reported`. Generation throughput is
+shown only when the endpoint reports it; wall-clock request duration is not
+relabeled as generation throughput. Tests pin every leaf and prove that no
+non-loopback destination reaches `fetch`.
+
 ---
 
 ## Tree B — Desktop app: detect → benchmark → measured truth — C3, C4

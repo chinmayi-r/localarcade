@@ -16,4 +16,6 @@ Security-sensitive automation is copied from official or project-maintainer sour
 
 ## Hand-written, needs review
 
-None.
+| File | Mechanism | Why hand-written | Review state |
+|---|---|---|---|
+| `lib/quick-test/endpoint-policy.ts` | Exact loopback URL allowlist for browser benchmark requests | No Tier-1 application template exists for this product-specific boundary; URL parsing uses the browser platform API and fails closed before `fetch`. | Needs review |
