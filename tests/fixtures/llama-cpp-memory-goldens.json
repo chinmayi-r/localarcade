@@ -1,0 +1,12 @@
+[
+  { "id": "gemma-2-9b-c3072-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/10068", "contextTokens": 3072, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 504, "valueMib": 504, "runtimeMib": 133.45 },
+  { "id": "gemma-2-9b-c4096-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/9936", "contextTokens": 4096, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 672, "valueMib": 672, "runtimeMib": 531.96 },
+  { "id": "llama-70b-c512-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/9784", "contextTokens": 512, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 80, "valueMib": 80, "runtimeMib": 284 },
+  { "id": "qwen-rpc-c4096-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/10943", "contextTokens": 4096, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 640, "valueMib": 640, "runtimeMib": 2480.12 },
+  { "id": "llama-3.2-1b-c131072-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/10223", "contextTokens": 131072, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 2048, "valueMib": 2048, "runtimeMib": 8464.5 },
+  { "id": "gemma-2-27b-c8192-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/9771", "contextTokens": 8192, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 1472, "valueMib": 1472, "runtimeMib": 582.89 },
+  { "id": "cuda-zero-layers-c512-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/10200", "contextTokens": 512, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 32, "valueMib": 32, "runtimeMib": 502.65 },
+  { "id": "large-partial-offload-c16128-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/8422", "contextTokens": 16128, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 10080, "valueMib": 10080, "runtimeMib": 2685.96 },
+  { "id": "large-c4096-q8", "sourceUrl": "https://github.com/ggml-org/llama.cpp/issues/10560", "contextTokens": 4096, "keyQuant": "q8_0", "valueQuant": "q8_0", "keyMib": 374, "valueMib": 374, "runtimeMib": 646.13 },
+  { "id": "deepseek-r1-rpc-c2048-f16", "sourceUrl": "https://github.com/ggml-org/llama.cpp/discussions/12088", "contextTokens": 2048, "keyQuant": "f16", "valueQuant": "f16", "keyMib": 5856, "valueMib": 3904, "runtimeMib": 3368.5 }
+]

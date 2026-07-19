@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — Make fit inputs explicit and runtime-scoped
+
+- **Decision:** The M2 fit function consumes exact weight bytes, sourced per-model K/V cache profiles, runtime/compute-buffer bytes, physical memory, OS/display reserves and a caller-selected safety margin. Missing KV types fail closed; the library does not infer these values from model parameters, GPU names or product labels.
+- **Why:** llama.cpp allocation logs and maintainer guidance show that KV memory changes with architecture, context and cache types, while compute buffers also change with batch, flash attention, backend and build. Keeping those values explicit makes the arithmetic reusable without claiming that llama.cpp behavior automatically describes Ollama, LM Studio, MLX or vLLM.
+- **Reversible:** Yes. New sourced runtime profiles can be added without changing the pure summation contract; a schema revision can add independently modeled memory pools for partial offload or multi-device topology.
+
 ## 2026-07-19 — Pin discovery separately from deterministic admission
 
 - **Decision:** Hugging Face discovery is a mutable, explicit operation governed by an editable trusted-publisher policy. It produces a revision lock; deterministic ingestion consumes only that lock and atomically publishes a fully validated snapshot.
