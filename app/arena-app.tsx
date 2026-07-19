@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { createElement, useMemo, useState } from "react";
 import { ConfigurationPanel } from "./components/finder/configuration-panel";
 import { RecommendationList } from "./components/finder/recommendation-list";
 import { recommend, rankingStrategies } from "@/lib/recommendation";
@@ -27,7 +27,7 @@ export function ArenaApp() {
   return (
     <main className="application-shell">
       <header className="app-header">
-        <a href="#results" className="app-brand" aria-label="Local Arena home"><span>LA</span><div><b>LOCAL ARENA</b><small>CONFIGURATION FINDER</small></div></a>
+        <a href="#results" className="app-brand" aria-label="Local Arena home"><span>LA</span><div><b>LOCAL ARENA</b><small>MODEL + CONFIGURATION FINDER</small></div></a>
         <div className="prototype-flag"><i /> PROTOTYPE DATA · NOT A PUBLISHED LEADERBOARD</div>
         <nav aria-label="Application navigation"><a className="active" href="#results">Finder</a><a href="#method">Method</a><span>Runner · planned</span></nav>
       </header>
@@ -35,8 +35,11 @@ export function ArenaApp() {
       <div className="app-body">
         <ConfigurationPanel query={query} onChange={changeQuery} />
         <section className="workspace" id="results">
+          <div className="configuration-field">
+            {createElement("la-constellation", { seed: "19", density: "155", bloom: "0.38" })}
+          </div>
           <div className="workspace-heading">
-            <div><span className="section-code">MATCH / 001</span><h1>Configurations for<br /><em>this machine.</em></h1></div>
+            <div className="workspace-intro"><span className="section-code">WEB FINDER / LIVE</span><h1>Find a configuration for this machine.</h1><p>Choose the hardware you have and what you want to do. Results update immediately; no download required.</p></div>
             <div className="result-provenance"><span>RANKING MODE</span><b>{strategy.label}</b><p>{strategy.description}</p></div>
           </div>
 

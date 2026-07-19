@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts && node --test tests/*.test.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
+    "lint": "eslint app lib tests worker public/design-system/constellation.js eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
   },
   "dependencies": {
     "next": "16.2.10",

@@ -1,0 +1,17 @@
+:root {
+  --la-void: #10120c;
+  --la-surface: #171a11;
+  --la-raised: #20241a;
+  --la-line: #303523;
+  --la-line-strong: #4b5236;
+  --la-text: #e9e7d3;
+  --la-muted: #8f9377;
+  --la-faint: #5d6247;
+  --la-forest: #6f9b52;
+  --la-forest-soft: rgba(111, 155, 82, 0.12);
+  --la-tobacco: #c1894e;
+  --la-sage: #9fb56a;
+  --la-rust: #c06a3a;
+  --la-lavender: #b3a4e6;
+}
+

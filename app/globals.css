@@ -1,29 +1,30 @@
+@import "../design-system/colors.css";
 @import "tailwindcss";
 
 :root {
-  --void: #070a10;
-  --surface: #0b1018;
-  --raised: #101824;
-  --line: #202c3a;
-  --line-bright: #34495c;
-  --text: #e5edf2;
-  --muted: #7f8f9d;
-  --cyan: #73d7e8;
-  --cyan-soft: rgba(115, 215, 232, 0.1);
-  --violet: #8c82ff;
-  --orange: #ff704d;
-  --green: #8eca9a;
+  --void: var(--la-void);
+  --surface: var(--la-surface);
+  --raised: var(--la-raised);
+  --line: var(--la-line);
+  --line-bright: var(--la-line-strong);
+  --text: var(--la-text);
+  --muted: var(--la-muted);
+  --cyan: var(--la-forest);
+  --cyan-soft: var(--la-forest-soft);
+  --violet: var(--la-lavender);
+  --orange: var(--la-tobacco);
+  --green: var(--la-sage);
 }
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; background: var(--void); }
-body { margin: 0; background: var(--void); color: var(--text); font-family: Arial, Helvetica, sans-serif; }
+body { margin: 0; background: var(--void); color: var(--text); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
 button, select { font: inherit; }
 button, a, select { transition: border-color 160ms ease, background 160ms ease, color 160ms ease; }
 button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
-.application-shell { min-height: 100vh; background: linear-gradient(145deg, rgba(115, 215, 232, 0.025), transparent 32%), var(--void); }
-.app-header { height: 66px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; background: rgba(7, 10, 16, 0.96); backdrop-filter: blur(16px); }
+.application-shell { min-height: 100vh; background: linear-gradient(145deg, rgba(111, 155, 82, 0.035), transparent 36%), var(--void); }
+.app-header { height: 66px; display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 20; background: rgba(16, 18, 12, 0.96); backdrop-filter: blur(16px); }
 .app-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: var(--text); }
 .app-brand > span { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--line-bright); color: var(--cyan); font: 700 10px "Courier New", monospace; }
 .app-brand b, .app-brand small { display: block; }
@@ -55,19 +56,22 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .strategy-list button.active span { color: #c5c0ff; }
 .strategy-list button.active small { display: block; }
 
-.workspace { min-width: 0; padding: 50px clamp(24px, 4vw, 68px) 80px; }
-.workspace-heading { display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 48px; }
+.workspace { min-width: 0; padding: 34px clamp(24px, 4vw, 68px) 80px; position: relative; isolation: isolate; overflow: hidden; }
+.configuration-field { position: absolute; z-index: -1; pointer-events: none; inset: -18px -8% auto 24%; height: 330px; opacity: 0.38; mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.88) 58%, transparent 100%); }
+.configuration-field la-constellation { width: 100%; height: 100%; }
+.workspace-heading { min-height: 132px; display: flex; align-items: end; justify-content: space-between; gap: 40px; margin-bottom: 26px; }
 .section-code { color: var(--cyan); font: 8px "Courier New", monospace; letter-spacing: 0.14em; }
-.workspace-heading h1 { font-size: clamp(42px, 5vw, 74px); line-height: 0.95; letter-spacing: -0.055em; margin: 18px 0 0; font-weight: 500; }
-.workspace-heading h1 em { color: var(--cyan); font-style: normal; font-weight: 300; }
+.workspace-intro { max-width: 620px; }
+.workspace-heading h1 { font-size: clamp(27px, 3vw, 40px); line-height: 1.06; letter-spacing: -0.035em; margin: 12px 0 0; font-weight: 560; }
+.workspace-intro > p { max-width: 570px; color: var(--muted); font-size: 12px; line-height: 1.55; margin: 12px 0 0; }
 .result-provenance { width: 310px; padding-left: 20px; border-left: 1px solid var(--line-bright); }
 .result-provenance span { color: var(--muted); font: 8px "Courier New", monospace; letter-spacing: 0.13em; }
 .result-provenance b { display: block; color: #c5c0ff; font-size: 15px; margin: 9px 0; }
 .result-provenance p { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 0; }
-.list-header { display: grid; grid-template-columns: minmax(280px, 1.7fr) 0.65fr 0.8fr 0.65fr 30px; gap: 16px; padding: 0 17px 10px; color: #586b7b; font: 8px "Courier New", monospace; letter-spacing: 0.12em; }
+.list-header { display: grid; grid-template-columns: minmax(280px, 1.7fr) 0.65fr 0.8fr 0.65fr 30px; gap: 16px; padding: 0 17px 10px; color: var(--la-faint); font: 8px "Courier New", monospace; letter-spacing: 0.12em; }
 .recommendation-list { border-top: 1px solid var(--line); }
-.recommendation-card { border-bottom: 1px solid var(--line); background: rgba(11, 16, 24, 0.56); }
-.recommendation-card:hover, .recommendation-card.selected { background: rgba(16, 24, 36, 0.88); }
+.recommendation-card { border-bottom: 1px solid var(--line); background: rgba(23, 26, 17, 0.72); }
+.recommendation-card:hover, .recommendation-card.selected { background: rgba(32, 36, 26, 0.94); }
 .recommendation-card.selected { box-shadow: inset 2px 0 var(--cyan); }
 .card-main { width: 100%; min-height: 92px; display: grid; grid-template-columns: 42px minmax(220px, 1.7fr) 0.65fr 0.8fr 0.65fr 30px; align-items: center; gap: 16px; border: 0; background: transparent; color: var(--text); text-align: left; padding: 14px 17px; cursor: pointer; }
 .rank { color: var(--cyan); font: 19px "Courier New", monospace; }
@@ -79,7 +83,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .metric b { font: 11px "Courier New", monospace; font-weight: 400; }
 .disclosure { color: var(--violet); font-size: 18px; text-align: right; }
 .card-evidence { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border-top: 1px solid var(--line); margin-left: 59px; }
-.card-evidence > div { min-height: 112px; padding: 18px; background: #0c131d; }
+.card-evidence > div { min-height: 112px; padding: 18px; background: #14170f; }
 .card-evidence span { color: var(--cyan); font: 8px "Courier New", monospace; letter-spacing: 0.12em; }
 .card-evidence b { display: block; color: var(--orange); font-size: 12px; margin-top: 12px; }
 .card-evidence p { color: var(--muted); font-size: 10px; line-height: 1.55; margin: 11px 0 0; }
@@ -93,7 +97,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
 .confidence-panel span { color: var(--cyan); font: 8px "Courier New", monospace; letter-spacing: 0.12em; }
 .confidence-panel b { display: block; font-size: 15px; margin: 34px 0 10px; }
 .confidence-panel p { color: var(--muted); font-size: 11px; line-height: 1.55; }
-.app-footer { min-height: 38px; display: flex; align-items: center; gap: 30px; padding: 0 24px; border-top: 1px solid var(--line); color: #536474; font: 8px "Courier New", monospace; letter-spacing: 0.11em; }
+.app-footer { min-height: 38px; display: flex; align-items: center; gap: 30px; padding: 0 24px; border-top: 1px solid var(--line); color: var(--la-faint); font: 8px "Courier New", monospace; letter-spacing: 0.11em; }
 .app-footer span:nth-child(2) { margin: auto; }
 .app-footer a { color: var(--cyan); text-decoration: none; }
 
@@ -116,6 +120,7 @@ button:focus-visible, a:focus-visible, select:focus-visible { outline: 2px solid
   .strategy-list { grid-template-columns: 1fr 1fr; }
   .strategy-list button.active small { display: none; }
   .workspace { padding: 48px 16px 70px; }
+  .configuration-field { inset-inline: 4%; top: 0; height: 250px; opacity: 0.26; }
   .workspace-heading { align-items: start; flex-direction: column; }
   .result-provenance { width: 100%; }
   .card-main { grid-template-columns: 32px minmax(0, 1fr) 24px; }

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,11 +8,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Local Arena",
     description: "Find what runs here.",
-    images: [{ url: "/og-v3.png", width: 1664, height: 928, alt: "Local Arena configuration memory-envelope chart" }],
+    images: [{ url: "/og-forest.png", width: 1672, height: 941, alt: "Local Arena sprawling configuration field" }],
   },
-  twitter: { card: "summary_large_image", images: ["/og-v3.png"] },
+  twitter: { card: "summary_large_image", images: ["/og-forest.png"] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body><Script src="/design-system/constellation.js" strategy="afterInteractive" />{children}</body></html>;
 }

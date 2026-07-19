@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Imported design-package reference material is not application source.
+    "Making Codex styles available to Claude/**",
   ]),
 ]);
 
