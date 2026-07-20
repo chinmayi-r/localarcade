@@ -6,7 +6,7 @@ import unknownGoldenJson from "./fixtures/unknown-throughput-golden.json";
 
 test("every throughput prior is fully scoped and sourced", () => {
   assert.deepEqual(validateThroughputPriorSnapshot(throughputPriorSnapshot), []);
-  assert.equal(throughputPriors.length, 5);
+  assert.equal(throughputPriors.length, 14);
   for (const prior of throughputPriors) {
     assert.match(prior.sourceUrl, /^https:\/\/www\.localscore\.ai\/result\/\d+$/);
     assert.equal(prior.evidenceTier, "tier-1");

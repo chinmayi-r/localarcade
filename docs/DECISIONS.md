@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-19 — GPU/Apple throughput priors: backend derivation and pooling boundaries
+
+- **Decision:** Nine GPU-class LocalScore result pages (RTX 4090, RTX 5070 Ti, RTX 3070 Ti Laptop, GTX 1660, Apple M1 Pro/M2/M5 Pro) were admitted as throughput priors across all three size bands. Two derivations beyond the page contents: (1) `backend` is recorded as `cuda` for NVIDIA and `metal` for Apple — the result pages don't name the backend, but llamafile's official README documents exactly those GPU paths per vendor (https://github.com/mozilla-ai/llamafile#gpu-support). (2) Apple accelerators use `kind: "integrated"`, not `"gpu"`, so coarse-bucket fallback can never pool unified-memory Apple silicon with discrete NVIDIA cards. Data was extracted from each result page's embedded structured JSON (Next.js `__NEXT_DATA__`), not visually transcribed; envelopes are floored/ceiled to one decimal so they only widen.
+- **Why:** The M3 admission rule requires a backend; deriving it from the runtime's official vendor documentation is sourced derivation (same class as filename-derived quantization in M1), whereas omitting GPU results entirely would leave every GPU user with `unavailable` estimates. The integrated/gpu split preserves the M4 pooling-isolation guarantee at the data level. The unknown-GPU golden was updated accordingly: an unknown GPU now inherits *GPU* evidence as a widened low-confidence range — it still cannot inherit CPU rows.
+- **Reversible:** Yes. Rows can be removed or re-scoped individually; the derivation rule is documented here and cited per row via source URLs.
+
+## 2026-07-19 — Freeze quick-test page investment until comparison data exists
+
+- **Decision:** No further work on the M7 quick-test page until community/bucket data exists to compare against. The shared modules (quick-task suite, endpoint policy) remain, as the runner reuses them.
+- **Why:** Product owner assessment (correct): measured-on-your-own-box numbers duplicate what local tools already show; their value arrives with comparison. The page's real yield was the reusable suite and the CORS/fail-closed groundwork.
+- **Reversible:** Yes — it's a prioritization, not a removal.
+
 ## 2026-07-19 — M9 rating policy: vote weights, tie handling, and the live threshold
 
 - **Decision:** Prompter votes weigh 1.0 and third-party votes 0.5 in the Bradley–Terry tally; ties enter the solver as half-wins per side while both-bad votes are recorded but carry no preference signal; a bucket's table goes `live` at 50 effective (weighted) votes and is `collecting` below that; confidence bands use a seeded 200-resample percentile bootstrap so results are deterministic. All four values live in `lib/battles/policy.ts` as editable product policy, not in the math.

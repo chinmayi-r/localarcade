@@ -8,8 +8,18 @@
     "engine": "llama.cpp"
   },
   "expected": {
-    "kind": "unavailable",
-    "confidence": "none",
-    "reason": "No sourced prior covers this hardware kind, artifact-size band, product, and engine."
+    "kind": "range",
+    "confidence": "low",
+    "hardwareMatch": "coarse-bucket",
+    "ranges": {
+      "promptTokensPerSecond": { "min": 348.6, "max": 35615.3 },
+      "generationTokensPerSecond": { "min": 13.5, "max": 279.1 },
+      "timeToFirstTokenMs": { "min": 8.8, "max": 6632.7 }
+    },
+    "sampleCount": 18,
+    "sourceUrls": [
+      "https://www.localscore.ai/result/3887",
+      "https://www.localscore.ai/result/3891"
+    ]
   }
 }
