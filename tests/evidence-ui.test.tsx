@@ -30,6 +30,7 @@ test("Tree A outcome states have distinct rendered messages", () => {
     [{ kind: "contradictory", items: base.items, message: "Requested constraints conflict." }, /CONSTRAINT CONFLICT/],
     [{ kind: "ranked", items: base.items, message: "Evidence-backed order." }, /RANKED/],
     [{ kind: "nothing-fits", items: [], message: "No fit." }, /NO SAFE MATCHES/],
+    [{ kind: "no-coverage", items: [], message: "Coverage gap." }, /COVERAGE GAP — NOT YOUR MACHINE/],
   ];
   for (const [outcome, expected] of outcomes) {
     const html = renderToStaticMarkup(<RecommendationList outcome={outcome} query={query} selectedId={null} onSelect={() => undefined} />);

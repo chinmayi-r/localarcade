@@ -66,3 +66,11 @@ function hardwareKind(query: RecommendationQuery): AcceleratorKind {
   if (query.hardware.platform === "apple") return "integrated";
   return "gpu";
 }
+
+/** True when at least one catalog candidate targets this platform's
+ * accelerator kind — i.e. an empty result means "doesn't fit" rather than
+ * "we have no evidence for this platform yet". */
+export function platformHasCoverage(query: RecommendationQuery, candidates: RecommendationCandidate[]): boolean {
+  const kind = hardwareKind(query);
+  return candidates.some((candidate) => candidate.hardwareKinds.includes(kind));
+}

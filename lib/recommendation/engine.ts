@@ -1,6 +1,6 @@
 import { throughputPriors } from "../priors";
 import type { ThroughputPrior } from "../priors";
-import { evaluateCandidates } from "./candidate-evaluation";
+import { evaluateCandidates, platformHasCoverage } from "./candidate-evaluation";
 import { realCandidates } from "./catalog/real-candidates";
 import { recommendationPolicy } from "./policy";
 import { buildRolePortfolio, dedupeByFamily, hasUnsupportedTie } from "./ranking";
@@ -14,6 +14,16 @@ export function recommend(query: RecommendationQuery, candidates: Recommendation
   const compatible = evaluateCandidates(query, candidates, contextTokens, priors);
 
   if (!compatible.length) {
+    // Persona finding (2026-07-20): a GPU user with a perfectly capable card
+    // must never read "nothing fits" when the truth is that our catalog has
+    // no measured profiles for their platform yet. Coverage gap ≠ inadequacy.
+    if (!platformHasCoverage(query, candidates)) {
+      return {
+        kind: "no-coverage",
+        items: [],
+        message: "Local Arcade has no measured configuration profiles for this hardware platform yet — a gap in our evidence, not a judgment of the machine. Coverage grows as sourced profiles are admitted.",
+      };
+    }
     const reducedContext = Math.min(recommendationPolicy.reducedContextTokens, contextTokens);
     const reduced = contextTokens > reducedContext ? evaluateCandidates(query, candidates, reducedContext, priors) : [];
     if (reduced.length) return {

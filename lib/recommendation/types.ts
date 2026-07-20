@@ -63,4 +63,7 @@ export type RecommendationOutcome =
   | { kind: "ranked"; items: RecommendationItem[]; message: string }
   | { kind: "unranked"; items: RecommendationItem[]; message: string }
   | { kind: "contradictory"; items: RecommendationItem[]; message: string }
-  | { kind: "nothing-fits"; items: []; message: string };
+  | { kind: "nothing-fits"; items: []; message: string }
+  /** The catalog has no measured profiles for this platform at all — a
+   * coverage gap in our evidence, never a statement about the machine. */
+  | { kind: "no-coverage"; items: []; message: string };

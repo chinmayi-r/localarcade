@@ -20,6 +20,7 @@ const roleLabels = {
 };
 
 export function RecommendationList({ outcome, query, selectedId, onSelect }: Props) {
+  if (outcome.kind === "no-coverage") return <EmptyState eyebrow="COVERAGE GAP — NOT YOUR MACHINE" title="No measured profiles for this platform yet." message={outcome.message} />;
   if (outcome.kind === "nothing-fits") return <EmptyState eyebrow="NO SAFE MATCHES" title="No sourced configuration fits these constraints." message={outcome.message} />;
 
   return <>

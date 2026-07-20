@@ -61,6 +61,18 @@ test("M4 golden outcomes cover every honest ranking leaf", () => {
   assert.match(cases.tie.message, /tied|range/);
 });
 
+test("a platform with zero catalog coverage yields no-coverage, never nothing-fits", () => {
+  // Persona finding (Marcus, RTX 4060 Ti): a capable GPU against a CPU-only
+  // catalog must be told about OUR coverage gap, not that nothing fits HIS machine.
+  const result = recommend(
+    { ...baseQuery, hardware: { platform: "nvidia", availableMemoryGb: 8 } },
+    [candidate("cpu-only", "cpu-family", { hardwareKinds: ["cpu"] })],
+  );
+  assert.equal(result.kind, "no-coverage");
+  assert.match(result.message, /gap in our evidence/);
+  assert.doesNotMatch(result.message, /fits/);
+});
+
 test("family variants nest and cannot occupy multiple slots", () => {
   const result = recommend(baseQuery, [
     candidate("family-a-heavy", "family-a", { weightGb: 2, maxContextK: 64 }),
