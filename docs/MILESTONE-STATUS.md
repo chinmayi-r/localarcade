@@ -18,4 +18,4 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 
 ## Current checkpoint
 
-**Completing M9 — Battles data model: closed (dark).** M8 was signed off by the product owner on 2026-07-19 and its gate is open, subject to the OPEN stop-and-asks recorded in the threat model. Every milestone in `agent-plan.md` (M-1 through M9) is now complete. The next checkpoint requires a product-owner decision between: (a) runner implementation start (M8 gate now open; begins with the updater stop-and-ask), (b) the pair-generation + consent surface needed to light up battles, or (c) registry expansion (throughput/fit profile coverage) to widen real recommendations.
+**M-1 through M9 complete; coverage batch c1 landed (GPU/Apple throughput priors + vendor-sourced accelerator registry).** Runner decisions are made (Tauri 2; installer-tools distribution, no self-update code — DECISIONS.md 2026-07-19) and runner milestones R1–R4 are authored in `agent-plan.md` §4b. The next implementation checkpoint is **Completing R1 — Tauri skeleton + signed-release pipeline**. Remaining OPEN stop-and-ask before R4: Windows GPU sandbox depth (threat model T7).

@@ -119,6 +119,33 @@ Execute in order unless the human says otherwise. Each is independently shippabl
 **Accept:** rating math unit-tested against hand-computed examples; flag-off build shows no battle UI; gate suite green.
 **Refs:** Chatbot Arena paper (arXiv:2403.04132) for the rating methodology.
 
+## 4b. Runner milestones (authorized by the signed-off M8 threat model)
+
+Product-owner decisions of 2026-07-19: **Tauri 2** stack; **no self-update code** — distribution via winget/Homebrew with cosign-signed artifacts and SLSA provenance (see DECISIONS.md). Every runner milestone inherits the threat model's §5 "never" list; each "never" gets a named test as its feature area appears.
+
+### R1 — Tauri skeleton + signed-release pipeline
+**Goal:** an installable, signed, do-nothing app with its own gate suite.
+**Steps:** scaffold Tauri 2 (workspace `runner/`); runner gate scripts (fmt, clippy, cargo test, web typecheck/lint/test, build); release workflow with cosign signing + SLSA provenance (Tier-1 templates per §3, SHA-pinned); draft winget/Homebrew manifests. No listening sockets, no downloads, no execution.
+**Accept:** runner gate suite exits 0 in CI; release workflow produces signed artifacts + provenance on a tag; SECURITY-LEDGER rows added.
+**Forbidden:** detection, scanning, downloads, engine execution, telemetry, any network call at runtime.
+
+### R2 — Hardware detection (read-only) + calibration fingerprint schema
+**Goal:** exact hardware truth, locally displayed, nothing uploaded.
+**Steps:** detect accelerator, VRAM/unified memory, RAM, OS, driver where OS APIs allow; reconcile against `lib/accelerators` (detected unknown device → fail closed to manual, decision-tree B1X); define (not yet run) the calibration-fingerprint record. Display the web-estimator recommendation using detected values, marked `detected` vs the site's `self-reported`.
+**Accept:** detection module unit-tested with fixture device data; unknown-device path golden; zero network calls (test-enforced).
+**Forbidden:** model downloads/execution; uploads; background anything.
+
+### R3 — Model-store scan (read-only)
+**Goal:** inventory of existing GGUF/Ollama/LM Studio artifacts, deduped by hash, per decision-tree Tree F/E1.
+**Accept:** scan is consent-gated, read-only (test asserts no writes into stores), unreadable files listed per-file with reasons; results stay local.
+**Forbidden:** executing anything found; uploads.
+
+### R4 — First benchmark run (bundled pinned llama.cpp)
+**Goal:** the Tree B measured loop on models the user already has (zero-download path first).
+**Steps:** bundle a pinned llama.cpp build; sandboxed child per threat-model T7 (Windows GPU sandbox depth is the remaining OPEN — investigate, then stop-and-ask with findings); preflight (power/thermal/load, B4); run TTFT/tok-s/peak-mem/stability + quick-task suite (reuse `lib/quick-test` definitions); results feed the local UI as `verified`; crash = recorded stability result (B5X).
+**Accept:** benchmark protocol documented and versioned; results reproducible on same machine ±; "never" tests for T7 boundaries present; still zero network.
+**Forbidden:** downloading models (that is R5, with its own consent UX); uploads (that is R6+, with the consent and payload-schema milestone).
+
 ## 5. Pinned references (agents: verify before use, never improvise APIs)
 
 | Ref | URL | Tier | Use |

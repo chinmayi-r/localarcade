@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — Runner stack: Tauri 2; updates via installer tools first
+
+- **Decision:** The desktop runner is built on Tauri 2 (Rust core, web UI). Distribution and updates go through package managers (winget/Homebrew) with cosign-signed artifacts and SLSA provenance; the runner ships **no self-update code** initially. Self-updating is a deliberate later milestone with its own threat-model revision — the T2 OPEN item (choosing a TUF-conformant updater) is deferred until that milestone, not resolved silently.
+- **Why:** Product-owner choices (2026-07-19) from explicit options. Tauri fits the security posture (small signed binaries, sandbox-friendly, official signed-updater plugin available when needed). Installer-first means zero update-channel attack surface while the fleet is small; "whoever controls updates controls every installed machine" is a risk worth taking on only when the installed base justifies defending it.
+- **Reversible:** Framework choice is expensive to reverse (hence asked, not assumed). The update posture is explicitly staged: revisiting it requires a threat-model update and sign-off, per I7/I8 discipline.
+
 ## 2026-07-19 — Vendor-sourced accelerator registry with derived memory variants
 
 - **Decision:** `registry/generated/accelerators.json` + `lib/accelerators` hold a deliberately small set (8 NVIDIA desktop cards, Apple M5/M5 Pro/M5 Max) with purchasable memory variants quoted from official vendor spec pages. `deriveMemory()` returns single-variant (confident pre-fill), multiple-variants (user picks from sourced options — RTX 4060 Ti 8/16, all Apple chips), or fails closed to manual entry for unknown ids. Manual memory confirmation is always retained in the UI. Bandwidth is stored only when the vendor states one unambiguous figure (M5: 153 GB/s, M5 Pro: 307 GB/s; M5 Max omitted — two figures by GPU config; NVIDIA omitted — not on spec pages, and deriving it from bus width would be manufactured data). Laptop silicon requires separate entries — desktop rows must never be reused for laptop variants.
