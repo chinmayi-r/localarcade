@@ -1,3 +1,4 @@
+pub mod benchmark;
 pub mod hardware;
 pub mod model_store;
 
@@ -18,12 +19,14 @@ pub fn identity() -> RunnerIdentity {
     RunnerIdentity {
         name: "Local Arcade Runner",
         version: env!("CARGO_PKG_VERSION"),
-        milestone: "R3",
-        // Each entry names its boundary. Uploads, downloads, and execution
-        // remain absent until their own milestones.
+        milestone: "R4-existing-engine",
+        // Each entry names its boundary. Uploads and downloads remain absent
+        // until their own milestones; execution is limited to the user's own
+        // llama-bench on the user's own model files.
         capabilities: &[
             "hardware-detection (read-only, on request, local only)",
             "model-store-scan (read-only, on request, local only)",
+            "benchmark (user's own engine + model, on request, watchdogged, local only)",
         ],
     }
 }
@@ -58,13 +61,23 @@ fn dirs_home() -> std::path::PathBuf {
         .unwrap_or_default()
 }
 
+/// Explicit-consent benchmark (decision-tree B3-B6). The UI warns that the
+/// model will load and the machine will be busy before this is invoked.
+#[tauri::command]
+fn run_benchmark(
+    request: benchmark::BenchmarkRequest,
+) -> Result<benchmark::BenchmarkReport, String> {
+    benchmark::run_benchmark(&request)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             runner_identity,
             detect_hardware,
-            scan_model_stores
+            scan_model_stores,
+            run_benchmark
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -75,16 +88,17 @@ mod tests {
     use super::*;
 
     #[test]
-    fn r3_identity_declares_exactly_detection_and_scan() {
+    fn r4_identity_declares_detection_scan_and_benchmark_only() {
         let id = identity();
-        assert_eq!(id.milestone, "R3");
+        assert_eq!(id.milestone, "R4-existing-engine");
         assert_eq!(
             id.capabilities,
             &[
                 "hardware-detection (read-only, on request, local only)",
                 "model-store-scan (read-only, on request, local only)",
+                "benchmark (user's own engine + model, on request, watchdogged, local only)",
             ],
-            "R3 adds the read-only scan and nothing else; new capabilities belong to later R milestones"
+            "R4-existing-engine adds benchmarking of the user's own engine and nothing else; downloads and uploads belong to later milestones"
         );
         assert_eq!(id.version, env!("CARGO_PKG_VERSION"));
     }

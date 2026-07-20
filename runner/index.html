@@ -34,6 +34,23 @@
         <button id="scan-button" type="button">Scan model stores</button>
         <pre id="scan-output"></pre>
       </section>
+      <section>
+        <h2>Benchmark</h2>
+        <p>
+          Runs your own <code>llama-bench</code> on a model you already have.
+          This currently requires a llama.cpp installation — LM Studio- or
+          Ollama-only setups aren't supported for benchmarking yet. Loading
+          the model will occupy your GPU/CPU for roughly a minute; a watchdog
+          terminates hung runs. Results are measured on this machine and never
+          leave it. Numbers reflect llama-bench defaults, which may differ
+          from your tuned serving flags — the exact configuration used is
+          shown with the result.
+        </p>
+        <input id="bench-engine-dir" type="text" placeholder="Engine folder containing llama-bench (e.g. H:\llama)" size="48" />
+        <input id="bench-model-path" type="text" placeholder="Full path to a .gguf model file" size="48" />
+        <button id="bench-button" type="button">Run benchmark</button>
+        <pre id="bench-output"></pre>
+      </section>
       <p>
         Source, milestone plan, and threat model:
         <code>docs/agent-plan.md</code> and <code>docs/runner-threat-model.md</code>

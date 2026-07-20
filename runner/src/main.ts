@@ -125,7 +125,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     for (const store of report.stores) {
       lines.push(`Store ${store.kind}: ${store.path} — ${store.exists ? "scanned" : "not present"}${store.truncated ? " (TRUNCATED at listing cap)" : ""}`);
     }
-    if (!report.artifacts.length) lines.push("No model artifacts found.");
+    if (!report.artifacts.length) {
+      lines.push(
+        "No model artifacts found. That's normal on a machine without local models yet — the Local Arcade website can recommend a first configuration for this hardware; guided setup arrives in a later runner milestone.",
+      );
+    }
     for (const artifact of report.artifacts) {
       lines.push(`• [${artifact.store}] ${artifact.label} — ${gb(artifact.fileSizeBytes)} — ${renderMatch(artifact.registryMatch)}`);
     }
@@ -138,5 +142,41 @@ window.addEventListener("DOMContentLoaded", async () => {
       for (const entry of report.unreadable) lines.push(`  ! ${entry.path} — ${entry.reason}`);
     }
     output.textContent = lines.join("\n");
+  });
+
+  el("#bench-button")?.addEventListener("click", async () => {
+    const output = el("#bench-output");
+    if (!output) return;
+    const engineDir = (document.querySelector("#bench-engine-dir") as HTMLInputElement | null)?.value ?? "";
+    const modelPath = (document.querySelector("#bench-model-path") as HTMLInputElement | null)?.value ?? "";
+    if (!engineDir || !modelPath) {
+      output.textContent = "Both the engine folder and the model path are required.";
+      return;
+    }
+    output.textContent = "Running llama-bench — the model is loading and your machine will be busy…";
+    try {
+      const report = await invoke<{
+        engine: string;
+        engineBuild: string;
+        backends: string;
+        gpuInfo: string;
+        modelType: string;
+        kvCache: string;
+        gpuLayers: number;
+        measurements: { kind: string; tokens: number; tokensPerSecond: number }[];
+        provenance: string;
+      }>("run_benchmark", { request: { engineDir, modelPath } });
+      const lines = [
+        `Measured on this machine (${report.provenance}) — not an estimate.`,
+        `Engine: ${report.engine} ${report.engineBuild} · ${report.backends} · ${report.gpuInfo}`,
+        `Model: ${report.modelType} · KV ${report.kvCache} · GPU layers ${report.gpuLayers}`,
+      ];
+      for (const measurement of report.measurements) {
+        lines.push(`${measurement.kind}: ${measurement.tokensPerSecond.toFixed(1)} tokens/s (${measurement.tokens} tokens)`);
+      }
+      output.textContent = lines.join("\n");
+    } catch (error) {
+      output.textContent = `Benchmark did not complete: ${String(error)}`;
+    }
   });
 });

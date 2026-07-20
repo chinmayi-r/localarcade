@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-07-20 — R4 existing-engine slice: benchmark the user's own llama-bench under a watchdog
+
+- **Decision:** R4 ships first as an existing-engine slice: the runner spawns exactly one executable — `llama-bench` from a user-chosen engine directory — on a user-chosen model file, with a 600 s watchdog kill, fail-closed JSON parsing, and `verified-local` provenance. The T7 sandbox (AppContainer/Job Object depth) is NOT implemented in this slice; its stop-and-ask remains open and applies to the future bundled-engine path executing downloaded artifacts.
+- **Why:** This slice executes the user's own binaries on the user's own files — the same software they run unsandboxed daily — so the watchdog is a strict safety improvement over their status quo while the real sandbox question is decided deliberately. It also required no downloads (which remain gated) and delivered measured truth immediately: live-verified on the dev machine.
+- **Reversible:** Yes; the module is isolated, and the bundled-engine path will supersede rather than extend it.
+
+## 2026-07-20 — Persona walkthroughs are a standing gate after every feature
+
+- **Decision:** After each feature, simulate Priya (newcomer), Marcus (intermediate), and Ravi (power user) through the real code paths; record in `docs/persona-findings.md`; fix cheap findings immediately, backlog the rest. Pass 1 already forced the `no-coverage` outcome split.
+- **Why:** Product-owner directive (2026-07-20). The first pass caught a product-killing message that all 107 unit tests were blind to.
+- **Reversible:** Yes (practice, not code).
+
 ## 2026-07-20 — R3 scan: identity is hash-or-candidate, hashing is a separate explicit step
 
 - **Decision:** The model-store scan reads directory listings and metadata only — never file contents. Identity against the admitted registry: an Ollama blob whose digest filename equals a registry sha256 is `verified`; a loose GGUF whose byte size equals a registry artifact is `candidateBySize` and is never upgraded without an actual hash; hashing multi-GB files is deferred to a later explicit per-file action, not done during scans. Ollama is read as plain files (manifests → model-layer digests → blobs), never invoked (I4). Walks are depth- and count-capped with truncation *reported*; unreadable entries (malformed manifests, dangling blobs, permission failures) are listed per-file; an installed-but-empty Ollama is a normal state, not an error. The scan module contains no write APIs, enforced by a source-level boundary test.

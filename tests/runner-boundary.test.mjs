@@ -28,6 +28,17 @@ test("R3 scan module contains no write APIs at all", async () => {
   }
 });
 
+test("R4 benchmark module spawns exactly llama-bench and nothing else", async () => {
+  const source = await readFile(new URL("../runner/src-tauri/src/benchmark.rs", import.meta.url), "utf8");
+  const spawnSites = source.match(/Command::new\(([^)]*)\)/g) ?? [];
+  assert.equal(spawnSites.length, 1, "exactly one spawn site is allowed");
+  assert.match(source, /const BENCH_EXECUTABLE: &str = "llama-bench";/);
+  assert.ok(spawnSites[0].includes("&executable"), "the spawn site must use the checked llama-bench path");
+  for (const forbidden of ["reqwest", "TcpStream", "UdpSocket", "fs::write", "File::create"]) {
+    assert.ok(!source.includes(forbidden), `${forbidden} must not appear in the benchmark module`);
+  }
+});
+
 test("R1 frontend makes no external requests", async () => {
   const main = await readFile(new URL("../runner/src/main.ts", import.meta.url), "utf8");
   const html = await readFile(new URL("../runner/index.html", import.meta.url), "utf8");
