@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-19 — Vendor-sourced accelerator registry with derived memory variants
+
+- **Decision:** `registry/generated/accelerators.json` + `lib/accelerators` hold a deliberately small set (8 NVIDIA desktop cards, Apple M5/M5 Pro/M5 Max) with purchasable memory variants quoted from official vendor spec pages. `deriveMemory()` returns single-variant (confident pre-fill), multiple-variants (user picks from sourced options — RTX 4060 Ti 8/16, all Apple chips), or fails closed to manual entry for unknown ids. Manual memory confirmation is always retained in the UI. Bandwidth is stored only when the vendor states one unambiguous figure (M5: 153 GB/s, M5 Pro: 307 GB/s; M5 Max omitted — two figures by GPU config; NVIDIA omitted — not on spec pages, and deriving it from bus width would be manufactured data). Laptop silicon requires separate entries — desktop rows must never be reused for laptop variants.
+- **Why:** AGENTS.md requires that selecting a device derive its memory variants rather than pretending a platform label identifies the machine. Family slugs align with `lib/priors` and a cross-registry test enforces id/family/kind agreement — which also independently re-verified the GPU priors' memory values against vendor pages.
+- **Reversible:** Yes. Entries are data; the derivation contract is typed and fail-closed.
+
 ## 2026-07-19 — GPU/Apple throughput priors: backend derivation and pooling boundaries
 
 - **Decision:** Nine GPU-class LocalScore result pages (RTX 4090, RTX 5070 Ti, RTX 3070 Ti Laptop, GTX 1660, Apple M1 Pro/M2/M5 Pro) were admitted as throughput priors across all three size bands. Two derivations beyond the page contents: (1) `backend` is recorded as `cuda` for NVIDIA and `metal` for Apple — the result pages don't name the backend, but llamafile's official README documents exactly those GPU paths per vendor (https://github.com/mozilla-ai/llamafile#gpu-support). (2) Apple accelerators use `kind: "integrated"`, not `"gpu"`, so coarse-bucket fallback can never pool unified-memory Apple silicon with discrete NVIDIA cards. Data was extracted from each result page's embedded structured JSON (Next.js `__NEXT_DATA__`), not visually transcribed; envelopes are floored/ceiled to one decimal so they only widen.

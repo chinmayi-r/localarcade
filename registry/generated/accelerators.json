@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-19T23:05:00.000Z",
+  "accelerators": [
+    {
+      "id": "nvidia-geforce-rtx-4090-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 4090",
+      "kind": "gpu",
+      "family": "nvidia-ada-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 24, "memoryType": "GDDR6X" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4090/",
+      "retrievedAt": "2026-07-19T22:55:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-4080-super-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 4080 SUPER",
+      "kind": "gpu",
+      "family": "nvidia-ada-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 16, "memoryType": "GDDR6X" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4080-family/",
+      "retrievedAt": "2026-07-19T22:58:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-4060-ti-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 4060 Ti",
+      "kind": "gpu",
+      "family": "nvidia-ada-desktop-gpu",
+      "memoryVariants": [
+        { "memoryGb": 8, "memoryType": "GDDR6" },
+        { "memoryGb": 16, "memoryType": "GDDR6" }
+      ],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4060-4060ti/",
+      "retrievedAt": "2026-07-19T22:55:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-4060-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 4060",
+      "kind": "gpu",
+      "family": "nvidia-ada-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 8, "memoryType": "GDDR6" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/rtx-4060-4060ti/",
+      "retrievedAt": "2026-07-19T22:55:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-5070-ti-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 5070 Ti",
+      "kind": "gpu",
+      "family": "nvidia-blackwell-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 16, "memoryType": "GDDR7" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5070-family/",
+      "retrievedAt": "2026-07-19T22:55:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-5070-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 5070",
+      "kind": "gpu",
+      "family": "nvidia-blackwell-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 12, "memoryType": "GDDR7" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5070-family/",
+      "retrievedAt": "2026-07-19T22:55:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-3090-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 3090",
+      "kind": "gpu",
+      "family": "nvidia-ampere-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 24, "memoryType": "GDDR6X" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3090-3090ti/",
+      "retrievedAt": "2026-07-19T22:58:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-3090-ti-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 3090 Ti",
+      "kind": "gpu",
+      "family": "nvidia-ampere-desktop-gpu",
+      "memoryVariants": [{ "memoryGb": 24, "memoryType": "GDDR6X" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/rtx-3090-3090ti/",
+      "retrievedAt": "2026-07-19T22:58:00.000Z"
+    },
+    {
+      "id": "apple-m5",
+      "vendor": "apple",
+      "marketingName": "Apple M5",
+      "kind": "integrated",
+      "family": "apple-m5-integrated",
+      "memoryVariants": [
+        { "memoryGb": 16, "memoryType": "unified" },
+        { "memoryGb": 24, "memoryType": "unified" },
+        { "memoryGb": 32, "memoryType": "unified" }
+      ],
+      "memoryBandwidthGBps": 153,
+      "sourceUrl": "https://www.apple.com/macbook-pro/specs/",
+      "retrievedAt": "2026-07-19T23:02:00.000Z"
+    },
+    {
+      "id": "apple-m5-pro",
+      "vendor": "apple",
+      "marketingName": "Apple M5 Pro",
+      "kind": "integrated",
+      "family": "apple-m5-pro-integrated",
+      "memoryVariants": [
+        { "memoryGb": 16, "memoryType": "unified" },
+        { "memoryGb": 24, "memoryType": "unified" },
+        { "memoryGb": 32, "memoryType": "unified" },
+        { "memoryGb": 48, "memoryType": "unified", "note": "40-core GPU configuration" },
+        { "memoryGb": 64, "memoryType": "unified", "note": "20-core GPU configuration" }
+      ],
+      "memoryBandwidthGBps": 307,
+      "sourceUrl": "https://www.apple.com/macbook-pro/specs/",
+      "retrievedAt": "2026-07-19T23:02:00.000Z"
+    },
+    {
+      "id": "apple-m5-max",
+      "vendor": "apple",
+      "marketingName": "Apple M5 Max",
+      "kind": "integrated",
+      "family": "apple-m5-max-integrated",
+      "memoryVariants": [
+        { "memoryGb": 24, "memoryType": "unified", "note": "32-core GPU configuration" },
+        { "memoryGb": 36, "memoryType": "unified", "note": "32-core GPU configuration" },
+        { "memoryGb": 48, "memoryType": "unified", "note": "40-core GPU configuration" },
+        { "memoryGb": 64, "memoryType": "unified", "note": "40-core GPU configuration" },
+        { "memoryGb": 128, "memoryType": "unified", "note": "40-core GPU configuration" }
+      ],
+      "sourceUrl": "https://www.apple.com/macbook-pro/specs/",
+      "retrievedAt": "2026-07-19T23:02:00.000Z"
+    }
+  ]
+}
