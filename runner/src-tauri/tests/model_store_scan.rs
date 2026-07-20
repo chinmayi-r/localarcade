@@ -190,11 +190,16 @@ fn live_scan_of_real_home_is_read_only_and_sane() {
     let home = std::env::var_os(if cfg!(windows) { "USERPROFILE" } else { "HOME" })
         .map(PathBuf::from)
         .expect("home directory exists");
-    let report = scan(&home, &[]);
+    // Optional live extra directory (e.g. a llama.cpp models folder) supplied
+    // by the environment; used for manual verification runs, absent in CI.
+    let extras: Vec<PathBuf> = std::env::var("LA_SCAN_EXTRA_DIR")
+        .ok()
+        .map(|directory| vec![PathBuf::from(directory)])
+        .unwrap_or_default();
+    let report = scan(&home, &extras);
     assert_eq!(report.provenance, "scanned-locally");
-    assert_eq!(
-        report.stores.len(),
-        3,
+    assert!(
+        report.stores.len() >= 3,
         "three default store locations are always reported"
     );
     println!(
