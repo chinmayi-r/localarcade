@@ -12,6 +12,15 @@
     <main class="container">
       <h1>Local Arcade Runner</h1>
       <p id="identity">Loading build identity…</p>
+      <section>
+        <h2>Hardware</h2>
+        <p>
+          Detection runs only when you press the button, reads OS hardware
+          APIs only, and the result never leaves this machine.
+        </p>
+        <button id="detect-button" type="button">Detect my hardware</button>
+        <pre id="detection-output"></pre>
+      </section>
       <p>
         Source, milestone plan, and threat model:
         <code>docs/agent-plan.md</code> and <code>docs/runner-threat-model.md</code>

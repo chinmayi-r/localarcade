@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-20 — R2 detection: DXGI truth, embedded registry, flag-don't-fix reconciliation
+
+- **Decision:** GPU detection uses DXGI adapter enumeration (`DedicatedVideoMemory`, software adapters excluded); OS/CPU/RAM via `sysinfo`. The vendor accelerator registry is embedded at compile time from `registry/generated/accelerators.json` so runner and website share one source of truth. Reconciliation matches on exact (case-insensitive) marketing name; detected memory is compared to vendor variants with a 1 GB tolerance for DXGI's reserved-segment under-report. A detected value that matches no variant is **flagged, never corrected** to a vendor number; unknown devices fail closed to manual entry (B1X). Non-Windows GPU enumeration returns an explicit unavailability reason. Detection runs only on button press — never on launch.
+- **Why:** WMI's `AdapterRAM` caps at 4 GB and is unreliable; DXGI is the accurate native source. Compile-time embedding beats a runtime file read (no filesystem access needed, no drift between surfaces). Flag-don't-fix preserves the provenance rule: `detected` values are what the machine said, not what we wish it said. Live verification on the dev machine confirmed both paths: RTX 3060 Laptop reconciled Known with variant match (5.9 ≈ 6 GB); Intel Iris Xe correctly fell to Unknown/manual.
+- **Reversible:** Yes. Enumeration backends, tolerance, and matching are isolated in `runner/src-tauri/src/hardware.rs`; the registry data is shared and separately versioned.
+
 ## 2026-07-19 — Runner stack: Tauri 2; updates via installer tools first
 
 - **Decision:** The desktop runner is built on Tauri 2 (Rust core, web UI). Distribution and updates go through package managers (winget/Homebrew) with cosign-signed artifacts and SLSA provenance; the runner ships **no self-update code** initially. Self-updating is a deliberate later milestone with its own threat-model revision — the T2 OPEN item (choosing a TUF-conformant updater) is deferred until that milestone, not resolved silently.

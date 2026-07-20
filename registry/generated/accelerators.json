@@ -86,6 +86,26 @@
       "retrievedAt": "2026-07-19T22:58:00.000Z"
     },
     {
+      "id": "nvidia-geforce-rtx-3060-laptop-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 3060 Laptop GPU",
+      "kind": "gpu",
+      "family": "nvidia-ampere-laptop-gpu",
+      "memoryVariants": [{ "memoryGb": 6, "memoryType": "GDDR6" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/laptops/30-series/",
+      "retrievedAt": "2026-07-20T00:20:00.000Z"
+    },
+    {
+      "id": "nvidia-geforce-rtx-3070-ti-laptop-gpu",
+      "vendor": "nvidia",
+      "marketingName": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+      "kind": "gpu",
+      "family": "nvidia-ampere-laptop-gpu",
+      "memoryVariants": [{ "memoryGb": 8, "memoryType": "GDDR6" }],
+      "sourceUrl": "https://www.nvidia.com/en-us/geforce/laptops/30-series/",
+      "retrievedAt": "2026-07-20T00:20:00.000Z"
+    },
+    {
       "id": "apple-m5",
       "vendor": "apple",
       "marketingName": "Apple M5",
