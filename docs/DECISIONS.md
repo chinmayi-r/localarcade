@@ -1,5 +1,11 @@
 # Decisions
 
+## 2026-07-20 — R3 scan: identity is hash-or-candidate, hashing is a separate explicit step
+
+- **Decision:** The model-store scan reads directory listings and metadata only — never file contents. Identity against the admitted registry: an Ollama blob whose digest filename equals a registry sha256 is `verified`; a loose GGUF whose byte size equals a registry artifact is `candidateBySize` and is never upgraded without an actual hash; hashing multi-GB files is deferred to a later explicit per-file action, not done during scans. Ollama is read as plain files (manifests → model-layer digests → blobs), never invoked (I4). Walks are depth- and count-capped with truncation *reported*; unreadable entries (malformed manifests, dangling blobs, permission failures) are listed per-file; an installed-but-empty Ollama is a normal state, not an error. The scan module contains no write APIs, enforced by a source-level boundary test.
+- **Why:** Hashing a 20 GB file during a "quick scan" breaks the product promise, and pretending a size match is an identity would be manufactured certainty — the candidate state keeps the evidence ladder honest inside the runner exactly as it works on the website. The empty-Ollama fix came from live verification on the dev machine (Ollama installed, no models pulled — was misreported as unreadable).
+- **Reversible:** Yes. Store adapters, caps, and match policy are isolated in `runner/src-tauri/src/model_store.rs`.
+
 ## 2026-07-20 — R2 detection: DXGI truth, embedded registry, flag-don't-fix reconciliation
 
 - **Decision:** GPU detection uses DXGI adapter enumeration (`DedicatedVideoMemory`, software adapters excluded); OS/CPU/RAM via `sysinfo`. The vendor accelerator registry is embedded at compile time from `registry/generated/accelerators.json` so runner and website share one source of truth. Reconciliation matches on exact (case-insensitive) marketing name; detected memory is compared to vendor variants with a 1 GB tolerance for DXGI's reserved-segment under-report. A detected value that matches no variant is **flagged, never corrected** to a vendor number; unknown devices fail closed to manual entry (B1X). Non-Windows GPU enumeration returns an explicit unavailability reason. Detection runs only on button press — never on launch.

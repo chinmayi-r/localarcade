@@ -21,6 +21,19 @@
         <button id="detect-button" type="button">Detect my hardware</button>
         <pre id="detection-output"></pre>
       </section>
+      <section>
+        <h2>Installed models</h2>
+        <p>
+          The scan reads directory listings and file metadata only — it opens
+          no model files, writes nothing, and the result never leaves this
+          machine. Directories read: <code>~/.ollama/models</code>,
+          <code>~/.lmstudio/models</code>, <code>~/.cache/lm-studio/models</code>,
+          plus any folder you add below.
+        </p>
+        <input id="extra-dir" type="text" placeholder="Optional: extra GGUF folder (full path)" size="48" />
+        <button id="scan-button" type="button">Scan model stores</button>
+        <pre id="scan-output"></pre>
+      </section>
       <p>
         Source, milestone plan, and threat model:
         <code>docs/agent-plan.md</code> and <code>docs/runner-threat-model.md</code>

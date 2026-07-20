@@ -1,4 +1,5 @@
 pub mod hardware;
+pub mod model_store;
 
 use serde::Serialize;
 
@@ -17,10 +18,13 @@ pub fn identity() -> RunnerIdentity {
     RunnerIdentity {
         name: "Local Arcade Runner",
         version: env!("CARGO_PKG_VERSION"),
-        milestone: "R2",
-        // Each entry names its boundary. Uploads, downloads, scans, and
-        // execution remain absent until their own milestones.
-        capabilities: &["hardware-detection (read-only, on request, local only)"],
+        milestone: "R3",
+        // Each entry names its boundary. Uploads, downloads, and execution
+        // remain absent until their own milestones.
+        capabilities: &[
+            "hardware-detection (read-only, on request, local only)",
+            "model-store-scan (read-only, on request, local only)",
+        ],
     }
 }
 
@@ -35,10 +39,33 @@ fn detect_hardware() -> hardware::HardwareReport {
     hardware::detect()
 }
 
+/// Explicit-request read-only scan (decision-tree F3/E1). Never on launch;
+/// the UI lists exactly which directories will be read before the click.
+#[tauri::command]
+fn scan_model_stores(extra_directories: Vec<String>) -> model_store::ScanReport {
+    let home = dirs_home();
+    let extras: Vec<std::path::PathBuf> = extra_directories
+        .into_iter()
+        .filter(|directory| !directory.trim().is_empty())
+        .map(std::path::PathBuf::from)
+        .collect();
+    model_store::scan(&home, &extras)
+}
+
+fn dirs_home() -> std::path::PathBuf {
+    std::env::var_os(if cfg!(windows) { "USERPROFILE" } else { "HOME" })
+        .map(std::path::PathBuf::from)
+        .unwrap_or_default()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![runner_identity, detect_hardware])
+        .invoke_handler(tauri::generate_handler![
+            runner_identity,
+            detect_hardware,
+            scan_model_stores
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -48,13 +75,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn r2_identity_declares_exactly_hardware_detection() {
+    fn r3_identity_declares_exactly_detection_and_scan() {
         let id = identity();
-        assert_eq!(id.milestone, "R2");
+        assert_eq!(id.milestone, "R3");
         assert_eq!(
             id.capabilities,
-            &["hardware-detection (read-only, on request, local only)"],
-            "R2 adds detection and nothing else; new capabilities belong to later R milestones"
+            &[
+                "hardware-detection (read-only, on request, local only)",
+                "model-store-scan (read-only, on request, local only)",
+            ],
+            "R3 adds the read-only scan and nothing else; new capabilities belong to later R milestones"
         );
         assert_eq!(id.version, env!("CARGO_PKG_VERSION"));
     }

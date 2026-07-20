@@ -51,6 +51,38 @@ function renderGpu(gpu: GpuReconciliation): string {
   return `${gpu.detectedName} — ${memory} · registry: ${gpu.acceleratorId}`;
 }
 
+type RegistryMatch =
+  | { status: "verified"; artifactId: string }
+  | { status: "candidateBySize"; artifactIds: string[] }
+  | { status: "none" };
+
+type FoundArtifact = {
+  path: string;
+  store: string;
+  label: string;
+  fileSizeBytes: number;
+  sha256: string | null;
+  registryMatch: RegistryMatch;
+};
+
+type ScanReport = {
+  stores: { kind: string; path: string; exists: boolean; truncated: boolean }[];
+  artifacts: FoundArtifact[];
+  duplicateGroups: string[][];
+  unreadable: { path: string; reason: string }[];
+  provenance: string;
+};
+
+function gb(bytes: number): string {
+  return (bytes / 2 ** 30).toFixed(1) + " GB";
+}
+
+function renderMatch(match: RegistryMatch): string {
+  if (match.status === "verified") return `identity verified: ${match.artifactId}`;
+  if (match.status === "candidateBySize") return `size matches ${match.artifactIds.length} registry artifact(s) — identity unverified until hashed`;
+  return "not in the artifact registry";
+}
+
 window.addEventListener("DOMContentLoaded", async () => {
   const identityEl = el("#identity");
   if (identityEl) {
@@ -77,6 +109,33 @@ window.addEventListener("DOMContentLoaded", async () => {
       lines.push("GPU: no dedicated adapters detected.");
     } else {
       for (const gpu of report.gpus) lines.push(`GPU: ${renderGpu(gpu)}`);
+    }
+    output.textContent = lines.join("\n");
+  });
+
+  el("#scan-button")?.addEventListener("click", async () => {
+    const output = el("#scan-output");
+    if (!output) return;
+    const extraDir = (document.querySelector("#extra-dir") as HTMLInputElement | null)?.value ?? "";
+    output.textContent = "Reading store directories…";
+    const report = await invoke<ScanReport>("scan_model_stores", {
+      extraDirectories: extraDir ? [extraDir] : [],
+    });
+    const lines = ["Everything below was read locally just now and stays on this machine."];
+    for (const store of report.stores) {
+      lines.push(`Store ${store.kind}: ${store.path} — ${store.exists ? "scanned" : "not present"}${store.truncated ? " (TRUNCATED at listing cap)" : ""}`);
+    }
+    if (!report.artifacts.length) lines.push("No model artifacts found.");
+    for (const artifact of report.artifacts) {
+      lines.push(`• [${artifact.store}] ${artifact.label} — ${gb(artifact.fileSizeBytes)} — ${renderMatch(artifact.registryMatch)}`);
+    }
+    if (report.duplicateGroups.length) {
+      lines.push(`Possible duplicates (${report.duplicateGroups.length} group(s)):`);
+      for (const group of report.duplicateGroups) lines.push("  = " + group.join("  |  "));
+    }
+    if (report.unreadable.length) {
+      lines.push("Unreadable entries (listed, never silently skipped):");
+      for (const entry of report.unreadable) lines.push(`  ! ${entry.path} — ${entry.reason}`);
     }
     output.textContent = lines.join("\n");
   });

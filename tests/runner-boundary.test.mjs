@@ -21,6 +21,13 @@ test("R1 config has a strict CSP and no updater or plugin section", async () => 
   assert.equal(conf.identifier, "org.localarcade.runner");
 });
 
+test("R3 scan module contains no write APIs at all", async () => {
+  const source = await readFile(new URL("../runner/src-tauri/src/model_store.rs", import.meta.url), "utf8");
+  for (const forbidden of ["fs::write", "File::create", "OpenOptions", "create_dir", "remove_file", "remove_dir", "set_len", "fs::copy", "fs::rename", "hard_link", "symlink"]) {
+    assert.ok(!source.includes(forbidden), `${forbidden} must not appear in the read-only scan module`);
+  }
+});
+
 test("R1 frontend makes no external requests", async () => {
   const main = await readFile(new URL("../runner/src/main.ts", import.meta.url), "utf8");
   const html = await readFile(new URL("../runner/index.html", import.meta.url), "utf8");
