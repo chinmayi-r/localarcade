@@ -1,0 +1,9 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "R1 capability: core IPC only. No opener, no fs, no shell, no network permissions — additions belong to later R milestones with their own review.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default"
+  ]
+}

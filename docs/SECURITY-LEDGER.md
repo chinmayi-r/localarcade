@@ -13,6 +13,9 @@ Security-sensitive automation is copied from official or project-maintainer sour
 | All workflow jobs | Harden Runner audit mode | https://github.com/step-security/harden-runner | 2026-07-19 | Pinned |
 | `.github/dependabot.yml` | Dependabot npm and Actions updates | https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference | 2026-07-19 | Copied |
 | `.github/workflows/registry-refresh.yml` | Scheduled workflow syntax, checkout, Node setup and GitHub CLI pull-request flow | https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule · https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request | 2026-07-19 | Pinned |
+| `.github/workflows/runner-ci.yml` | Runner gate suite (reuses ledger-pinned checkout/setup-node/harden-runner SHAs) | see rows above | 2026-07-19 | Pinned |
+| `.github/workflows/runner-release.yml` | Cosign keyless blob signing | https://github.com/sigstore/cosign-installer (v4.1.2 @ 6f9f17788090df1f26f669e9d70d6ae9567deba6) · https://docs.sigstore.dev/cosign/signing/signing_with_blobs/ | 2026-07-19 | Pinned |
+| `.github/workflows/runner-release.yml` | SLSA build provenance (reusable workflow) | https://github.com/slsa-framework/slsa-github-generator @ v2.1.0 — tag reference required by its official docs; documented exception to the SHA-pin rule | 2026-07-19 | Tag-pinned (documented exception) |
 
 ## Hand-written, needs review
 

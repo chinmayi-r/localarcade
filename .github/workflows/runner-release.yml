@@ -1,0 +1,94 @@
+# Signed runner releases: build bundles, hash them, sign with Sigstore cosign
+# (keyless, GitHub OIDC), and attach SLSA build provenance.
+#
+# Distribution policy (DECISIONS.md 2026-07-19): installer tools only
+# (winget/Homebrew); the app contains no self-update code, so this workflow's
+# signatures and provenance ARE the update trust chain.
+#
+# Pinned sources recorded in docs/SECURITY-LEDGER.md:
+# - https://github.com/sigstore/cosign-installer (v4.1.2, SHA-pinned)
+# - https://github.com/slsa-framework/slsa-github-generator — the reusable
+#   provenance workflow MUST be referenced by tag, not SHA, per its official
+#   documentation (verifier resolves the tag); documented exception to the
+#   SHA-pin rule.
+name: Runner Release
+
+on:
+  push:
+    tags: ["runner-v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+          - os: macos-latest
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      id-token: write # cosign keyless signing via GitHub OIDC
+    defaults:
+      run:
+        working-directory: runner
+    outputs:
+      hashes: ${{ steps.hash.outputs.hashes }}
+    steps:
+      # Source: https://github.com/step-security/harden-runner (copied 2026-07-19)
+      - name: Harden runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+      - run: rustup toolchain install stable --profile minimal
+      - run: npm ci --ignore-scripts
+      - run: npm run tauri build
+      # Source: https://github.com/sigstore/cosign-installer (copied 2026-07-19)
+      - name: Install cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+      - name: Sign bundles (keyless)
+        shell: bash
+        run: |
+          find src-tauri/target/release/bundle -type f \( -name "*.msi" -o -name "*.exe" -o -name "*.dmg" -o -name "*.app.tar.gz" \) -print0 |
+            while IFS= read -r -d '' artifact; do
+              cosign sign-blob --yes \
+                --output-signature "${artifact}.sig" \
+                --output-certificate "${artifact}.pem" \
+                "${artifact}"
+            done
+      - name: Compute subject hashes for provenance
+        id: hash
+        shell: bash
+        run: |
+          cd src-tauri/target/release/bundle
+          find . -type f \( -name "*.msi" -o -name "*.exe" -o -name "*.dmg" -o -name "*.app.tar.gz" \) -exec sha256sum {} \; > checksums.txt
+          echo "hashes=$(base64 -w0 < checksums.txt 2>/dev/null || base64 < checksums.txt | tr -d '\n')" >> "$GITHUB_OUTPUT"
+      - name: Upload signed artifacts to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          gh release create "${GITHUB_REF_NAME}" --draft --verify-tag --title "${GITHUB_REF_NAME}" 2>/dev/null || true
+          find src-tauri/target/release/bundle -type f \( -name "*.msi" -o -name "*.exe" -o -name "*.dmg" -o -name "*.app.tar.gz" -o -name "*.sig" -o -name "*.pem" -o -name "checksums.txt" \) \
+            -exec gh release upload "${GITHUB_REF_NAME}" {} --clobber \;
+
+  provenance:
+    needs: [build]
+    permissions:
+      actions: read
+      id-token: write
+      contents: write
+    # Official SLSA generic generator; tag reference required by its docs.
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.build.outputs.hashes }}
+      upload-assets: true

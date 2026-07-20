@@ -1,0 +1,15 @@
+# DRAFT — cannot be submitted until the first public runner-v* release exists.
+# Schema: https://learn.microsoft.com/en-us/windows/package-manager/package/manifest
+PackageIdentifier: LocalArcade.Runner
+PackageVersion: 0.1.0 # TODO-release: match released tag
+PackageName: Local Arcade Runner
+Publisher: Local Arcade
+License: TODO-release # repository license once published
+ShortDescription: Hardware-truth benchmarks for local AI models. Detects, measures, and uploads nothing without explicit consent.
+Installers:
+  - Architecture: x64
+    InstallerType: wix
+    InstallerUrl: TODO-release # exact release-asset URL, never a `latest` redirect
+    InstallerSha256: TODO-release # from the release's signed checksums.txt
+ManifestType: singleton
+ManifestVersion: 1.6.0
