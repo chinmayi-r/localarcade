@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "scenario": {
+    "scenarioId": "invented-unknown", "hardware": { "osFamily": "unknown", "acceleratorVendor": "unknown", "acceleratorModel": "guessed-gpu", "acceleratorMemoryBytes": 8589934592, "systemMemoryBytes": null, "unifiedMemory": null },
+    "task": { "family": "general", "latencyPreference": "interactive", "contextTokens": 4096, "priority": "balanced" },
+    "constraints": { "maximumArtifactBytes": null, "allowedBackends": ["cuda"], "installedOnly": false },
+    "guards": [], "expectations": [], "objectives": [], "diversityDimensions": []
+  },
+  "sources": [],
+  "systemResults": [{ "systemId": "bad", "systemVersion": "fixture", "inputMapping": "exact", "mappingFacets": { "hardware": "exact", "task": "exact", "constraints": "exact", "candidateIdentity": "exact", "evidence": "exact" }, "mappingAdjustments": [], "mappingNotes": [], "guardAssessments": [], "candidates": [] }]
+}

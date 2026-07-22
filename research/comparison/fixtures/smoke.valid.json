@@ -1,52 +1,45 @@
 {
   "schemaVersion": 1,
   "scenario": {
-    "scenarioId": "smoke-6gb-nvidia-coding",
-    "hardware": {
-      "osFamily": "windows",
-      "acceleratorVendor": "nvidia",
-      "acceleratorModel": "example-6gb-gpu",
-      "acceleratorMemoryBytes": 6442450944,
-      "systemMemoryBytes": 17179869184,
-      "unifiedMemory": false
-    },
-    "task": {
-      "family": "coding",
-      "interactionStyle": "interactive",
-      "contextTokens": 16384,
-      "priority": "balanced"
-    },
-    "constraints": {
-      "maximumArtifactBytes": 6442450944,
-      "allowedBackends": ["cuda"],
-      "installedOnly": false
-    }
+    "scenarioId": "smoke-24gb-patient-coding",
+    "hardware": { "osFamily": "windows", "acceleratorVendor": "nvidia", "acceleratorModel": null, "acceleratorMemoryBytes": 25769803776, "systemMemoryBytes": 68719476736, "unifiedMemory": false },
+    "task": { "family": "coding", "latencyPreference": "patient", "contextTokens": 16384, "priority": "quality" },
+    "constraints": { "maximumArtifactBytes": null, "allowedBackends": ["cuda"], "installedOnly": false },
+    "guards": [
+      { "code": "NO_UNPROVEN_FIT", "statement": "Do not recommend without exact fit evidence.", "sourceIds": ["consensus-source"] }
+    ],
+    "expectations": [
+      { "expectationId": "consider-family-a", "modelFamilyId": "family-a", "identityCompleteness": "family-prior", "acceptableDispositions": ["considered", "recommended", "excluded"], "acceptableExclusionCodes": ["NO_EXACT_FIT"], "sourceIds": ["consensus-source"] },
+      { "expectationId": "consider-family-b", "modelFamilyId": "family-b", "identityCompleteness": "family-prior", "acceptableDispositions": ["considered", "recommended", "excluded"], "acceptableExclusionCodes": ["NO_EXACT_FIT"], "sourceIds": ["consensus-source"] }
+    ],
+    "objectives": [
+      { "id": "decode", "observation": "decodeTokensPerSecond", "direction": "maximize", "unit": "tokens/s", "scope": "scenario-exact" }
+    ],
+    "diversityDimensions": ["family", "runtime"]
   },
   "sources": [
-    {
-      "sourceId": "fixture-source",
-      "url": "https://example.invalid/research-source",
-      "retrievedAt": "2026-07-22T16:00:00Z",
-      "sourceClass": "upstream-tool",
-      "dataUseStatus": "reference-only"
-    }
+    { "sourceId": "consensus-source", "url": "https://example.invalid/consensus", "retrievedAt": "2026-07-22T00:00:00Z", "retrievalPrecision": "date", "sourceClass": "community-consensus", "dataUseStatus": "reference-only" },
+    { "sourceId": "measurement-source", "url": "https://example.invalid/measurement", "retrievedAt": "2026-07-22T16:00:00Z", "retrievalPrecision": "date-time", "sourceClass": "local-measurement", "dataUseStatus": "reference-only" }
   ],
   "systemResults": [
     {
-      "systemId": "example-baseline",
-      "systemVersion": "fixture",
-      "inputMapping": "lossy",
-      "mappingNotes": ["The example baseline cannot represent exact runtime build identity."],
+      "systemId": "example-baseline", "systemVersion": "fixture", "inputMapping": "lossy",
+      "mappingFacets": { "hardware": "lossy", "task": "lossy", "constraints": "exact", "candidateIdentity": "lossy", "evidence": "exact" },
+      "mappingAdjustments": [
+        { "code": "PATIENT_TO_INTERACTIVE", "facet": "task", "detail": "Baseline accepts only interactive/batch; patient was represented as interactive." },
+        { "code": "MODEL_UNKNOWN_PRESERVED", "facet": "hardware", "detail": "The unknown accelerator model remained null." }
+      ],
+      "mappingNotes": ["Family candidates do not resolve exact artifact identity."],
+      "guardAssessments": [{ "guardCode": "NO_UNPROVEN_FIT", "status": "satisfied", "reasons": ["Only the candidate with a measured exact fit was recommended."] }],
       "candidates": [
         {
-          "rank": 1,
-          "disposition": "considered",
-          "modelFamilyId": "example-family",
-          "artifactId": null,
-          "runtimeIdentityComplete": false,
-          "runnable": "unknown",
-          "evidenceApplicability": "proxy",
-          "reasons": ["Broad family candidate only; exact artifact and runtime remain unresolved."]
+          "candidateId": "candidate-a", "rank": 1, "disposition": "recommended", "exclusionCodes": [], "modelFamilyId": "family-a", "artifactId": "artifact-a", "runtimeIdentityComplete": true, "runnable": "yes", "evidenceApplicability": "exact",
+          "observations": { "decodeTokensPerSecond": { "lower": 12, "upper": 14, "unit": "tokens/s", "scope": "scenario-exact", "evidenceClass": "locally-measured", "sourceIds": ["measurement-source"] } },
+          "diversity": { "family": "family-a", "runtime": "llama.cpp" }, "reasons": ["Exact scoped local observation is available."]
+        },
+        {
+          "candidateId": "candidate-b", "rank": null, "disposition": "excluded", "exclusionCodes": ["NO_EXACT_FIT"], "modelFamilyId": "family-b", "artifactId": null, "runtimeIdentityComplete": false, "runnable": "unknown", "evidenceApplicability": "unknown",
+          "observations": {}, "diversity": { "family": "family-b", "runtime": null }, "reasons": ["No exact artifact fit was available."]
         }
       ]
     }

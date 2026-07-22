@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "scenario": {
+    "scenarioId": "unknown-accelerator", "hardware": { "osFamily": "unknown", "acceleratorVendor": "unknown", "acceleratorModel": null, "acceleratorMemoryBytes": 8589934592, "systemMemoryBytes": null, "unifiedMemory": null },
+    "task": { "family": "general", "latencyPreference": "interactive", "contextTokens": 4096, "priority": "balanced" },
+    "constraints": { "maximumArtifactBytes": null, "allowedBackends": [], "installedOnly": false },
+    "guards": [{ "code": "NO_VENDOR_FROM_MEMORY", "statement": "Do not infer vendor or backend from memory.", "sourceIds": [] }],
+    "expectations": [], "objectives": [], "diversityDimensions": []
+  },
+  "sources": [],
+  "systemResults": [{
+    "systemId": "blocked-baseline", "systemVersion": "fixture", "inputMapping": "unsupported",
+    "mappingFacets": { "hardware": "unsupported", "task": "exact", "constraints": "unsupported", "candidateIdentity": "unsupported", "evidence": "unsupported" },
+    "mappingAdjustments": [{ "code": "UNKNOWN_HARDWARE_PRESERVED", "facet": "hardware", "detail": "Unknown fields remained unknown; no backend was invented." }],
+    "mappingNotes": ["Candidate generation is blocked until hardware compatibility is known."],
+    "guardAssessments": [{ "guardCode": "NO_VENDOR_FROM_MEMORY", "status": "satisfied", "reasons": ["No candidates or backend were produced."] }],
+    "candidates": []
+  }]
+}

@@ -3,103 +3,148 @@
   "$id": "https://localarcade.example/research/comparison-v1.schema.json",
   "title": "Local Arcade non-production recommendation comparison v1",
   "type": "object",
+  "additionalProperties": false,
   "required": ["schemaVersion", "scenario", "sources", "systemResults"],
   "properties": {
     "schemaVersion": { "const": 1 },
+    "scenario": { "$ref": "#/$defs/scenario" },
+    "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+    "systemResults": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/systemResult" } }
+  },
+  "$defs": {
+    "mappingClass": { "enum": ["exact", "lossy", "unsupported"] },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceId", "url", "retrievedAt", "retrievalPrecision", "sourceClass", "dataUseStatus"],
+      "properties": {
+        "sourceId": { "type": "string", "minLength": 1 },
+        "url": { "type": "string", "format": "uri" },
+        "retrievedAt": { "type": "string", "format": "date-time" },
+        "retrievalPrecision": { "enum": ["date", "date-time"] },
+        "sourceClass": { "enum": ["upstream-tool", "model-author", "runtime-author", "community-consensus", "community-measurement", "local-measurement", "research-paper"] },
+        "dataUseStatus": { "enum": ["reference-only", "redistribution-approved", "unknown"] }
+      }
+    },
+    "hardware": {
+      "type": "object", "additionalProperties": false,
+      "required": ["osFamily", "acceleratorVendor", "acceleratorModel", "acceleratorMemoryBytes", "systemMemoryBytes", "unifiedMemory"],
+      "properties": {
+        "osFamily": { "enum": ["windows", "macos", "linux", "other", "unknown"] },
+        "acceleratorVendor": { "enum": ["nvidia", "amd", "apple", "intel", "cpu", "other", "unknown"] },
+        "acceleratorModel": { "type": ["string", "null"] },
+        "acceleratorMemoryBytes": { "type": ["integer", "null"], "minimum": 1 },
+        "systemMemoryBytes": { "type": ["integer", "null"], "minimum": 1 },
+        "unifiedMemory": { "type": ["boolean", "null"] }
+      }
+    },
+    "task": {
+      "type": "object", "additionalProperties": false,
+      "required": ["family", "latencyPreference", "contextTokens", "priority"],
+      "properties": {
+        "family": { "enum": ["coding", "writing", "extraction", "general", "other"] },
+        "latencyPreference": { "enum": ["interactive", "patient", "batch"] },
+        "contextTokens": { "type": "integer", "minimum": 1 },
+        "priority": { "enum": ["balanced", "quality", "speed", "long-context", "lightest"] }
+      }
+    },
+    "guard": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "statement", "sourceIds"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+        "statement": { "type": "string", "minLength": 1 },
+        "sourceIds": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "expectation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["expectationId", "modelFamilyId", "identityCompleteness", "acceptableDispositions", "acceptableExclusionCodes", "sourceIds"],
+      "properties": {
+        "expectationId": { "type": "string", "minLength": 1 },
+        "modelFamilyId": { "type": "string", "minLength": 1 },
+        "identityCompleteness": { "enum": ["family-prior", "exact-configuration"] },
+        "acceptableDispositions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["considered", "recommended", "excluded", "unsupported"] } },
+        "acceptableExclusionCodes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "sourceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "objective": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "observation", "direction", "unit", "scope"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 }, "observation": { "type": "string", "minLength": 1 },
+        "direction": { "enum": ["maximize", "minimize"] }, "unit": { "type": "string", "minLength": 1 }, "scope": { "type": "string", "minLength": 1 }
+      }
+    },
     "scenario": {
-      "type": "object",
-      "required": ["scenarioId", "hardware", "task", "constraints"],
+      "type": "object", "additionalProperties": false,
+      "required": ["scenarioId", "hardware", "task", "constraints", "guards", "expectations", "objectives", "diversityDimensions"],
       "properties": {
         "scenarioId": { "type": "string", "minLength": 1 },
-        "hardware": {
-          "type": "object",
-          "required": ["osFamily", "acceleratorVendor", "acceleratorModel", "acceleratorMemoryBytes", "systemMemoryBytes", "unifiedMemory"],
-          "properties": {
-            "osFamily": { "enum": ["windows", "macos", "linux", "other"] },
-            "acceleratorVendor": { "enum": ["nvidia", "amd", "apple", "intel", "cpu", "other"] },
-            "acceleratorModel": { "type": ["string", "null"] },
-            "acceleratorMemoryBytes": { "type": ["integer", "null"], "minimum": 1 },
-            "systemMemoryBytes": { "type": "integer", "minimum": 1 },
-            "unifiedMemory": { "type": ["boolean", "null"] }
-          },
-          "additionalProperties": false
-        },
-        "task": {
-          "type": "object",
-          "required": ["family", "interactionStyle", "contextTokens", "priority"],
-          "properties": {
-            "family": { "enum": ["coding", "writing", "extraction", "general", "other"] },
-            "interactionStyle": { "enum": ["interactive", "batch"] },
-            "contextTokens": { "type": "integer", "minimum": 1 },
-            "priority": { "enum": ["balanced", "quality", "speed", "long-context", "lightest"] }
-          },
-          "additionalProperties": false
-        },
+        "hardware": { "$ref": "#/$defs/hardware" }, "task": { "$ref": "#/$defs/task" },
         "constraints": {
-          "type": "object",
+          "type": "object", "additionalProperties": false,
           "required": ["maximumArtifactBytes", "allowedBackends", "installedOnly"],
           "properties": {
             "maximumArtifactBytes": { "type": ["integer", "null"], "minimum": 1 },
-            "allowedBackends": {
-              "type": "array",
-              "uniqueItems": true,
-              "items": { "enum": ["cuda", "rocm", "metal", "vulkan", "cpu", "other"] }
-            },
+            "allowedBackends": { "type": "array", "uniqueItems": true, "items": { "enum": ["cuda", "rocm", "metal", "vulkan", "cpu", "other"] } },
             "installedOnly": { "type": "boolean" }
-          },
-          "additionalProperties": false
-        }
-      },
-      "additionalProperties": false
-    },
-    "sources": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["sourceId", "url", "retrievedAt", "sourceClass", "dataUseStatus"],
-        "properties": {
-          "sourceId": { "type": "string", "minLength": 1 },
-          "url": { "type": "string", "format": "uri" },
-          "retrievedAt": { "type": "string", "format": "date-time" },
-          "sourceClass": { "enum": ["upstream-tool", "model-author", "runtime-author", "community-consensus", "community-measurement", "local-measurement", "research-paper"] },
-          "dataUseStatus": { "enum": ["reference-only", "redistribution-approved", "unknown"] }
-        },
-        "additionalProperties": false
-      }
-    },
-    "systemResults": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": ["systemId", "systemVersion", "inputMapping", "mappingNotes", "candidates"],
-        "properties": {
-          "systemId": { "type": "string", "minLength": 1 },
-          "systemVersion": { "type": "string", "minLength": 1 },
-          "inputMapping": { "enum": ["exact", "lossy", "unsupported"] },
-          "mappingNotes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-          "candidates": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "required": ["rank", "disposition", "modelFamilyId", "artifactId", "runtimeIdentityComplete", "runnable", "evidenceApplicability", "reasons"],
-              "properties": {
-                "rank": { "type": ["integer", "null"], "minimum": 1 },
-                "disposition": { "enum": ["considered", "recommended", "excluded", "unsupported"] },
-                "modelFamilyId": { "type": "string", "minLength": 1 },
-                "artifactId": { "type": ["string", "null"] },
-                "runtimeIdentityComplete": { "type": "boolean" },
-                "runnable": { "enum": ["yes", "no", "unknown"] },
-                "evidenceApplicability": { "enum": ["exact", "compatible", "proxy", "unknown"] },
-                "reasons": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
-              },
-              "additionalProperties": false
-            }
           }
         },
-        "additionalProperties": false
+        "guards": { "type": "array", "items": { "$ref": "#/$defs/guard" } },
+        "expectations": { "type": "array", "items": { "$ref": "#/$defs/expectation" } },
+        "objectives": { "type": "array", "items": { "$ref": "#/$defs/objective" } },
+        "diversityDimensions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["lower", "upper", "unit", "scope", "evidenceClass", "sourceIds"],
+      "properties": {
+        "lower": { "type": "number" }, "upper": { "type": "number" }, "unit": { "type": "string", "minLength": 1 }, "scope": { "type": "string", "minLength": 1 },
+        "evidenceClass": { "enum": ["estimated", "community-measured", "locally-measured", "objective-check"] },
+        "sourceIds": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidateId", "rank", "disposition", "exclusionCodes", "modelFamilyId", "artifactId", "runtimeIdentityComplete", "runnable", "evidenceApplicability", "observations", "diversity", "reasons"],
+      "properties": {
+        "candidateId": { "type": "string", "minLength": 1 }, "rank": { "type": ["integer", "null"], "minimum": 1 },
+        "disposition": { "enum": ["considered", "recommended", "excluded", "unsupported"] },
+        "exclusionCodes": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "modelFamilyId": { "type": "string", "minLength": 1 }, "artifactId": { "type": ["string", "null"] }, "runtimeIdentityComplete": { "type": "boolean" },
+        "runnable": { "enum": ["yes", "no", "unknown"] }, "evidenceApplicability": { "enum": ["exact", "compatible", "proxy", "unknown"] },
+        "observations": { "type": "object", "additionalProperties": { "$ref": "#/$defs/observation" } },
+        "diversity": { "type": "object", "additionalProperties": { "type": ["string", "null"] } },
+        "reasons": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "mappingAdjustment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "facet", "detail"],
+      "properties": { "code": { "type": "string", "minLength": 1 }, "facet": { "enum": ["hardware", "task", "constraints", "candidate-identity", "evidence", "source-time"] }, "detail": { "type": "string", "minLength": 1 } }
+    },
+    "guardAssessment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["guardCode", "status", "reasons"],
+      "properties": { "guardCode": { "type": "string", "minLength": 1 }, "status": { "enum": ["satisfied", "violated", "not-evaluable"] }, "reasons": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } } }
+    },
+    "systemResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["systemId", "systemVersion", "inputMapping", "mappingFacets", "mappingAdjustments", "mappingNotes", "guardAssessments", "candidates"],
+      "properties": {
+        "systemId": { "type": "string", "minLength": 1 }, "systemVersion": { "type": "string", "minLength": 1 }, "inputMapping": { "$ref": "#/$defs/mappingClass" },
+        "mappingFacets": {
+          "type": "object", "additionalProperties": false,
+          "required": ["hardware", "task", "constraints", "candidateIdentity", "evidence"],
+          "properties": { "hardware": { "$ref": "#/$defs/mappingClass" }, "task": { "$ref": "#/$defs/mappingClass" }, "constraints": { "$ref": "#/$defs/mappingClass" }, "candidateIdentity": { "$ref": "#/$defs/mappingClass" }, "evidence": { "$ref": "#/$defs/mappingClass" } }
+        },
+        "mappingAdjustments": { "type": "array", "items": { "$ref": "#/$defs/mappingAdjustment" } },
+        "mappingNotes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "guardAssessments": { "type": "array", "items": { "$ref": "#/$defs/guardAssessment" } },
+        "candidates": { "type": "array", "items": { "$ref": "#/$defs/candidate" } }
       }
     }
-  },
-  "additionalProperties": false
+  }
 }
