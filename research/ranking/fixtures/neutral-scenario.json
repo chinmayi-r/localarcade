@@ -1,0 +1,43 @@
+{
+  "id": "neutral-12gb-coding-example",
+  "retrievedAt": "2026-07-22T00:00:00Z",
+  "hardConstraints": [
+    { "id": "memory-fit", "observation": "peakMemoryGb", "operator": "at-most", "value": 12, "unit": "GiB", "scope": "hw-12gb|ctx-16k" }
+  ],
+  "objectives": [
+    { "id": "decode-speed", "observation": "decodeTps", "direction": "maximize", "unit": "token/s", "scope": "hw-12gb|ctx-16k|harness-v1" },
+    { "id": "memory-headroom", "observation": "memoryHeadroomGb", "direction": "maximize", "unit": "GiB", "scope": "hw-12gb|ctx-16k" }
+  ],
+  "diversityDimensions": ["family", "runtime", "quantization"],
+  "candidates": [
+    {
+      "id": "cfg-a",
+      "familyId": "family-a",
+      "exactConfigurationId": "exact-a",
+      "observations": {
+        "peakMemoryGb": { "lower": 8, "upper": 9, "unit": "GiB", "scope": "hw-12gb|ctx-16k", "evidenceClass": "community-measured", "sourceIds": ["source-a"] },
+        "decodeTps": { "lower": 40, "upper": 44, "unit": "token/s", "scope": "hw-12gb|ctx-16k|harness-v1", "evidenceClass": "community-measured", "sourceIds": ["source-a"] },
+        "memoryHeadroomGb": { "lower": 3, "upper": 4, "unit": "GiB", "scope": "hw-12gb|ctx-16k", "evidenceClass": "community-measured", "sourceIds": ["source-a"] }
+      },
+      "diversity": { "family": "family-a", "runtime": "runtime-x", "quantization": "q4" }
+    },
+    {
+      "id": "cfg-b",
+      "familyId": "family-b",
+      "exactConfigurationId": "exact-b",
+      "observations": {
+        "peakMemoryGb": { "lower": 10, "upper": 11, "unit": "GiB", "scope": "hw-12gb|ctx-16k", "evidenceClass": "locally-measured", "sourceIds": ["source-b"] },
+        "decodeTps": { "lower": 45, "upper": 49, "unit": "token/s", "scope": "hw-12gb|ctx-16k|harness-v1", "evidenceClass": "locally-measured", "sourceIds": ["source-b"] },
+        "memoryHeadroomGb": { "lower": 1, "upper": 2, "unit": "GiB", "scope": "hw-12gb|ctx-16k", "evidenceClass": "locally-measured", "sourceIds": ["source-b"] }
+      },
+      "diversity": { "family": "family-b", "runtime": "runtime-y", "quantization": "q5" }
+    },
+    {
+      "id": "cfg-unknown",
+      "familyId": "family-c",
+      "exactConfigurationId": null,
+      "observations": {},
+      "diversity": { "family": "family-c", "runtime": "runtime-x", "quantization": "q4" }
+    }
+  ]
+}

@@ -17,6 +17,7 @@
     "registry:import:hf": "npm run ingest",
     "registry:freshness": "tsx scripts/check-registry-freshness.ts",
     "contracts:validate": "node docs/contracts/validate-fixtures.mjs",
+    "research:ranking": "tsc -p research/ranking/tsconfig.json && tsx --test research/ranking/*.test.ts",
     "docs:validate": "node docs/validate-documentation.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
     "lint": "eslint app lib tests worker public/design-system/constellation.js eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
