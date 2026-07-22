@@ -2,6 +2,8 @@ import type { HardwareProfile, RecommendationQuery } from "../../recommendation/
 import type { HardwareTarget, MappingResult, Need, OsFamily, Origin, RecommendationRequest } from "../types";
 
 const GIB = 2 ** 30;
+/** Adapter-local extension; the legacy core does not yet model system RAM. */
+export type HardwareProfileWithSystemMemory = HardwareProfile & { systemMemoryGb?: number };
 export type RecommendationRequestContext = {
   requestId: string; hardwareTargetId: string; interactionStyle: "interactive" | "batch"; scopeLabel: string;
   needs: Need[]; allowCpuOffload: boolean; installedOnly: boolean;
@@ -29,7 +31,7 @@ export type HardwareAdapterContext = {
   backend: HardwareTarget["accelerators"][number]["backend"]; fieldOrigins: Record<string, Origin>;
 };
 
-export function toHardwareTarget(profile: HardwareProfile, context: HardwareAdapterContext): HardwareTarget {
+export function toHardwareTarget(profile: HardwareProfileWithSystemMemory, context: HardwareAdapterContext): HardwareTarget {
   return {
     hardwareTargetId: context.hardwareTargetId, os: { family: context.osFamily, version: context.osVersion },
     cpu: { displayName: context.cpuDisplayName, logicalCores: context.logicalCores },
@@ -39,7 +41,7 @@ export function toHardwareTarget(profile: HardwareProfile, context: HardwareAdap
   };
 }
 
-export function fromHardwareTarget(target: HardwareTarget): MappingResult<HardwareProfile> {
+export function fromHardwareTarget(target: HardwareTarget): MappingResult<HardwareProfileWithSystemMemory> {
   if (target.accelerators.length !== 1) return { kind: "blocked", reasonCode: "mapping.accelerator-cardinality", message: "Current hardware profiles support exactly one accelerator.", missing: ["accelerators"] };
   const accelerator = target.accelerators[0];
   if (accelerator.deviceMemoryBytes === null) return { kind: "blocked", reasonCode: "mapping.device-memory-unknown", message: "Current recommendation requires confirmed available accelerator memory.", missing: ["accelerators/0/deviceMemoryBytes"] };
