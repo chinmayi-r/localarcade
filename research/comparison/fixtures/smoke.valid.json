@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "scenario": {
+    "scenarioId": "smoke-6gb-nvidia-coding",
+    "hardware": {
+      "osFamily": "windows",
+      "acceleratorVendor": "nvidia",
+      "acceleratorModel": "example-6gb-gpu",
+      "acceleratorMemoryBytes": 6442450944,
+      "systemMemoryBytes": 17179869184,
+      "unifiedMemory": false
+    },
+    "task": {
+      "family": "coding",
+      "interactionStyle": "interactive",
+      "contextTokens": 16384,
+      "priority": "balanced"
+    },
+    "constraints": {
+      "maximumArtifactBytes": 6442450944,
+      "allowedBackends": ["cuda"],
+      "installedOnly": false
+    }
+  },
+  "sources": [
+    {
+      "sourceId": "fixture-source",
+      "url": "https://example.invalid/research-source",
+      "retrievedAt": "2026-07-22T16:00:00Z",
+      "sourceClass": "upstream-tool",
+      "dataUseStatus": "reference-only"
+    }
+  ],
+  "systemResults": [
+    {
+      "systemId": "example-baseline",
+      "systemVersion": "fixture",
+      "inputMapping": "lossy",
+      "mappingNotes": ["The example baseline cannot represent exact runtime build identity."],
+      "candidates": [
+        {
+          "rank": 1,
+          "disposition": "considered",
+          "modelFamilyId": "example-family",
+          "artifactId": null,
+          "runtimeIdentityComplete": false,
+          "runnable": "unknown",
+          "evidenceApplicability": "proxy",
+          "reasons": ["Broad family candidate only; exact artifact and runtime remain unresolved."]
+        }
+      ]
+    }
+  ]
+}
