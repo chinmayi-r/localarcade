@@ -4,7 +4,7 @@ import registryJson from "../registry/generated/artifacts.json";
 import type { Provenance } from "../lib/contracts";
 import type { RegistrySnapshot } from "../lib/registry";
 import { buildExactConfigurationCandidate, evaluateArtifactCompatibility } from "../lib/runtime";
-import type { CandidateBuildInput, CompatibilityAssertion, RuntimeBuild } from "../lib/runtime";
+import type { CandidateBuildInput, CompatibilityAssertion, ProductId, RuntimeBuild } from "../lib/runtime";
 
 const registry = registryJson as RegistrySnapshot;
 const artifact = registry.artifacts.find((record) => record.status === "promoted")!;
@@ -95,6 +95,52 @@ test("M-E reports every absent explicit runtime field and never supplies default
   assert.ok(result.missing.includes("runtime.chatTemplate"));
   assert.ok(result.missing.includes("runtime.kvCache"));
   assert.ok(result.missing.includes("runtime.sampler"));
+});
+
+test("M-E fails closed on incomplete nested settings and schema-invalid numeric values", () => {
+  const incomplete = buildExactConfigurationCandidate({
+    ...completeInput,
+    runtime: {
+      ...completeInput.runtime!,
+      kvCache: { key: "f16" } as unknown as NonNullable<CandidateBuildInput["runtime"]>["kvCache"],
+      sampler: { temperature: null, topP: null } as unknown as NonNullable<CandidateBuildInput["runtime"]>["sampler"],
+    },
+  });
+  assert.equal(incomplete.kind, "blocked");
+  if (incomplete.kind === "blocked") {
+    assert.ok(incomplete.missing.includes("runtime.kvCache.value"));
+    assert.ok(incomplete.missing.includes("runtime.sampler.topK"));
+    assert.ok(incomplete.missing.includes("runtime.sampler.minP"));
+    assert.ok(incomplete.missing.includes("runtime.sampler.seed"));
+  }
+
+  const invalidNumbers = buildExactConfigurationCandidate({
+    ...completeInput,
+    runtime: {
+      ...completeInput.runtime!,
+      contextTokens: 1.5,
+      batchSize: 0,
+      sampler: { temperature: -1, topP: 2, topK: -1, minP: Number.NaN, seed: 1.5 },
+    },
+  });
+  assert.equal(invalidNumbers.kind, "blocked");
+  if (invalidNumbers.kind === "blocked") {
+    for (const field of ["runtime.contextTokens", "runtime.batchSize", "runtime.sampler.temperature", "runtime.sampler.topP", "runtime.sampler.topK", "runtime.sampler.minP", "runtime.sampler.seed"]) {
+      assert.ok(invalidNumbers.missing.includes(field), field);
+    }
+  }
+});
+
+test("M-E blocks unknown runtime products instead of throwing at the catalog boundary", () => {
+  const result = buildExactConfigurationCandidate({
+    ...completeInput,
+    runtime: { ...completeInput.runtime!, productId: "unknown-product" as ProductId },
+  });
+  assert.equal(result.kind, "blocked");
+  if (result.kind === "blocked") {
+    assert.equal(result.reasonCode, "runtime-incompatible");
+    assert.match(result.reasons.join(" "), /not present in the runtime catalog/);
+  }
 });
 
 test("M-E fails closed when compatibility evidence is unknown or incomplete", () => {

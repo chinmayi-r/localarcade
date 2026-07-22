@@ -49,6 +49,18 @@ function hasOwn(value: object, key: PropertyKey): boolean {
   return Object.prototype.hasOwnProperty.call(value, key);
 }
 
+function isIntegerAtLeast(value: unknown, minimum: number): boolean {
+  return typeof value === "number" && Number.isInteger(value) && value >= minimum;
+}
+
+function isNullableIntegerAtLeast(value: unknown, minimum: number): boolean {
+  return value === null || isIntegerAtLeast(value, minimum);
+}
+
+function isNullableNumberInRange(value: unknown, minimum: number, maximum = Number.POSITIVE_INFINITY): boolean {
+  return value === null || (typeof value === "number" && Number.isFinite(value) && value >= minimum && value <= maximum);
+}
+
 export function buildExactConfigurationCandidate(input: CandidateBuildInput): CandidateBuildResult {
   const missing: string[] = [];
   if (!input.candidateId) missing.push("candidateId");
@@ -72,7 +84,33 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
     if (!input.runtime.runtimeBuild?.os) missing.push("runtime.runtimeBuild.os");
     if (!input.runtime.runtimeBuild?.cpuArchitecture) missing.push("runtime.runtimeBuild.cpuArchitecture");
     if (!input.runtime.runtimeBuild?.backend) missing.push("runtime.runtimeBuild.backend");
-    if (!input.runtime.contextTokens || input.runtime.contextTokens < 1) missing.push("runtime.contextTokens");
+    if (!isIntegerAtLeast(input.runtime.contextTokens, 1)) missing.push("runtime.contextTokens");
+    if (input.runtime.kvCache !== undefined) {
+      if (!hasOwn(input.runtime.kvCache, "key")) missing.push("runtime.kvCache.key");
+      if (!hasOwn(input.runtime.kvCache, "value")) missing.push("runtime.kvCache.value");
+    }
+    if (input.runtime.sampler !== undefined) {
+      for (const field of ["temperature", "topP", "topK", "minP", "seed"] as const) {
+        if (!hasOwn(input.runtime.sampler, field)) missing.push(`runtime.sampler.${field}`);
+      }
+    }
+    if (input.runtime.gpuLayers !== undefined && input.runtime.gpuLayers !== "all" && !isNullableIntegerAtLeast(input.runtime.gpuLayers, 0)) missing.push("runtime.gpuLayers");
+    for (const field of ["batchSize", "microBatchSize", "parallelism", "threads"] as const) {
+      if (input.runtime[field] !== undefined && !isNullableIntegerAtLeast(input.runtime[field], 1)) missing.push(`runtime.${field}`);
+    }
+    if (input.runtime.sampler !== undefined) {
+      if (!isNullableNumberInRange(input.runtime.sampler.temperature, 0)) missing.push("runtime.sampler.temperature");
+      if (!isNullableNumberInRange(input.runtime.sampler.topP, 0, 1)) missing.push("runtime.sampler.topP");
+      if (!isNullableIntegerAtLeast(input.runtime.sampler.topK, 0)) missing.push("runtime.sampler.topK");
+      if (!isNullableNumberInRange(input.runtime.sampler.minP, 0, 1)) missing.push("runtime.sampler.minP");
+      if (input.runtime.sampler.seed !== null && !Number.isInteger(input.runtime.sampler.seed)) missing.push("runtime.sampler.seed");
+    }
+    if (input.runtime.additionalFlags !== undefined) {
+      for (const [index, flag] of input.runtime.additionalFlags.entries()) {
+        if (!flag.name) missing.push(`runtime.additionalFlags.${index}.name`);
+        if (!hasOwn(flag, "value")) missing.push(`runtime.additionalFlags.${index}.value`);
+      }
+    }
   }
   if (input.artifact) {
     if (input.artifact.status !== "promoted") missing.push("artifact.status:promoted");
@@ -96,6 +134,12 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
   const build = runtime.runtimeBuild!;
   const productId = runtime.productId!;
   const product = products[productId];
+  if (!product) {
+    return {
+      kind: "blocked", reasonCode: "runtime-incompatible", message: "The selected runtime product is unsupported.", missing: [],
+      reasons: [`Product ${productId} is not present in the runtime catalog.`],
+    };
+  }
   if (!product.engineIds.includes(build.engineId)) {
     return {
       kind: "blocked", reasonCode: "runtime-incompatible", message: "The product does not expose the selected engine.", missing: [],
