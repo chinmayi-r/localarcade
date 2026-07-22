@@ -2,6 +2,22 @@
 
 This module is the admission gate for real artifact and accelerator data. It is deliberately separate from the prototype recommendation catalog.
 
+## M-C contract boundary
+
+`toRegistryArtifactIdentity` maps one admitted, explicitly promoted registry
+record to the artifact/family portion of the approved M-A exact-configuration
+candidate. It deliberately does not construct a candidate: M-E must add an
+explicit runtime configuration before that contract is complete.
+
+`toRegistryArtifactSnapshot` applies the existing snapshot validation and
+seven-day freshness policy, exposes promoted identities, and preserves triage
+and quarantine state. Both functions fail closed rather than normalize an
+incompatible hash, promote a lifecycle state, or invent a missing value.
+
+The adapter retains all fifteen field-provenance records. The compact M-A
+provenance rows identify the source field through `rawSourceRecordRef`; the
+original field map remains available as registry metadata for M-E/M-G.
+
 ## Artifact admission
 
 A downloadable artifact cannot enter a published recommendation until the record includes its publisher/repository, immutable revision, exact filename, SHA-256, byte size, format, quantization, maximum context, license source and retrieval time. Artifact identity is runtime-neutral. Product/engine compatibility is stored as separate versioned assertions.

@@ -9,3 +9,10 @@ test("M4 production imports real registry data and the demo catalog is gone", as
   const engine = await readFile(new URL("../lib/recommendation/engine.ts", import.meta.url), "utf8");
   assert.doesNotMatch(engine, /demo-artifacts|baselineTokensPerSecond|taskScores/);
 });
+
+test("M-C contract adapter depends only on its registry core and M-A types", async () => {
+  const source = await readFile(new URL("../lib/registry/contracts.ts", import.meta.url), "utf8");
+  assert.match(source, /from "\.\.\/contracts"/);
+  assert.doesNotMatch(source, /recommendation|fit|priors|runtime|app\//);
+  assert.doesNotMatch(source, /fetch\(|node:fs|node:child_process|@tauri-apps/);
+});

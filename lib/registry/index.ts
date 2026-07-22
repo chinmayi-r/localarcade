@@ -4,6 +4,8 @@ export { assertRegistryFresh, assessRegistryFreshness, isRecommendableArtifact, 
 export type { RegistryFreshness } from "./freshness";
 export { admitHuggingFaceRepository, chatTemplateSha256, quantizationFromFilename } from "./importers/hugging-face";
 export { baseModelFromTags, selectDiscoveredRepositories } from "./discovery/hugging-face";
+export { toRegistryArtifactIdentity, toRegistryArtifactSnapshot } from "./contracts";
+export type { RegistryArtifactIdentityV1, RegistryArtifactSnapshotV1 } from "./contracts";
 export type { AdmissionResult, HuggingFaceModelResponse } from "./importers/hugging-face";
 export type { DiscoveredRepository, HuggingFaceDiscoveryLock, HuggingFaceDiscoveryPolicy, HuggingFaceListModel, TrustedPublisher } from "./discovery/hugging-face";
 export type { AcceleratorRegistryRecord, AcceleratorVariant, ArtifactFieldProvenance, ArtifactRegistryRecord, FieldProvenance, QuarantineCode, QuarantineRecord, RegistrySnapshot } from "./types";
