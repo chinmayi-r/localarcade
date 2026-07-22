@@ -1,0 +1,209 @@
+# Local Arcade system build assembler
+
+Status: **Active implementation dashboard**, 2026-07-22. This is a progress
+overlay on the audited llmfit operation map and the approved Local Arcade
+module target. A check on an upstream L-box means its source behavior was
+audited; it does not mean Local Arcade adopted or reimplemented it.
+
+## Legend
+
+- ✅ complete or audited, with evidence available
+- 🟡 active in an isolated worktree
+- ⬜ queued behind an explicit dependency
+- ⏸ owner decision or research evidence required
+- ⛔ excluded from the approved first slice
+
+## Graph 1 — complete llmfit box mapped into Local Arcade
+
+The detailed inputs, outputs, side effects and callables for L0–L25 remain in
+[the source operation audit](system-operation-graph.md). This view keeps every
+upstream operation visible while allowing many-to-many adoption boundaries.
+
+```mermaid
+flowchart LR
+  subgraph LF["llmfit v1.1.6 — all source operations audited ✅"]
+    direction TB
+    subgraph LH["hardware"]
+      L0["L0 public exports"]
+      L1["L1 detect hardware"]
+      L2["L2 enrich hardware facts"]
+      L3["L3 hypothetical overrides"]
+    end
+    subgraph LK["model knowledge"]
+      L4["L4 load model database"]
+      L5["L5 storage / KV / quant facts"]
+      L6["L6 mutable discovery cache"]
+    end
+    subgraph LRUN["runtimes and installed state"]
+      L7["L7 detect providers/models"]
+      L8["L8 aggregate installed providers"]
+      L9["L9 map / download / delete artifacts"]
+    end
+    subgraph LADV["fit, ranking and planning"]
+      L10["L10 one-model fit"]
+      L11["L11 whole-catalog fit/calibration"]
+      L12["L12 rank catalog"]
+      L13["L13 filter / compare / recommend"]
+      L14["L14 plan / upgrade deltas"]
+      L15["L15 Kubernetes claim"]
+    end
+    subgraph LMEAS["measurement and sharing"]
+      L16["L16 benchmark endpoint"]
+      L17["L17 discover benchmark targets"]
+      L18["L18 community measurements"]
+      L19["L19 local benchmark store/calibration"]
+      L20["L20 GitHub benchmark sharing"]
+    end
+    subgraph LQUAL["quality, diagnostics and delivery"]
+      L21["L21 regex quality checks"]
+      L22["L22 composite role routing"]
+      L23["L23 diagnostics"]
+      L24["L24 task-prior lookup"]
+      L25["L25 CLI/TUI/web/REST/MCP/NATS/Python"]
+    end
+  end
+
+  subgraph LA["Local Arcade — contracts, preserved cores and target modules"]
+    direction TB
+    MA["M-A contracts ✅"]
+    MB["M-B pinned llmfit advisory ⏸"]
+    MC["M-C exact artifact registry 🟡"]
+    MD["M-D hardware resolver 🟡"]
+    ME["M-E exact candidate/runtime builder 🟡"]
+    MF["M-F fit/performance adapter ⬜\npreserved core ✅"]
+    MG["M-G evidence policy ⬜\npreserved core ✅"]
+    MH["M-H portfolio ⏸\nlegacy core ✅"]
+    MI["M-I read-only inventory ⬜\npreserved core ✅"]
+    MJ["M-J verification adapter ⬜\npreserved core ✅"]
+    MK["M-K private Arena ⬜ later"]
+    MLN["M-L/M-M/M-N public systems ⛔"]
+    MO["M-O orchestration ⬜"]
+    MP["M-P website / desktop / CLI ⬜"]
+  end
+
+  L0 -. "versioned translation" .-> MA
+  L1 -. "detected facts" .-> MD
+  L2 -. "facts, never performance proof" .-> MD
+  L2 -. "scoped estimator input" .-> MF
+  L3 -. "manual/simulated target" .-> MD
+  L4 -. "family prior; exact artifact resolved locally" .-> MB
+  L4 -. "registry identity" .-> MC
+  L5 -. "attributed advisory math" .-> MB
+  L5 -. "compared with preserved exact fit" .-> MF
+  L6 -. "do not import mutable cache lifecycle" .-> MC
+  L7 -. "compatibility identity" .-> ME
+  L7 -. "installed state" .-> MI
+  L8 -. "inventory mechanics" .-> MI
+  L9 -. "mapping only" .-> ME
+  L9 -. "download/delete excluded" .-> MLN
+  L10 -. "estimated advisory" .-> MB
+  L10 -. "fit evidence" .-> MF
+  L11 -. "candidate prior/calibration audit" .-> MB
+  L11 -. "no automatic global calibration" .-> MG
+  L12 -. "baseline under matched research" .-> MH
+  L13 -. "intent orchestration" .-> MO
+  L13 -. "surface parity, not copied UI" .-> MP
+  L14 -. "single-config planning concepts" .-> MF
+  L15 -. "not first-slice product" .-> MLN
+  L16 -. "existing-engine measurement mechanics" .-> MJ
+  L17 -. "explicit inventory/target selection" .-> MI
+  L17 -. "plan binding" .-> MJ
+  L18 -. "scoped community prior" .-> MG
+  L19 -. "local exact observation" .-> MJ
+  L19 -. "eligibility and provenance" .-> MG
+  L20 -. "public contribution deferred" .-> MLN
+  L21 -. "mechanical checks only" .-> MJ
+  L21 -. "later private audition" .-> MK
+  L22 -. "not accepted as product truth" .-> MH
+  L23 -. "typed unavailable/diagnostic states" .-> MO
+  L24 -. "dated task prior" .-> MG
+  L24 -. "portfolio input, never proof" .-> MH
+  L25 -. "use-case boundary" .-> MO
+  L25 -. "new Local Arcade surfaces" .-> MP
+
+  MA --> MC
+  MA --> MD
+  MA --> ME
+  MA --> MG
+  MC --> ME
+  MB --> MF
+  MC --> MF
+  MD --> MF
+  ME --> MF
+  MG --> MF
+  MF --> MH
+  MC --> MI
+  ME --> MI
+  MD --> MJ
+  ME --> MJ
+  MI --> MJ
+  MH --> MO
+  MI --> MO
+  MJ --> MO
+  MO --> MP
+```
+
+## Graph 2 — implementation checkpoints and parallel tracks
+
+```mermaid
+flowchart TB
+  BASE["Preservation baseline ✅\n59e6dd1"] --> MA["M-A contracts ✅\n55afbb2 + corrections"]
+
+  subgraph W1["Parallel adapter wave — active"]
+    MC["M-C registry 🟡\ncodex/m-c-registry"]
+    MD["M-D hardware 🟡\ncodex/m-d-hardware"]
+    ME["M-E runtime/candidate 🟡\ncodex/m-e-runtime"]
+    MG["M-G evidence ⬜\nfirst free agent slot"]
+    PROTO["Matched ranking protocol 🟡\nassembler-owned"]
+  end
+
+  MA --> MC
+  MA --> MD
+  MA --> ME
+  MA --> MG
+  MA --> PROTO
+
+  MB["M-B llmfit adapter ⏸\nowner decision + pin"]
+  MC --> MF["M-F fit/performance ⬜"]
+  MD --> MF
+  ME --> MF
+  MG --> MF
+  MB --> MF
+
+  MC --> MI["M-I inventory ⬜"]
+  ME --> MI
+  MD --> MJ["M-J verification ⬜"]
+  ME --> MJ
+  MI --> MJ
+
+  MF --> MH["M-H portfolio policy ⏸"]
+  PROTO --> MH
+  MH --> MO["M-O use cases ⬜"]
+  MI --> MO
+  MJ --> MO
+  MO --> WEB["M-P website ⬜"]
+  MO --> DESK["M-P desktop ⬜"]
+  MO --> CLI["CLI parity ⬜"]
+  DESK --> ARENA["M-K private Arena ⬜ later"]
+  PUBLIC["Public Arena / upload / service ⛔"]
+```
+
+## Active branch ledger
+
+| Track | Branch/worktree | Current state | Completion evidence |
+|---|---|---|---|
+| assembler and ranking protocol | `codex/implementation-assembler` — `G:/LocalArcade-worktrees/implementation-assembler` | 🟡 active | graphs, protocol, integration review, documentation and full gates |
+| M-C registry | `codex/m-c-registry` — `G:/LocalArcade-worktrees/m-c-registry` | 🟡 active | adapter/equivalence tests and unchanged snapshot semantics |
+| M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | 🟡 active | manual/detected/unknown/mismatch boundary tests |
+| M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | 🟡 active | exact candidate and incomplete-identity rejection tests |
+| M-G evidence | not cut | ⬜ queued | starts when one agent slot becomes free |
+
+## Mapping rule
+
+The L and M namespaces intentionally describe different things. L0–L25 are
+audited upstream source operations; M-A–M-P are Local Arcade responsibility and
+permission boundaries. One L operation may inform several M modules, and a
+Local Arcade module may combine preserved local behavior with only a narrow,
+attributed part of llmfit. Progress remains attached to each Local Arcade
+module across as many checkpoints as necessary; a partially wrapped core does
+not become complete merely because one adapter exists.

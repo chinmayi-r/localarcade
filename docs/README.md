@@ -23,6 +23,9 @@ and a completed old milestone does not authorize a conflicting new interface.
    approved contracts.
 10. `worktree-execution-plan.md` — approved dependency direction/order; each
     checkpoint remains separately scoped.
+11. `system-build-assembler.md` — live implementation graph, worktree ledger
+    and progress overlay; it reports status but does not override module
+    contracts or checkpoint exclusions.
 
 If these disagree, stop and record the conflict. Do not silently select the
 document that makes the requested code easiest.
@@ -94,6 +97,8 @@ first-slice matrix. Prototypes remain illustrative design references.
   before M-H/M-O; not production authorization.
 - `ranking-research-assembler.md` — active combined llmfit/Local Arcade Mermaid
   dependency graph and parallel-lane progress dashboard.
+- `research/matched-ranking-hypothesis-protocol.md` — proposed operational
+  collection and matched-evaluation contract; thresholds remain owner decisions.
 - `persona-findings.md`
 - `evidence-evaluation-contract.md`
 - `strategy-and-product-rationale.md` — conversation context and long-term
