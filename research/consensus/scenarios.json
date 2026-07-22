@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "consensus-sanity.v1",
+  "asOf": "2026-07-22",
+  "methodology": "Dated, defeasible priors for retention-or-exclusion tests. Inclusion is not a rank, fit result, artifact endorsement, or universal recommendation.",
+  "sources": [
+    { "id": "qwen3-card", "title": "Qwen2.5-Coder-3B-Instruct model card", "publisher": "Qwen", "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct", "sourceClass": "vendor-model-card", "publishedAt": "2025-01-12", "retrievedAt": "2026-07-22", "supports": ["The 3B instruction model is a code-specialized candidate family."] },
+    { "id": "qwen7-card", "title": "Qwen2.5-Coder-7B-Instruct model card", "publisher": "Qwen", "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct", "sourceClass": "vendor-model-card", "publishedAt": "2025-01-12", "retrievedAt": "2026-07-22", "supports": ["The 7B instruction model is code-specialized and advertises long context with deployment caveats."] },
+    { "id": "qwen14-card", "title": "Qwen2.5-Coder-14B-Instruct model card", "publisher": "Qwen", "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-14B-Instruct", "sourceClass": "vendor-model-card", "publishedAt": "2025-01-12", "retrievedAt": "2026-07-22", "supports": ["The 14B code model defaults to 32768 tokens; longer context needs explicit YaRN configuration."] },
+    { "id": "qwen32-card", "title": "Qwen2.5-Coder-32B-Instruct model card", "publisher": "Qwen", "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct", "sourceClass": "vendor-model-card", "publishedAt": "2025-01-12", "retrievedAt": "2026-07-22", "supports": ["The 32B instruction model is code-specialized; local use still requires exact quantization and fit evidence."] },
+    { "id": "qwen3-gguf", "title": "Official Qwen2.5-Coder-3B-Instruct GGUF revision", "publisher": "Qwen", "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-3B-Instruct-GGUF/tree/f74adce6aa16316c625447af059dbebe4983757c", "sourceClass": "vendor-model-card", "publishedAt": null, "retrievedAt": "2026-07-22", "supports": ["An official revision-pinned GGUF conversion exists for exact-artifact follow-up."] },
+    { "id": "gemma4-card", "title": "Gemma 3 4B IT model card", "publisher": "Google", "url": "https://huggingface.co/google/gemma-3-4b-it", "sourceClass": "vendor-model-card", "publishedAt": "2025-03-12", "retrievedAt": "2026-07-22", "supports": ["Gemma 3 4B IT lists summarization and text generation and advertises 128K input context."] },
+    { "id": "phi4-card", "title": "Phi-4-mini-instruct model card", "publisher": "Microsoft", "url": "https://huggingface.co/microsoft/Phi-4-mini-instruct", "sourceClass": "vendor-model-card", "publishedAt": "2025-02-26", "retrievedAt": "2026-07-22", "supports": ["Phi-4 mini is 3.8B and intended partly for constrained and latency-bound use."] },
+    { "id": "mlx-docs", "title": "MLX LM README", "publisher": "MLX team", "url": "https://github.com/ml-explore/mlx-lm", "sourceClass": "runtime-documentation", "publishedAt": null, "retrievedAt": "2026-07-22", "supports": ["MLX LM runs and quantizes language models on Apple silicon."] },
+    { "id": "llamacpp-docs", "title": "llama.cpp README", "publisher": "ggml-org", "url": "https://github.com/ggml-org/llama.cpp", "sourceClass": "runtime-documentation", "publishedAt": null, "retrievedAt": "2026-07-22", "supports": ["llama.cpp supports CPU plus GPU hybrid inference and compatible GGUF artifacts."] },
+    { "id": "community-6gb", "title": "What can I do with 6GB of VRAM?", "publisher": "r/LocalLLaMA contributors", "url": "https://www.reddit.com/r/LocalLLaMA/comments/1hzi6ed/what_can_i_do_with_6gb_of_vram/", "sourceClass": "community-discussion", "publishedAt": "2025-01-12", "retrievedAt": "2026-07-22", "supports": ["Contributors consider Qwen2.5 Coder 3B and quantized 7B on 6GB and report larger offloaded models as slower."] },
+    { "id": "community-24gb", "title": "Models that can fit in 24GB VRAM", "publisher": "r/LocalLLaMA contributor", "url": "https://www.reddit.com/r/LocalLLaMA/comments/1i8tx5z/i_benchmarked_almost_every_model_that_can_fit_in/", "sourceClass": "community-discussion", "publishedAt": "2025-01-24", "retrievedAt": "2026-07-22", "supports": ["A high-attention benchmark treats quantized Qwen2.5 Coder 32B as a candidate but explicitly omitted coding tasks."] },
+    { "id": "community-apple16", "title": "Apple Silicon 16GB model recommendation discussion", "publisher": "r/LocalLLM contributors", "url": "https://www.reddit.com/r/LocalLLM/comments/1shmkgu/what_model_should_i_use_on_an_apple_silicon/", "sourceClass": "community-discussion", "publishedAt": "2026-04-10", "retrievedAt": "2026-07-22", "supports": ["Contributors support small quantized models but disagree about capability and safe context headroom on 16GB."] }
+  ],
+  "scenarios": [
+    {
+      "id": "nvidia-6gb-interactive-coding", "status": "sourced-prior",
+      "hardware": { "acceleratorKind": "discrete-gpu", "vendor": "nvidia", "acceleratorMemoryGiB": 6, "systemMemoryGiB": 16, "memoryConfirmation": "self-reported" },
+      "task": { "kind": "coding", "contextTargetTokens": 8192, "priority": "balanced", "latencyPreference": "interactive" },
+      "assumptions": { "runtime": "llama.cpp-compatible", "backend": "cuda", "offload": "partial-allowed", "notes": ["System RAM matters because hybrid offload changes feasibility and speed.", "Context target is an input, not the model-card maximum."] },
+      "mustConsider": [
+        { "id": "qwen3-q4", "modelFamily": "Qwen2.5 Coder 3B Instruct", "upstreamModel": "Qwen/Qwen2.5-Coder-3B-Instruct", "artifactRequirement": "revision-pinned GGUF, Q4-class candidate", "runtimeRequirement": "identified llama.cpp build with CUDA backend", "considerationReason": "Code specialization, an official pinned GGUF route and community reports make this a strong small-model prior.", "sourceIds": ["qwen3-card", "qwen3-gguf", "community-6gb"], "identityCompleteness": "family-prior-exact-artifact-unresolved" },
+        { "id": "qwen7-q4", "modelFamily": "Qwen2.5 Coder 7B Instruct", "upstreamModel": "Qwen/Qwen2.5-Coder-7B-Instruct", "artifactRequirement": "revision-pinned GGUF, Q4-class candidate", "runtimeRequirement": "identified llama.cpp build; offload measured", "considerationReason": "Code specialization and repeated community consideration justify retaining or explicitly excluding it after fit evaluation.", "sourceIds": ["qwen7-card", "community-6gb", "llamacpp-docs"], "identityCompleteness": "family-prior-exact-artifact-unresolved" }
+      ],
+      "mustNotRecommend": [
+        { "code": "NO_UNPROVEN_FULL_GPU_FIT", "rule": "Do not label 7B fully GPU-resident until weights, buffers, KV cache and machine reserve fit.", "sourceIds": ["llamacpp-docs"] },
+        { "code": "NO_CONTEXT_CEILING_AS_FIT", "rule": "Do not equate advertised maximum context with an interactive 8192-token configuration on this device.", "sourceIds": ["qwen7-card"] },
+        { "code": "NO_SLOW_OFFLOAD_AS_INTERACTIVE", "rule": "Do not recommend a larger CPU-offloaded model for interactive use without exact latency evidence.", "sourceIds": ["community-6gb", "llamacpp-docs"] }
+      ],
+      "disagreements": ["Reports disagree on whether 7B Q4 stays interactive after context and desktop reserve.", "A 3B candidate may be faster but adequacy must be auditioned."],
+      "evaluationRule": "Each candidate must survive exact fit evaluation or produce a stable exclusion code; neither must rank first."
+    },
+    {
+      "id": "discrete-12gb-project-coding", "status": "sourced-prior",
+      "hardware": { "acceleratorKind": "discrete-gpu", "vendor": "nvidia", "acceleratorMemoryGiB": 12, "systemMemoryGiB": 32, "memoryConfirmation": "self-reported" },
+      "task": { "kind": "coding", "contextTargetTokens": 16384, "priority": "long-context", "latencyPreference": "interactive" },
+      "assumptions": { "runtime": "llama.cpp-compatible", "backend": "cuda", "offload": "partial-allowed", "notes": ["Project context makes KV-cache settings first-class fit inputs.", "The 14B case is conditional, not presumed resident."] },
+      "mustConsider": [
+        { "id": "qwen7-project", "modelFamily": "Qwen2.5 Coder 7B Instruct", "upstreamModel": "Qwen/Qwen2.5-Coder-7B-Instruct", "artifactRequirement": "revision-pinned GGUF with declared quantization", "runtimeRequirement": "identified llama.cpp build and CUDA settings", "considerationReason": "The code-specialized 7B family supplies a lower-memory baseline against which larger candidates justify cost.", "sourceIds": ["qwen7-card", "llamacpp-docs"], "identityCompleteness": "family-prior-exact-artifact-unresolved" },
+        { "id": "qwen14-project", "modelFamily": "Qwen2.5 Coder 14B Instruct", "upstreamModel": "Qwen/Qwen2.5-Coder-14B-Instruct", "artifactRequirement": "revision-pinned GGUF selected by exact fit", "runtimeRequirement": "identified llama.cpp build; partial offload measured", "considerationReason": "The larger code family is a quality candidate only if fit and interactive latency survive the 16K target.", "sourceIds": ["qwen14-card", "llamacpp-docs"], "identityCompleteness": "family-prior-exact-artifact-unresolved" }
+      ],
+      "mustNotRecommend": [
+        { "code": "NO_YARN_BY_DEFAULT", "rule": "Do not silently enable long-context scaling; the card requires explicit configuration and warns of tradeoffs.", "sourceIds": ["qwen14-card"] },
+        { "code": "NO_14B_FIT_ASSUMPTION", "rule": "Do not infer 14B fit from parameter count without artifact, KV, buffers and reserve calculations.", "sourceIds": ["llamacpp-docs"] }
+      ],
+      "disagreements": ["Partial CPU offload can make 14B load while violating the interactive preference."],
+      "evaluationRule": "Expose the 7B baseline and retain 14B or explain its exact fit or latency exclusion."
+    },
+    {
+      "id": "apple-16gb-writing-summarization", "status": "sourced-prior",
+      "hardware": { "acceleratorKind": "apple-silicon", "vendor": "apple", "acceleratorMemoryGiB": 16, "systemMemoryGiB": 16, "memoryConfirmation": "manually-confirmed" },
+      "task": { "kind": "writing", "contextTargetTokens": 16384, "priority": "balanced", "latencyPreference": "interactive" },
+      "assumptions": { "runtime": "MLX LM", "backend": "metal", "offload": "full-accelerator-preferred", "notes": ["The matching memory values represent one unified pool, not additive capacities.", "Writing quality needs audition evidence."] },
+      "mustConsider": [
+        { "id": "gemma4-mlx", "modelFamily": "Gemma 3 4B IT", "upstreamModel": "google/gemma-3-4b-it", "artifactRequirement": "revision-pinned MLX-compatible quantized artifact", "runtimeRequirement": "identified MLX LM and MLX builds", "considerationReason": "The vendor lists summarization and the small family plus MLX route make this a plausible experiment.", "sourceIds": ["gemma4-card", "mlx-docs", "community-apple16"], "identityCompleteness": "family-prior-exact-artifact-unresolved" },
+        { "id": "phi4-mlx", "modelFamily": "Phi-4 Mini Instruct", "upstreamModel": "microsoft/Phi-4-mini-instruct", "artifactRequirement": "revision-pinned MLX-compatible quantized artifact", "runtimeRequirement": "identified MLX builds and supported chat template", "considerationReason": "The vendor targets constrained and latency-bound use, making it a useful competing small-model prior.", "sourceIds": ["phi4-card", "mlx-docs"], "identityCompleteness": "family-prior-exact-artifact-unresolved" }
+      ],
+      "mustNotRecommend": [
+        { "code": "NO_UNIFIED_MEMORY_DOUBLE_COUNT", "rule": "Do not add system and accelerator values; this scenario represents one Apple unified-memory pool.", "sourceIds": ["mlx-docs"] },
+        { "code": "NO_128K_FIT_INFERENCE", "rule": "Do not infer either advertised 128K ceiling is feasible or interactive within 16GB unified memory.", "sourceIds": ["gemma4-card", "phi4-card"] },
+        { "code": "NO_MODEL_CARD_WINNER", "rule": "Do not declare a writing winner from intended-use language; audition or retain uncertainty.", "sourceIds": ["gemma4-card", "phi4-card"] }
+      ],
+      "disagreements": ["Community reports disagree about useful capability and context headroom on 16GB.", "Model cards do not establish exact MLX memory or comparative writing quality."],
+      "evaluationRule": "Retain both when exact artifacts fit; ordering needs scoped evidence or remains uncertain."
+    },
+    {
+      "id": "nvidia-24gb-quality-coding", "status": "sourced-prior",
+      "hardware": { "acceleratorKind": "discrete-gpu", "vendor": "nvidia", "acceleratorMemoryGiB": 24, "systemMemoryGiB": 64, "memoryConfirmation": "self-reported" },
+      "task": { "kind": "coding", "contextTargetTokens": 16384, "priority": "quality", "latencyPreference": "patient" },
+      "assumptions": { "runtime": "llama.cpp-compatible", "backend": "cuda", "offload": "full-accelerator-preferred", "notes": ["Display and OS reserve remain unknown until machine reconciliation.", "Community evidence discovers candidates, not exact local performance."] },
+      "mustConsider": [
+        { "id": "qwen14-quality", "modelFamily": "Qwen2.5 Coder 14B Instruct", "upstreamModel": "Qwen/Qwen2.5-Coder-14B-Instruct", "artifactRequirement": "revision-pinned GGUF with declared quantization", "runtimeRequirement": "identified llama.cpp build and CUDA settings", "considerationReason": "A code-specialized 14B configuration is a lower-cost baseline for whether 32B adds value.", "sourceIds": ["qwen14-card"], "identityCompleteness": "family-prior-exact-artifact-unresolved" },
+        { "id": "qwen32-quality", "modelFamily": "Qwen2.5 Coder 32B Instruct", "upstreamModel": "Qwen/Qwen2.5-Coder-32B-Instruct", "artifactRequirement": "revision-pinned GGUF; quantization and KV selected by fit", "runtimeRequirement": "identified llama.cpp build and measured CUDA residency", "considerationReason": "The vendor card and community attention justify a fit-checked experiment, not an automatic winner.", "sourceIds": ["qwen32-card", "community-24gb", "llamacpp-docs"], "identityCompleteness": "family-prior-exact-artifact-unresolved" }
+      ],
+      "mustNotRecommend": [
+        { "code": "NO_32B_WITHOUT_HEADROOM", "rule": "Do not recommend 32B until weights, 16K KV, runtime buffers and machine reserve pass exact fit.", "sourceIds": ["llamacpp-docs"] },
+        { "code": "NO_BENCHMARK_AS_CODING_PROOF", "rule": "Do not treat the cited benchmark as coding proof because its author explicitly omitted coding tasks.", "sourceIds": ["community-24gb"] },
+        { "code": "NO_UNIVERSAL_32B_WINNER", "rule": "Do not infer universal superiority across repositories, prompts, runtimes and quantizations.", "sourceIds": ["qwen32-card", "community-24gb"] }
+      ],
+      "disagreements": ["32B feasibility varies with quantization, KV type, runtime and display reserve.", "The 14B baseline may reduce verification cost and latency regret."],
+      "evaluationRule": "Both families reach fit evaluation; rank needs scoped coding or audition evidence."
+    },
+    {
+      "id": "unknown-accelerator-manual-memory", "status": "procedural-only",
+      "hardware": { "acceleratorKind": "unknown", "vendor": "unknown", "acceleratorMemoryGiB": 8, "systemMemoryGiB": null, "memoryConfirmation": "manually-confirmed" },
+      "task": { "kind": "general", "contextTargetTokens": 4096, "priority": "balanced", "latencyPreference": "interactive" },
+      "assumptions": { "runtime": null, "backend": null, "offload": "unresolved", "notes": ["Memory alone does not identify vendor, backend, compatibility or reserve."] },
+      "mustConsider": [],
+      "mustNotRecommend": [
+        { "code": "NO_VENDOR_FROM_MEMORY", "rule": "Do not infer vendor, accelerator kind, backend or compatibility from confirmed memory.", "sourceIds": [] },
+        { "code": "NO_CANDIDATE_WITHOUT_BACKEND", "rule": "Do not emit a runnable configuration until compatibility or missing runtime facts are supplied.", "sourceIds": [] }
+      ],
+      "disagreements": ["No family consensus is admissible because missing compatibility facts dominate."],
+      "evaluationRule": "Return structured unavailable or blocked status requesting facts, not a padded list."
+    }
+  ],
+  "omittedApprovedShapes": [
+    { "shape": "8 GB discrete GPU, general assistant", "reason": "No distinct candidate set met the source-strength threshold without duplicating adjacent cases." },
+    { "shape": "32 GB Apple unified memory, long-context document work", "reason": "Reserved for exact Anubis matching in the Apple-validation lane." },
+    { "shape": "CPU-only laptop, occasional extraction", "reason": "Runtime feasibility is supportable, but a strong dated model-consensus set was not established." }
+  ]
+}

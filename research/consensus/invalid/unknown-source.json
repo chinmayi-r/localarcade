@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "consensus-sanity.v1", "asOf": "2026-07-22",
+  "methodology": "Invalid fixture proving dangling source references are rejected semantically.",
+  "sources": [{ "id": "real-source", "title": "Real source", "publisher": "Example", "url": "https://example.com/real", "sourceClass": "runtime-documentation", "publishedAt": null, "retrievedAt": "2026-07-22", "supports": ["A sufficiently long claim."] }],
+  "scenarios": [{
+    "id": "invalid-scenario", "status": "sourced-prior",
+    "hardware": { "acceleratorKind": "discrete-gpu", "vendor": "nvidia", "acceleratorMemoryGiB": 6, "systemMemoryGiB": 16, "memoryConfirmation": "self-reported" },
+    "task": { "kind": "coding", "contextTargetTokens": 4096, "priority": "balanced", "latencyPreference": "interactive" },
+    "assumptions": { "runtime": "llama.cpp", "backend": "cuda", "offload": "partial-allowed", "notes": [] },
+    "mustConsider": [{ "id": "candidate", "modelFamily": "Example model", "upstreamModel": "example/model", "artifactRequirement": "exact artifact required", "runtimeRequirement": "exact runtime required", "considerationReason": "Intentionally invalid source reference.", "sourceIds": ["missing-source"], "identityCompleteness": "family-prior-exact-artifact-unresolved" }],
+    "mustNotRecommend": [{ "code": "NO_UNSUPPORTED", "rule": "Do not recommend unsupported configurations without evidence.", "sourceIds": [] }],
+    "disagreements": [], "evaluationRule": "The dangling source identifier must make validation fail."
+  }],
+  "omittedApprovedShapes": []
+}

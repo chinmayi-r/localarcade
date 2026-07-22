@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localarcade.example/research/consensus/scenario.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "asOf", "methodology", "sources", "scenarios", "omittedApprovedShapes"],
+  "properties": {
+    "schemaVersion": { "const": "consensus-sanity.v1" },
+    "asOf": { "type": "string", "format": "date" },
+    "methodology": { "type": "string", "minLength": 20 },
+    "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },
+    "scenarios": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/scenario" } },
+    "omittedApprovedShapes": { "type": "array", "items": { "$ref": "#/$defs/omission" } }
+  },
+  "$defs": {
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "publisher", "url", "sourceClass", "publishedAt", "retrievedAt", "supports"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+        "title": { "type": "string", "minLength": 3 },
+        "publisher": { "type": "string", "minLength": 2 },
+        "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "sourceClass": { "enum": ["vendor-model-card", "runtime-documentation", "community-discussion"] },
+        "publishedAt": { "type": ["string", "null"], "format": "date" },
+        "retrievedAt": { "type": "string", "format": "date" },
+        "supports": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 8 } }
+      }
+    },
+    "hardware": {
+      "type": "object", "additionalProperties": false,
+      "required": ["acceleratorKind", "vendor", "acceleratorMemoryGiB", "systemMemoryGiB", "memoryConfirmation"],
+      "properties": {
+        "acceleratorKind": { "enum": ["discrete-gpu", "apple-silicon", "unknown"] },
+        "vendor": { "enum": ["nvidia", "apple", "unknown"] },
+        "acceleratorMemoryGiB": { "type": ["integer", "null"], "minimum": 1 },
+        "systemMemoryGiB": { "type": ["integer", "null"], "minimum": 1 },
+        "memoryConfirmation": { "enum": ["self-reported", "manually-confirmed", "unknown"] }
+      }
+    },
+    "task": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contextTargetTokens", "priority", "latencyPreference"],
+      "properties": {
+        "kind": { "enum": ["coding", "writing", "general", "extraction"] },
+        "contextTargetTokens": { "type": "integer", "minimum": 1024 },
+        "priority": { "enum": ["balanced", "quality", "speed", "long-context", "lightest"] },
+        "latencyPreference": { "enum": ["interactive", "patient", "batch"] }
+      }
+    },
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "modelFamily", "upstreamModel", "artifactRequirement", "runtimeRequirement", "considerationReason", "sourceIds", "identityCompleteness"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+        "modelFamily": { "type": "string", "minLength": 2 },
+        "upstreamModel": { "type": "string", "pattern": "^[^/]+/[^/]+$" },
+        "artifactRequirement": { "type": "string", "minLength": 8 },
+        "runtimeRequirement": { "type": "string", "minLength": 8 },
+        "considerationReason": { "type": "string", "minLength": 16 },
+        "sourceIds": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "identityCompleteness": { "const": "family-prior-exact-artifact-unresolved" }
+      }
+    },
+    "rule": {
+      "type": "object", "additionalProperties": false,
+      "required": ["code", "rule", "sourceIds"],
+      "properties": {
+        "code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]+$" },
+        "rule": { "type": "string", "minLength": 20 },
+        "sourceIds": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "scenario": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "status", "hardware", "task", "assumptions", "mustConsider", "mustNotRecommend", "disagreements", "evaluationRule"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$" },
+        "status": { "enum": ["sourced-prior", "procedural-only"] },
+        "hardware": { "$ref": "#/$defs/hardware" },
+        "task": { "$ref": "#/$defs/task" },
+        "assumptions": {
+          "type": "object", "additionalProperties": false,
+          "required": ["runtime", "backend", "offload", "notes"],
+          "properties": {
+            "runtime": { "type": ["string", "null"] }, "backend": { "type": ["string", "null"] },
+            "offload": { "enum": ["full-accelerator-preferred", "partial-allowed", "unresolved"] },
+            "notes": { "type": "array", "items": { "type": "string", "minLength": 8 } }
+          }
+        },
+        "mustConsider": { "type": "array", "items": { "$ref": "#/$defs/candidate" } },
+        "mustNotRecommend": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/rule" } },
+        "disagreements": { "type": "array", "items": { "type": "string", "minLength": 16 } },
+        "evaluationRule": { "type": "string", "minLength": 20 }
+      }
+    },
+    "omission": {
+      "type": "object", "additionalProperties": false, "required": ["shape", "reason"],
+      "properties": { "shape": { "type": "string", "minLength": 3 }, "reason": { "type": "string", "minLength": 12 } }
+    }
+  }
+}

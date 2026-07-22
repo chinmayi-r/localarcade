@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "consensus-sanity.v1", "asOf": "2026-07-22",
+  "methodology": "Invalid fixture proving duplicate identifiers are rejected semantically.",
+  "sources": [
+    { "id": "same-id", "title": "Source one", "publisher": "Example", "url": "https://example.com/one", "sourceClass": "runtime-documentation", "publishedAt": null, "retrievedAt": "2026-07-22", "supports": ["A sufficiently long claim."] },
+    { "id": "same-id", "title": "Source two", "publisher": "Example", "url": "https://example.com/two", "sourceClass": "runtime-documentation", "publishedAt": null, "retrievedAt": "2026-07-22", "supports": ["A sufficiently long claim."] }
+  ],
+  "scenarios": [], "omittedApprovedShapes": []
+}
