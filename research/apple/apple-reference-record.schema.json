@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localarcade.invalid/research/apple-reference-record-v1.schema.json",
+  "title": "Local Arcade Apple reference record (research only)",
+  "type": "object",
+  "required": ["schemaVersion", "recordId", "illustrative", "source", "hardware", "runtime", "protocol", "observations", "comparisonEligibility", "unknowns"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "recordId": { "type": "string", "minLength": 1 },
+    "illustrative": { "type": "boolean" },
+    "source": {
+      "type": "object",
+      "required": ["sourceId", "sourceType", "url", "revision", "retrievedAt", "dataUse"],
+      "properties": {
+        "sourceId": { "type": "string", "minLength": 1 },
+        "sourceType": { "enum": ["apple-specification", "apple-research", "runtime-project", "community-measurement"] },
+        "url": { "type": "string", "format": "uri" },
+        "revision": { "type": ["string", "null"] },
+        "retrievedAt": { "type": "string", "format": "date-time" },
+        "dataUse": { "enum": ["architectural-reference", "measurement-reference-only", "redistribution-approved", "terms-unresolved"] }
+      },
+      "additionalProperties": false
+    },
+    "hardware": {
+      "type": "object",
+      "required": ["machineModelIdentifier", "chipName", "chipVariant", "gpuCoreCount", "unifiedMemoryBytes", "availableMemoryBytes", "marketedMemoryBandwidthGBs", "osVersion"],
+      "properties": {
+        "machineModelIdentifier": { "type": ["string", "null"] },
+        "chipName": { "type": ["string", "null"] },
+        "chipVariant": { "type": ["string", "null"] },
+        "gpuCoreCount": { "type": ["integer", "null"], "minimum": 1 },
+        "unifiedMemoryBytes": { "type": ["integer", "null"], "minimum": 1 },
+        "availableMemoryBytes": { "type": ["integer", "null"], "minimum": 0 },
+        "marketedMemoryBandwidthGBs": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "osVersion": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "runtime": {
+      "type": "object",
+      "required": ["product", "productVersion", "engine", "engineBuild", "backend", "backendVersion", "artifact", "contextTokens", "kvCache", "gpuLayers", "batchSize", "microBatchSize", "threads", "flashAttention", "mmap", "sampler", "additionalFlags"],
+      "properties": {
+        "product": { "type": ["string", "null"] },
+        "productVersion": { "type": ["string", "null"] },
+        "engine": { "type": ["string", "null"] },
+        "engineBuild": { "type": ["string", "null"] },
+        "backend": { "enum": ["metal", "cpu", null] },
+        "backendVersion": { "type": ["string", "null"] },
+        "artifact": {
+          "type": "object",
+          "required": ["repository", "revision", "filename", "sha256", "format", "quantization"],
+          "properties": {
+            "repository": { "type": ["string", "null"] },
+            "revision": { "type": ["string", "null"] },
+            "filename": { "type": ["string", "null"] },
+            "sha256": { "oneOf": [{ "type": "string", "pattern": "^[a-f0-9]{64}$" }, { "type": "null" }] },
+            "format": { "type": ["string", "null"] },
+            "quantization": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "contextTokens": { "type": ["integer", "null"], "minimum": 1 },
+        "kvCache": {
+          "type": "object",
+          "required": ["key", "value", "maximumTokens"],
+          "properties": {
+            "key": { "type": ["string", "null"] },
+            "value": { "type": ["string", "null"] },
+            "maximumTokens": { "type": ["integer", "null"], "minimum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "gpuLayers": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "const": "all" }, { "type": "null" }] },
+        "batchSize": { "type": ["integer", "null"], "minimum": 1 },
+        "microBatchSize": { "type": ["integer", "null"], "minimum": 1 },
+        "threads": { "type": ["integer", "null"], "minimum": 1 },
+        "flashAttention": { "type": ["boolean", "null"] },
+        "mmap": { "type": ["boolean", "null"] },
+        "sampler": {
+          "type": "object",
+          "required": ["temperature", "topP", "topK", "minP", "seed"],
+          "properties": {
+            "temperature": { "type": ["number", "null"] },
+            "topP": { "type": ["number", "null"] },
+            "topK": { "type": ["integer", "null"] },
+            "minP": { "type": ["number", "null"] },
+            "seed": { "type": ["integer", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "additionalFlags": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    },
+    "protocol": {
+      "type": "object",
+      "required": ["harnessId", "promptId", "promptTokens", "generatedTokens", "warmupRuns", "measuredRuns", "seedStrategy", "powerState", "thermalState", "concurrentLoad"],
+      "properties": {
+        "harnessId": { "type": ["string", "null"] },
+        "promptId": { "type": ["string", "null"] },
+        "promptTokens": { "type": ["integer", "null"], "minimum": 0 },
+        "generatedTokens": { "type": ["integer", "null"], "minimum": 1 },
+        "warmupRuns": { "type": ["integer", "null"], "minimum": 0 },
+        "measuredRuns": { "type": ["integer", "null"], "minimum": 1 },
+        "seedStrategy": { "enum": ["fixed", "random", "unknown", null] },
+        "powerState": { "enum": ["ac", "battery", "unknown", null] },
+        "thermalState": { "enum": ["nominal", "fair", "serious", "critical", "unknown", null] },
+        "concurrentLoad": { "enum": ["controlled", "observed", "unknown", null] }
+      },
+      "additionalProperties": false
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["metric", "classification", "unit", "samples", "interval", "confidence", "applicability"],
+        "properties": {
+          "metric": { "enum": ["prompt-throughput", "generation-throughput", "time-to-first-token", "peak-process-memory", "available-memory", "gpu-memory-bandwidth", "system-power", "gpu-power", "thermal-state"] },
+          "classification": { "enum": ["measurement", "estimate", "assumption", "unknown"] },
+          "unit": { "type": "string", "minLength": 1 },
+          "samples": { "type": "array", "items": { "type": "number" } },
+          "interval": {
+            "oneOf": [
+              { "type": "object", "required": ["lower", "upper"], "properties": { "lower": { "type": "number" }, "upper": { "type": "number" } }, "additionalProperties": false },
+              { "type": "null" }
+            ]
+          },
+          "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "applicability": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "comparisonEligibility": {
+      "type": "object",
+      "required": ["eligible", "reasons"],
+      "properties": {
+        "eligible": { "type": "boolean" },
+        "reasons": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      },
+      "additionalProperties": false
+    },
+    "unknowns": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+  },
+  "additionalProperties": false
+}

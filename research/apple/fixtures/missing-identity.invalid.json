@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "recordId": "invalid-comparison",
+  "illustrative": false,
+  "source": {
+    "sourceId": "community-row",
+    "sourceType": "community-measurement",
+    "url": "https://example.invalid/community-row",
+    "revision": null,
+    "retrievedAt": "2026-07-22T12:00:00Z",
+    "dataUse": "terms-unresolved"
+  },
+  "hardware": {
+    "machineModelIdentifier": null,
+    "chipName": "Apple M-series",
+    "chipVariant": null,
+    "gpuCoreCount": null,
+    "unifiedMemoryBytes": 17179869184,
+    "availableMemoryBytes": null,
+    "marketedMemoryBandwidthGBs": 100,
+    "osVersion": null
+  },
+  "runtime": {
+    "product": "unknown product",
+    "productVersion": null,
+    "engine": null,
+    "engineBuild": null,
+    "backend": "metal",
+    "backendVersion": null,
+    "artifact": { "repository": null, "revision": null, "filename": null, "sha256": null, "format": "GGUF", "quantization": "Q4" },
+    "contextTokens": null,
+    "kvCache": { "key": null, "value": null, "maximumTokens": null },
+    "gpuLayers": null,
+    "batchSize": null,
+    "microBatchSize": null,
+    "threads": null,
+    "flashAttention": null,
+    "mmap": null,
+    "sampler": { "temperature": null, "topP": null, "topK": null, "minP": null, "seed": null },
+    "additionalFlags": []
+  },
+  "protocol": {
+    "harnessId": null,
+    "promptId": null,
+    "promptTokens": null,
+    "generatedTokens": null,
+    "warmupRuns": null,
+    "measuredRuns": 1,
+    "seedStrategy": "unknown",
+    "powerState": "unknown",
+    "thermalState": "unknown",
+    "concurrentLoad": "unknown"
+  },
+  "observations": [{ "metric": "generation-throughput", "classification": "measurement", "unit": "tokens/s", "samples": [42], "interval": { "lower": 42, "upper": 42 }, "confidence": null, "applicability": "Unscoped community value." }],
+  "comparisonEligibility": { "eligible": true, "reasons": [] },
+  "unknowns": ["artifact-revision", "runtime-build", "hardware-variant"]
+}

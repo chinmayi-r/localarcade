@@ -1,0 +1,61 @@
+{
+  "retrievedAt": "2026-07-22T00:00:00Z",
+  "sources": [
+    {
+      "id": "apple-metal-unified-memory",
+      "url": "https://developer.apple.com/documentation/metal/mtldevice/hasunifiedmemory",
+      "kind": "vendor-api-documentation",
+      "use": "architectural-reference",
+      "dataReuse": "not-applicable"
+    },
+    {
+      "id": "apple-metal-working-set",
+      "url": "https://developer.apple.com/documentation/metal/mtldevice/recommendedmaxworkingsetsize",
+      "kind": "vendor-api-documentation",
+      "use": "runtime-capacity-reference",
+      "dataReuse": "not-applicable"
+    },
+    {
+      "id": "apple-m4-pro-max-specification",
+      "url": "https://support.apple.com/en-ca/121554",
+      "kind": "vendor-hardware-specification",
+      "use": "chip-variant-and-marketed-bandwidth-reference",
+      "dataReuse": "not-applicable"
+    },
+    {
+      "id": "apple-mlx-m5-study",
+      "url": "https://machinelearning.apple.com/research/exploring-llms-mlx-m5",
+      "kind": "vendor-measurement-study",
+      "use": "scoped-measurement-reference",
+      "dataReuse": "reference-only"
+    },
+    {
+      "id": "mlx-project",
+      "url": "https://github.com/ml-explore/mlx",
+      "kind": "primary-runtime-repository",
+      "use": "runtime-semantics-reference",
+      "dataReuse": "MIT-code-license"
+    },
+    {
+      "id": "mlx-lm-project",
+      "url": "https://github.com/ml-explore/mlx-lm",
+      "kind": "primary-runtime-repository",
+      "use": "configuration-semantics-reference",
+      "dataReuse": "MIT-code-license"
+    },
+    {
+      "id": "llama-cpp-metal-build",
+      "url": "https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md",
+      "kind": "primary-runtime-documentation",
+      "use": "metal-build-and-offload-reference",
+      "dataReuse": "MIT-code-license"
+    },
+    {
+      "id": "anubis-source-audit",
+      "url": "https://github.com/uncSoft/anubis-oss/tree/8391bd9c75fd7960688e34825d5afd22935ecbbb",
+      "kind": "primary-community-tool-repository",
+      "use": "schema-and-methodology-audit",
+      "dataReuse": "GPL-3.0-code; community-row-terms-unresolved"
+    }
+  ]
+}
