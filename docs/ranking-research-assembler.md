@@ -48,11 +48,11 @@ flowchart TB
   MA["✅ M-A shared first-slice v1 contracts\nTS + Rust DTOs · envelopes · canonical handoff\n18 accepted / 11 rejected fixtures"]
 
   subgraph RESEARCH["Approved non-production comparison checkpoint"]
-    RU["🟡 upstream + community-results audit"]
-    RR["🟡 constraint / Pareto / diversity baselines"]
-    RC["🟡 consensus scenario corpus"]
-    RA["🟡 Anubis / Apple external validation"]
-    RH["⬜ frozen comparison harness + scorecards"]
+    RU["✅ upstream + community-results audit"]
+    RR["✅ constraint / Pareto / diversity baselines"]
+    RC["✅ consensus scenario corpus"]
+    RA["🟡 Apple/Metal external validation"]
+    RH["🟡 frozen comparison harness + scorecards"]
     RPOL["⬜ owner-reviewed M-H policy recommendation"]
     RU --> RH
     RR --> RH
@@ -134,11 +134,12 @@ flowchart TB
 
 | Lane | Status | Baseline | Deliverable | Integration rule |
 |---|---|---|---|---|
-| assembler/root | 🟡 active | M-A commit `55afbb2` | shared schema, combined graph, progress, final comparison | only root merges or changes shared research contracts |
-| upstream-baseline | 🟡 active — `codex/research-upstream`, `G:/LocalArcade-worktrees/upstream` | research baseline `4e153f6` (contains M-A `55afbb2`) | llmfit rank/community pipeline audit and normalized examples | no production adapter/ranking changes |
-| ranking-methods | 🟡 active — `codex/research-ranking`, `G:/LocalArcade-worktrees/ranking` | research baseline `4e153f6` (contains M-A `55afbb2`) | non-production constraint/Pareto/diversity baselines | experimental paths only |
-| consensus-corpus | 🟡 active — `codex/research-consensus`, `G:/LocalArcade-worktrees/consensus` | research baseline `4e153f6` (contains M-A `55afbb2`) | sourced scenarios and consideration/exclusion rules | consensus remains defeasible |
-| apple-validation | 🟡 worktree ready / agent queued — `codex/research-apple`, `G:/LocalArcade-worktrees/apple` | research baseline `4e153f6` (contains M-A `55afbb2`) | Anubis schema/terms and reference-only matched cases | no GPL copying or unlicensed ingestion |
+| assembler/root | 🟡 active | M-A commits `55afbb2`, `a7c634f` | shared schema, combined graph, progress, final comparison | only root merges or changes shared research contracts |
+| upstream-baseline | ✅ integrated as `865cf60` | lane commit `e1ca38f` | llmfit rank/community pipeline and exact/lossy/unsupported audit | community rows remain scoped priors; data reuse unresolved |
+| ranking-methods | ✅ integrated as `5b45c35` | lane commit `28c7fe4` | hard constraints, interval Pareto, parameterized diversity, seven tests | experimental paths only; no product weights |
+| consensus-corpus | ✅ integrated as `db1f516` | lane commit `f1f67ac` | five scenarios, consideration/exclusion rules, schema and validator | consensus remains defeasible |
+| apple-validation | 🟡 active — `codex/research-apple`, `G:/LocalArcade-worktrees/apple` | research baseline `4e153f6` (contains M-A `55afbb2`) | Apple Silicon/Metal reference research | no production policy or unlicensed ingestion |
+| comparison-harness | 🟡 active — `codex/research-harness`, `G:/LocalArcade-worktrees/harness` | integrated baseline `db1f516` | reconciled interchange, fixtures, reproducible scorecards | no product weights or production imports |
 
 ## Community-result questions assigned to upstream lane
 
@@ -165,10 +166,16 @@ not automatically eligible for exact Local Arcade ranking or publication.
 
 - ✅ Wave 0 preservation/documentation baseline committed: `59e6dd1`.
 - ✅ M-A shared contracts approved and committed: `55afbb2`.
+- ✅ Clean-baseline compatibility correction committed: `a7c634f`.
 - ✅ Ranking/audition research plan approved by the product owner.
 - ✅ Four research worktrees created from shared baseline `4e153f6`.
-- 🟡 Upstream, ranking-method and consensus lanes active; Apple lane queued for
-  the next agent slot.
+- ✅ Ranking-method lane integrated: `5b45c35`; research gate has seven passing
+  tests.
+- ✅ Upstream/community audit integrated: `865cf60`.
+- ✅ Consensus corpus integrated: `db1f516`; five scenarios pass and two
+  negative fixtures fail as intended.
+- 🟡 Apple/Metal lane active.
+- 🟡 Comparison-harness reconciliation active in a fifth isolated worktree.
 - ✅ Research-only comparison interchange v1 created under
   `research/comparison/`; valid smoke fixture passes and forward version fails.
 - ⬜ Lane artifacts reconciled into the shared interchange and harness.

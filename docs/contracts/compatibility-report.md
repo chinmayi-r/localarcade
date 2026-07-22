@@ -8,16 +8,19 @@ Evidence: the [v1 schema](local-arcade-first-slice-v1.schema.json),
 [`lib/recommendation/types.ts`](../../lib/recommendation/types.ts),
 [`lib/accelerators/types.ts`](../../lib/accelerators/types.ts),
 [`lib/fit/types.ts`](../../lib/fit/types.ts),
-[`lib/fit/memory-pools.ts`](../../lib/fit/memory-pools.ts),
+`lib/fit/memory-pools.ts` (preserved dirty-file evidence; not present in the
+approved M-A commit),
 [`lib/evidence/types.ts`](../../lib/evidence/types.ts),
 [`lib/registry/types.ts`](../../lib/registry/types.ts),
 [`lib/runtime/types.ts`](../../lib/runtime/types.ts),
 [`lib/priors/types.ts`](../../lib/priors/types.ts), and Rust
 [`hardware.rs`](../../runner/src-tauri/src/hardware.rs),
 [`model_store.rs`](../../runner/src-tauri/src/model_store.rs),
-[`preflight.rs`](../../runner/src-tauri/src/preflight.rs),
+`runner/src-tauri/src/preflight.rs` (preserved dirty-file evidence; not present
+in the approved M-A commit),
 [`benchmark.rs`](../../runner/src-tauri/src/benchmark.rs), and
-[`quick_task.rs`](../../runner/src-tauri/src/quick_task.rs).
+`runner/src-tauri/src/quick_task.rs` (preserved dirty-file evidence; not present
+in the approved M-A commit).
 
 ## Exact field and enum mapping
 
