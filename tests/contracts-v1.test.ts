@@ -99,3 +99,11 @@ test("hardware adapter round-trips representable values and blocks lossy mapping
 test("forward schema versions fail closed", () => {
   assert.equal(validateContract({ schemaVersion: 2, contract: "hardware-target", status: "error" }).ok, false);
 });
+
+test("measurement evidence cannot contradict its raw series", async () => {
+  const envelope = JSON.parse(await readFile(join(fixtureRoot, "benchmark-result.ok.json"), "utf8"));
+  envelope.data.series[1].evidence.measurement.interval = { lower: 170, upper: 180 };
+  const result = validateContract(envelope);
+  assert.equal(result.ok, false);
+  if (!result.ok) assert.match(result.errors.join("; "), /interval must equal the measured aggregate range/);
+});

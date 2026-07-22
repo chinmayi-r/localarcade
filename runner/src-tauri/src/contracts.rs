@@ -859,7 +859,8 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
             }
         }
         "benchmark-result" => {
-            let _: BenchmarkResult = decode(value)?;
+            let item: BenchmarkResult = decode(value)?;
+            validate_measurement_series(&item.series)?;
         }
         "quick-check-plan" => {
             let item: QuickCheckPlan = decode(value)?;
@@ -880,9 +881,38 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
             }
         }
         "verification-result" => {
-            let _: VerificationResult = decode(value)?;
+            let item: VerificationResult = decode(value)?;
+            if let Some(benchmark) = item.benchmark_result {
+                validate_measurement_series(&benchmark.series)?;
+            }
         }
         _ => return Err("unknown contract".into()),
+    }
+    Ok(())
+}
+
+fn validate_measurement_series(series: &[MeasurementSeries]) -> Result<(), String> {
+    for item in series {
+        if item.evidence.sample_count != Some(item.measured_samples.len() as u64) {
+            return Err("measurement sampleCount must equal measuredSamples length".into());
+        }
+        let Some(measurement) = &item.evidence.measurement else {
+            continue;
+        };
+        if measurement.unit != item.unit {
+            return Err("measurement evidence unit must equal series unit".into());
+        }
+        if let (Some(aggregate), Some(interval), None) = (
+            &item.aggregate,
+            &measurement.interval,
+            measurement.confidence,
+        ) {
+            if interval.lower != aggregate.minimum || interval.upper != aggregate.maximum {
+                return Err(
+                    "unqualified measurement interval must equal measured aggregate range".into(),
+                );
+            }
+        }
     }
     Ok(())
 }

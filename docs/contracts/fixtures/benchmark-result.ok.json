@@ -98,8 +98,8 @@
           "measurement": {
             "unit": "tokens-per-second",
             "interval": {
-              "lower": 170,
-              "upper": 180
+              "lower": 58,
+              "upper": 62
             },
             "confidence": null,
             "eligible": true,

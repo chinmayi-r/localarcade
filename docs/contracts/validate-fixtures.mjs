@@ -46,6 +46,20 @@ function semanticErrors(envelope) {
       errors.push("verification plan must contain at least one typed plan");
     }
   }
+  if (envelope.status === "ok" || envelope.status === "partial") {
+    const benchmark = envelope.contract === "benchmark-result"
+      ? envelope.data
+      : envelope.contract === "verification-result" ? envelope.data.benchmarkResult : null;
+    for (const series of benchmark?.series ?? []) {
+      if (series.evidence.sampleCount !== series.measuredSamples.length) errors.push(`${series.kind} sampleCount must equal measuredSamples length`);
+      const measurement = series.evidence.measurement;
+      if (measurement && measurement.unit !== series.unit) errors.push(`${series.kind} evidence unit must equal series unit`);
+      if (series.aggregate && measurement?.confidence === null && measurement.interval
+          && (measurement.interval.lower !== series.aggregate.minimum || measurement.interval.upper !== series.aggregate.maximum)) {
+        errors.push(`${series.kind} unqualified evidence interval must equal the measured aggregate range`);
+      }
+    }
+  }
   return errors;
 }
 

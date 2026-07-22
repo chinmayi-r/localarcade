@@ -2,7 +2,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import schema from "../../docs/contracts/local-arcade-first-slice-v1.schema.json";
 import { handoffContentHash } from "./canonical";
-import type { ContractEnvelope, RecommendationPortfolio, RunnerHandoff, VerificationPlan } from "./types";
+import type { BenchmarkResult, ContractEnvelope, MeasurementSeries, RecommendationPortfolio, RunnerHandoff, VerificationPlan, VerificationResult } from "./types";
 
 const validateSchema = addFormats(new Ajv2020({ allErrors: true, strict: true })).compile(schema);
 export type ContractValidation = { ok: true; value: ContractEnvelope } | { ok: false; errors: string[] };
@@ -23,6 +23,26 @@ function semanticErrors(value: ContractEnvelope): string[] {
   if (value.contract === "verification-plan") {
     const plan = value.data as VerificationPlan;
     if (plan.benchmarkPlan === null && plan.quickCheckPlan === null) errors.push("verification plan must contain at least one typed plan");
+  }
+  if (value.contract === "benchmark-result") errors.push(...measurementSeriesErrors((value.data as BenchmarkResult).series));
+  if (value.contract === "verification-result") {
+    const benchmark = (value.data as VerificationResult).benchmarkResult;
+    if (benchmark !== null) errors.push(...measurementSeriesErrors(benchmark.series));
+  }
+  return errors;
+}
+
+function measurementSeriesErrors(series: MeasurementSeries[]): string[] {
+  const errors: string[] = [];
+  for (const item of series) {
+    const measurement = item.evidence.measurement;
+    if (item.evidence.sampleCount !== item.measuredSamples.length) errors.push(`${item.kind} sampleCount must equal measuredSamples length`);
+    if (measurement === null) continue;
+    if (measurement.unit !== item.unit) errors.push(`${item.kind} evidence unit must equal series unit`);
+    if (item.aggregate !== null && measurement.confidence === null && measurement.interval !== null
+      && (measurement.interval.lower !== item.aggregate.minimum || measurement.interval.upper !== item.aggregate.maximum)) {
+      errors.push(`${item.kind} unqualified evidence interval must equal the measured aggregate range`);
+    }
   }
   return errors;
 }

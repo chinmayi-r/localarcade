@@ -156,3 +156,13 @@ fn forward_versions_fail_closed() {
     let fixture = r#"{"schemaVersion":2,"contract":"hardware-target","status":"error"}"#;
     assert!(validate_contract_json(fixture).is_err());
 }
+
+#[test]
+fn measurement_evidence_cannot_contradict_its_raw_series() {
+    let mut fixture: serde_json::Value =
+        serde_json::from_str(include_str!("../../../docs/contracts/fixtures/benchmark-result.ok.json"))
+            .expect("benchmark fixture");
+    fixture["data"]["series"][1]["evidence"]["measurement"]["interval"] =
+        json!({"lower": 170, "upper": 180});
+    assert!(validate_contract_json(&fixture.to_string()).is_err());
+}
