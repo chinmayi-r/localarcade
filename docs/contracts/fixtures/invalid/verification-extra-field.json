@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "contract": "verification-result",
+  "status": "ok",
+  "data": {
+    "verificationResultId": "verification-result-fixture",
+    "verificationPlanId": "verification-plan-fixture",
+    "candidateId": "candidate-fixture",
+    "domainStatus": "completed",
+    "benchmarkResult": {
+      "benchmarkResultId": "benchmark-result-fixture",
+      "benchmarkPlanId": "benchmark-plan-fixture",
+      "candidateId": "candidate-fixture",
+      "domainStatus": "completed",
+      "series": [
+        {
+          "kind": "prompt-processing",
+          "unit": "tokens-per-second",
+          "warmupSamples": [
+            168
+          ],
+          "measuredSamples": [
+            170,
+            175,
+            180
+          ],
+          "aggregate": {
+            "minimum": 170,
+            "maximum": 180,
+            "median": 175
+          },
+          "completion": "completed",
+          "stability": "stable",
+          "evidence": {
+            "source": {
+              "id": "fixture-source",
+              "version": "1",
+              "revision": "fixture-revision",
+              "url": "https://example.invalid/source"
+            },
+            "retrievedAt": "2026-07-22T12:00:00Z",
+            "observedAt": "2026-07-22T11:00:00Z",
+            "method": "measurement",
+            "hardwareMatch": "exact",
+            "configurationMatch": "exact",
+            "scope": {
+              "taskFamily": null,
+              "taskPackId": null,
+              "promptId": null,
+              "harnessId": "fixture-harness-v1"
+            },
+            "sampleCount": 3,
+            "measurement": {
+              "unit": "tokens-per-second",
+              "interval": {
+                "lower": 170,
+                "upper": 180
+              },
+              "confidence": null,
+              "eligible": true,
+              "eligibilityReasons": []
+            },
+            "rawSourceRecordRef": "fixture://source-record"
+          }
+        },
+        {
+          "kind": "generation",
+          "unit": "tokens-per-second",
+          "warmupSamples": [
+            56
+          ],
+          "measuredSamples": [
+            58,
+            60,
+            62
+          ],
+          "aggregate": {
+            "minimum": 58,
+            "maximum": 62,
+            "median": 60
+          },
+          "completion": "completed",
+          "stability": "stable",
+          "evidence": {
+            "source": {
+              "id": "fixture-source",
+              "version": "1",
+              "revision": "fixture-revision",
+              "url": "https://example.invalid/source"
+            },
+            "retrievedAt": "2026-07-22T12:00:00Z",
+            "observedAt": "2026-07-22T11:00:00Z",
+            "method": "measurement",
+            "hardwareMatch": "exact",
+            "configurationMatch": "exact",
+            "scope": {
+              "taskFamily": null,
+              "taskPackId": null,
+              "promptId": null,
+              "harnessId": "fixture-harness-v1"
+            },
+            "sampleCount": 3,
+            "measurement": {
+              "unit": "tokens-per-second",
+              "interval": {
+                "lower": 170,
+                "upper": 180
+              },
+              "confidence": null,
+              "eligible": true,
+              "eligibilityReasons": []
+            },
+            "rawSourceRecordRef": "fixture://source-record"
+          }
+        }
+      ],
+      "calibrationEligible": false,
+      "calibrationExclusions": [
+        "Thermal and concurrent GPU telemetry are unknown."
+      ],
+      "diagnostics": []
+    },
+    "quickCheckResult": {
+      "quickCheckResultId": "quick-result-fixture",
+      "quickCheckPlanId": "quick-plan-fixture",
+      "candidateId": "candidate-fixture",
+      "domainStatus": "completed",
+      "checks": [
+        {
+          "checkId": "json-schema",
+          "criterion": "Return the exact required JSON object.",
+          "status": "pass",
+          "explanation": "The object matched the required keys, values, and types.",
+          "localDiagnostics": "Local output retained by runner.",
+          "evidence": {
+            "source": {
+              "id": "fixture-source",
+              "version": "1",
+              "revision": "fixture-revision",
+              "url": "https://example.invalid/source"
+            },
+            "retrievedAt": "2026-07-22T12:00:00Z",
+            "observedAt": "2026-07-22T11:00:00Z",
+            "method": "objective-check",
+            "hardwareMatch": "exact",
+            "configurationMatch": "exact",
+            "scope": {
+              "taskFamily": "coding",
+              "taskPackId": "quick-v1",
+              "promptId": "json-schema",
+              "harnessId": "llama-cli-v1"
+            },
+            "sampleCount": 1,
+            "measurement": {
+              "unit": "boolean",
+              "interval": null,
+              "confidence": null,
+              "eligible": true,
+              "eligibilityReasons": []
+            },
+            "rawSourceRecordRef": "fixture://source-record"
+          }
+        }
+      ]
+    },
+    "unsupportedClaim": "best model"
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

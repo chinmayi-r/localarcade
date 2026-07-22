@@ -1,0 +1,567 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localarcade.example/contracts/local-arcade-first-slice-v1.schema.json",
+  "title": "Local Arcade approved first-slice contracts v1",
+  "oneOf": [
+    { "$ref": "#/$defs/typedEnvelope" },
+    { "$ref": "#/$defs/nonDataEnvelope" }
+  ],
+  "$defs": {
+    "contractId": {
+      "enum": [
+        "hardware-target", "recommendation-request", "exact-configuration-candidate",
+        "fit-evidence-assessment", "recommendation-portfolio", "runner-handoff",
+        "benchmark-plan", "benchmark-result", "quick-check-plan", "quick-check-result",
+        "verification-plan", "verification-result"
+      ]
+    },
+    "origin": { "enum": ["detected", "self-reported", "imported", "confirmed", "unknown"] },
+    "provenance": {
+      "type": "object",
+      "required": ["source", "retrievedAt", "observedAt", "method", "hardwareMatch", "configurationMatch", "scope", "sampleCount", "measurement", "rawSourceRecordRef"],
+      "properties": {
+        "source": {
+          "type": "object",
+          "required": ["id", "version", "revision", "url"],
+          "properties": {
+            "id": { "type": "string", "minLength": 1 },
+            "version": { "type": ["string", "null"] },
+            "revision": { "type": ["string", "null"] },
+            "url": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "retrievedAt": { "type": ["string", "null"], "format": "date-time" },
+        "observedAt": { "type": ["string", "null"], "format": "date-time" },
+        "method": { "enum": ["estimate", "measurement", "preference", "objective-check", "self-reported", "detected", "imported"] },
+        "hardwareMatch": { "enum": ["exact", "calibrated-neighbor", "coarse-bucket", "not-applicable", "unknown"] },
+        "configurationMatch": { "enum": ["exact", "compatible", "family-proxy", "not-applicable", "unknown"] },
+        "scope": {
+          "type": "object",
+          "required": ["taskFamily", "taskPackId", "promptId", "harnessId"],
+          "properties": {
+            "taskFamily": { "type": ["string", "null"] },
+            "taskPackId": { "type": ["string", "null"] },
+            "promptId": { "type": ["string", "null"] },
+            "harnessId": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "sampleCount": { "type": ["integer", "null"], "minimum": 0 },
+        "measurement": {
+          "type": ["object", "null"],
+          "required": ["unit", "interval", "confidence", "eligible", "eligibilityReasons"],
+          "properties": {
+            "unit": { "enum": ["bytes", "tokens-per-second", "milliseconds", "probability", "joules", "boolean", "count", "other"] },
+            "interval": {
+              "type": ["object", "null"],
+              "required": ["lower", "upper"],
+              "properties": { "lower": { "type": "number" }, "upper": { "type": "number" } },
+              "additionalProperties": false
+            },
+            "confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "eligible": { "type": ["boolean", "null"] },
+            "eligibilityReasons": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false
+        },
+        "rawSourceRecordRef": { "type": ["string", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "hardwareTarget": {
+      "type": "object",
+      "required": ["hardwareTargetId", "os", "cpu", "memory", "accelerators", "fieldOrigins"],
+      "properties": {
+        "hardwareTargetId": { "type": "string", "minLength": 1 },
+        "os": {
+          "type": "object",
+          "required": ["family", "version"],
+          "properties": {
+            "family": { "enum": ["windows", "macos", "linux", "other"] },
+            "version": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "cpu": {
+          "type": "object",
+          "required": ["displayName", "logicalCores"],
+          "properties": {
+            "displayName": { "type": ["string", "null"] },
+            "logicalCores": { "type": ["integer", "null"], "minimum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "memory": {
+          "type": "object",
+          "required": ["totalRamBytes", "availableRamBytes", "unified"],
+          "properties": {
+            "totalRamBytes": { "type": "integer", "minimum": 1 },
+            "availableRamBytes": { "type": ["integer", "null"], "minimum": 0 },
+            "unified": { "type": ["boolean", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "accelerators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["acceleratorId", "displayName", "kind", "vendor", "backend", "deviceMemoryBytes", "count"],
+            "properties": {
+              "acceleratorId": { "type": ["string", "null"] },
+              "displayName": { "type": "string", "minLength": 1 },
+              "kind": { "enum": ["nvidia", "amd", "apple", "intel", "cpu", "other"] },
+              "vendor": { "enum": ["nvidia", "amd", "apple", "intel", "cpu", "other"] },
+              "backend": { "enum": ["cuda", "rocm", "metal", "vulkan", "cpu", "other"] },
+              "deviceMemoryBytes": { "type": ["integer", "null"], "minimum": 1 },
+              "count": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "fieldOrigins": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/origin" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "recommendationRequest": {
+      "type": "object",
+      "required": ["requestId", "hardwareTargetId", "task", "preferences", "advanced"],
+      "properties": {
+        "requestId": { "type": "string", "minLength": 1 },
+        "hardwareTargetId": { "type": "string", "minLength": 1 },
+        "task": {
+          "type": "object",
+          "required": ["family", "interactionStyle", "scopeLabel", "derivedContextTokens", "needs"],
+          "properties": {
+            "family": { "enum": ["coding", "writing", "extraction", "general", "other"] },
+            "interactionStyle": { "enum": ["interactive", "batch"] },
+            "scopeLabel": { "type": "string", "minLength": 1 },
+            "derivedContextTokens": { "type": "integer", "minimum": 1 },
+            "needs": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "enum": ["tool-use", "structured-output", "vision", "embeddings", "offline"] }
+            }
+          },
+          "additionalProperties": false
+        },
+        "preferences": {
+          "type": "object",
+          "required": ["priority", "allowCpuOffload", "installedOnly"],
+          "properties": {
+            "priority": { "enum": ["balanced", "quality", "speed", "long-context", "lightest"] },
+            "allowCpuOffload": { "type": "boolean" },
+            "installedOnly": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "advanced": {
+          "type": "object",
+          "required": ["forcedRuntime", "maximumArtifactBytes"],
+          "properties": {
+            "forcedRuntime": { "type": ["string", "null"] },
+            "maximumArtifactBytes": { "type": ["integer", "null"], "minimum": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtimeConfiguration": {
+      "type": "object",
+      "required": ["runtimeConfigurationId", "product", "engine", "engineBuild", "backend", "chatTemplate", "contextTokens", "kvCache", "gpuLayers", "batchSize", "microBatchSize", "parallelism", "threads", "flashAttention", "mmap", "sampler", "additionalFlags"],
+      "properties": {
+        "runtimeConfigurationId": { "type": "string", "minLength": 1 },
+        "product": { "type": "string", "minLength": 1 },
+        "engine": { "type": "string", "minLength": 1 },
+        "engineBuild": { "type": ["string", "null"] },
+        "backend": { "enum": ["cuda", "rocm", "metal", "vulkan", "cpu", "other"] },
+        "chatTemplate": { "type": ["string", "null"] },
+        "contextTokens": { "type": "integer", "minimum": 1 },
+        "kvCache": {
+          "type": "object",
+          "required": ["key", "value"],
+          "properties": { "key": { "type": ["string", "null"] }, "value": { "type": ["string", "null"] } },
+          "additionalProperties": false
+        },
+        "gpuLayers": { "oneOf": [{ "type": "integer", "minimum": 0 }, { "const": "all" }, { "type": "null" }] },
+        "batchSize": { "type": ["integer", "null"], "minimum": 1 },
+        "microBatchSize": { "type": ["integer", "null"], "minimum": 1 },
+        "parallelism": { "type": ["integer", "null"], "minimum": 1 },
+        "threads": { "type": ["integer", "null"], "minimum": 1 },
+        "flashAttention": { "type": ["boolean", "null"] },
+        "mmap": { "type": ["boolean", "null"] },
+        "sampler": {
+          "type": "object",
+          "required": ["temperature", "topP", "topK", "minP", "seed"],
+          "properties": {
+            "temperature": { "type": ["number", "null"], "minimum": 0 },
+            "topP": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "topK": { "type": ["integer", "null"], "minimum": 0 },
+            "minP": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+            "seed": { "type": ["integer", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "additionalFlags": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "value"],
+            "properties": { "name": { "type": "string", "minLength": 1 }, "value": { "type": ["string", "null"] } },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "exactConfigurationCandidate": {
+      "type": "object",
+      "required": ["candidateId", "modelFamily", "artifact", "runtime", "provenance"],
+      "properties": {
+        "candidateId": { "type": "string", "minLength": 1 },
+        "modelFamily": {
+          "type": "object",
+          "required": ["modelFamilyId", "displayName"],
+          "properties": { "modelFamilyId": { "type": "string", "minLength": 1 }, "displayName": { "type": "string", "minLength": 1 } },
+          "additionalProperties": false
+        },
+        "artifact": {
+          "type": "object",
+          "required": ["artifactId", "repository", "revision", "filename", "sha256", "bytes", "format", "quantization", "license", "status"],
+          "properties": {
+            "artifactId": { "type": "string", "minLength": 1 },
+            "repository": { "type": "string", "minLength": 1 },
+            "revision": { "type": "string", "minLength": 1 },
+            "filename": { "type": "string", "minLength": 1 },
+            "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+            "bytes": { "type": "integer", "minimum": 1 },
+            "format": { "type": "string", "minLength": 1 },
+            "quantization": { "type": "string", "minLength": 1 },
+            "license": { "type": "string", "minLength": 1 },
+            "status": { "const": "promoted" }
+          },
+          "additionalProperties": false
+        },
+        "runtime": { "$ref": "#/$defs/runtimeConfiguration" },
+        "provenance": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/provenance" } }
+      },
+      "additionalProperties": false
+    },
+    "memoryPool": {
+      "type": "object",
+      "required": ["modelBytes", "contextBytes", "computeBytes", "reserveBytes", "marginBytes", "requiredBytes", "availableBytes"],
+      "properties": {
+        "modelBytes": { "type": "integer", "minimum": 0 },
+        "contextBytes": { "type": "integer", "minimum": 0 },
+        "computeBytes": { "type": "integer", "minimum": 0 },
+        "reserveBytes": { "type": "integer", "minimum": 0 },
+        "marginBytes": { "type": "integer", "minimum": 0 },
+        "requiredBytes": { "type": "integer", "minimum": 0 },
+        "availableBytes": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "range": {
+      "type": ["object", "null"],
+      "required": ["low", "high"],
+      "properties": { "low": { "type": "number", "minimum": 0 }, "high": { "type": "number", "minimum": 0 } },
+      "additionalProperties": false
+    },
+    "fitEvidenceAssessment": {
+      "type": "object",
+      "required": ["assessmentId", "candidateId", "hardwareTargetId", "fit", "runPath", "memoryPools", "performance", "evidence", "blockingReasons"],
+      "properties": {
+        "assessmentId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "hardwareTargetId": { "type": "string", "minLength": 1 },
+        "fit": { "enum": ["good", "tight", "does-not-fit", "unknown"] },
+        "runPath": { "enum": ["gpu", "cpu-offload", "cpu", "unknown"] },
+        "memoryPools": {
+          "type": "object",
+          "required": ["device", "host"],
+          "properties": { "device": { "$ref": "#/$defs/memoryPool" }, "host": { "$ref": "#/$defs/memoryPool" } },
+          "additionalProperties": false
+        },
+        "performance": {
+          "type": "object",
+          "required": ["promptTokensPerSecond", "generationTokensPerSecond", "timeToFirstTokenMs"],
+          "properties": {
+            "promptTokensPerSecond": { "$ref": "#/$defs/range" },
+            "generationTokensPerSecond": { "$ref": "#/$defs/range" },
+            "timeToFirstTokenMs": { "$ref": "#/$defs/range" }
+          },
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "object",
+          "required": ["fit", "promptSpeed", "generationSpeed", "timeToFirstToken", "taskQuality"],
+          "properties": {
+            "fit": { "type": "array", "items": { "$ref": "#/$defs/provenance" } },
+            "promptSpeed": { "type": "array", "items": { "$ref": "#/$defs/provenance" } },
+            "generationSpeed": { "type": "array", "items": { "$ref": "#/$defs/provenance" } },
+            "timeToFirstToken": { "type": "array", "items": { "$ref": "#/$defs/provenance" } },
+            "taskQuality": { "type": "array", "items": { "$ref": "#/$defs/provenance" } }
+          },
+          "additionalProperties": false
+        },
+        "blockingReasons": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "portfolioItem": {
+      "type": "object",
+      "required": ["role", "modelFamilyId", "candidateId", "assessmentId", "why", "caveats"],
+      "properties": {
+        "role": { "oneOf": [{ "enum": ["primary-match", "quality-option", "fast-option", "long-context-option", "memory-efficient-option"] }, { "type": "null" }] },
+        "modelFamilyId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "assessmentId": { "type": "string", "minLength": 1 },
+        "why": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "caveats": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "recommendationPortfolio": {
+      "type": "object",
+      "required": ["requestId", "outcome", "message", "items", "methodologyVersion"],
+      "properties": {
+        "requestId": { "type": "string", "minLength": 1 },
+        "outcome": { "enum": ["ranked", "unranked-compatible", "contradictory-preferences", "nothing-fits", "coverage-gap"] },
+        "message": { "type": "string", "minLength": 1 },
+        "items": { "type": "array", "maxItems": 5, "items": { "$ref": "#/$defs/portfolioItem" } },
+        "methodologyVersion": { "type": "string", "minLength": 1 }
+      },
+      "allOf": [
+        { "if": { "properties": { "outcome": { "const": "ranked" } } }, "then": { "properties": { "items": { "type": "array", "minItems": 1, "items": { "allOf": [{ "$ref": "#/$defs/portfolioItem" }, { "type": "object", "properties": { "role": { "enum": ["primary-match", "quality-option", "fast-option", "long-context-option", "memory-efficient-option"] } } }] } } } } },
+        { "if": { "properties": { "outcome": { "enum": ["nothing-fits", "coverage-gap"] } } }, "then": { "properties": { "items": { "type": "array", "maxItems": 0 } } } },
+        { "if": { "properties": { "outcome": { "enum": ["unranked-compatible", "contradictory-preferences"] } } }, "then": { "properties": { "items": { "type": "array", "items": { "allOf": [{ "$ref": "#/$defs/portfolioItem" }, { "type": "object", "properties": { "role": { "type": "null" } } }] } } } } }
+      ],
+      "additionalProperties": false
+    },
+    "runnerHandoff": {
+      "type": "object",
+      "required": ["handoffId", "schemaVersion", "createdAt", "expiresAt", "contentHash", "recommendationRequest", "hardwareTarget", "selectedCandidate", "evidenceSummary", "containsModelData", "sideEffectAuthorization"],
+      "properties": {
+        "handoffId": { "type": "string", "minLength": 1 },
+        "schemaVersion": { "const": 1 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "recommendationRequest": { "$ref": "#/$defs/recommendationRequest" },
+        "hardwareTarget": { "$ref": "#/$defs/hardwareTarget" },
+        "selectedCandidate": { "$ref": "#/$defs/exactConfigurationCandidate" },
+        "evidenceSummary": { "$ref": "#/$defs/fitEvidenceAssessment" },
+        "containsModelData": { "const": false },
+        "sideEffectAuthorization": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "preflight": {
+      "type": "object",
+      "required": ["power", "thermal", "concurrentGpu", "requiresConfirmation", "conditions"],
+      "properties": {
+        "power": { "enum": ["ac", "battery", "unknown"] },
+        "thermal": { "enum": ["acceptable", "adverse", "unknown"] },
+        "concurrentGpu": { "enum": ["idle", "active", "unknown"] },
+        "requiresConfirmation": { "type": "boolean" },
+        "conditions": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "sideEffects": {
+      "type": "object",
+      "required": ["executesLocalProcess", "loadsModel", "writesModelStore", "network", "upload"],
+      "properties": {
+        "executesLocalProcess": { "const": true }, "loadsModel": { "const": true },
+        "writesModelStore": { "const": false }, "network": { "const": false }, "upload": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "benchmarkPlan": {
+      "type": "object",
+      "required": ["benchmarkPlanId", "candidateId", "artifactPath", "expectedArtifactSha256", "runtime", "protocolId", "warmupRuns", "measuredRuns", "measurementKinds", "preflight", "sideEffects"],
+      "properties": {
+        "benchmarkPlanId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "artifactPath": { "type": "string", "minLength": 1 },
+        "expectedArtifactSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "runtime": { "$ref": "#/$defs/runtimeConfiguration" },
+        "protocolId": { "type": "string", "minLength": 1 },
+        "warmupRuns": { "type": "integer", "minimum": 0 },
+        "measuredRuns": { "type": "integer", "minimum": 1 },
+        "measurementKinds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["prompt-processing", "generation", "time-to-first-token", "memory", "stability"] } },
+        "preflight": { "$ref": "#/$defs/preflight" },
+        "sideEffects": { "$ref": "#/$defs/sideEffects" }
+      },
+      "additionalProperties": false
+    },
+    "quickCheckPlan": {
+      "type": "object",
+      "required": ["quickCheckPlanId", "candidateId", "artifactPath", "expectedArtifactSha256", "runtime", "checks", "preflight", "sideEffects"],
+      "properties": {
+        "quickCheckPlanId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "artifactPath": { "type": "string", "minLength": 1 },
+        "expectedArtifactSha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "runtime": { "$ref": "#/$defs/runtimeConfiguration" },
+        "checks": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "required": ["checkId", "criterion"],
+            "properties": { "checkId": { "type": "string", "minLength": 1 }, "criterion": { "type": "string", "minLength": 1 } },
+            "additionalProperties": false
+          }
+        },
+        "preflight": { "$ref": "#/$defs/preflight" },
+        "sideEffects": { "$ref": "#/$defs/sideEffects" }
+      },
+      "additionalProperties": false
+    },
+    "verificationPlan": {
+      "type": "object",
+      "required": ["verificationPlanId", "hardwareTargetId", "candidateId", "benchmarkPlan", "quickCheckPlan"],
+      "properties": {
+        "verificationPlanId": { "type": "string", "minLength": 1 },
+        "hardwareTargetId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "benchmarkPlan": { "oneOf": [{ "$ref": "#/$defs/benchmarkPlan" }, { "type": "null" }] },
+        "quickCheckPlan": { "oneOf": [{ "$ref": "#/$defs/quickCheckPlan" }, { "type": "null" }] }
+      },
+      "additionalProperties": false
+    },
+    "measurementSeries": {
+      "type": "object",
+      "required": ["kind", "unit", "warmupSamples", "measuredSamples", "aggregate", "completion", "stability", "evidence"],
+      "properties": {
+        "kind": { "enum": ["prompt-processing", "generation", "time-to-first-token", "memory", "stability"] },
+        "unit": { "enum": ["tokens-per-second", "milliseconds", "bytes", "boolean", "count", "other"] },
+        "warmupSamples": { "type": "array", "items": { "type": "number" } },
+        "measuredSamples": { "type": "array", "items": { "type": "number" } },
+        "aggregate": {
+          "type": ["object", "null"], "required": ["minimum", "maximum", "median"],
+          "properties": { "minimum": { "type": "number" }, "maximum": { "type": "number" }, "median": { "type": "number" } },
+          "additionalProperties": false
+        },
+        "completion": { "enum": ["completed", "failed", "timed-out", "cancelled", "oom", "stopped"] },
+        "stability": { "enum": ["stable", "unstable", "insufficient-samples", "not-applicable"] },
+        "evidence": { "$ref": "#/$defs/provenance" }
+      },
+      "additionalProperties": false
+    },
+    "benchmarkResult": {
+      "type": "object",
+      "required": ["benchmarkResultId", "benchmarkPlanId", "candidateId", "domainStatus", "series", "calibrationEligible", "calibrationExclusions", "diagnostics"],
+      "properties": {
+        "benchmarkResultId": { "type": "string", "minLength": 1 },
+        "benchmarkPlanId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "domainStatus": { "enum": ["completed", "failed", "timed-out", "cancelled", "oom", "stopped"] },
+        "series": { "type": "array", "items": { "$ref": "#/$defs/measurementSeries" } },
+        "calibrationEligible": { "type": "boolean" },
+        "calibrationExclusions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "diagnostics": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "quickCheckResult": {
+      "type": "object",
+      "required": ["quickCheckResultId", "quickCheckPlanId", "candidateId", "domainStatus", "checks"],
+      "properties": {
+        "quickCheckResultId": { "type": "string", "minLength": 1 },
+        "quickCheckPlanId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "domainStatus": { "enum": ["completed", "failed", "timed-out", "cancelled", "oom", "stopped"] },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["checkId", "criterion", "status", "explanation", "localDiagnostics", "evidence"],
+            "properties": {
+              "checkId": { "type": "string", "minLength": 1 },
+              "criterion": { "type": "string", "minLength": 1 },
+              "status": { "enum": ["pass", "fail", "not-run"] },
+              "explanation": { "type": "string", "minLength": 1 },
+              "localDiagnostics": { "type": ["string", "null"] },
+              "evidence": { "$ref": "#/$defs/provenance" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "verificationResult": {
+      "type": "object",
+      "required": ["verificationResultId", "verificationPlanId", "candidateId", "domainStatus", "benchmarkResult", "quickCheckResult"],
+      "properties": {
+        "verificationResultId": { "type": "string", "minLength": 1 },
+        "verificationPlanId": { "type": "string", "minLength": 1 },
+        "candidateId": { "type": "string", "minLength": 1 },
+        "domainStatus": { "enum": ["completed", "failed", "timed-out", "cancelled", "oom", "stopped"] },
+        "benchmarkResult": { "oneOf": [{ "$ref": "#/$defs/benchmarkResult" }, { "type": "null" }] },
+        "quickCheckResult": { "oneOf": [{ "$ref": "#/$defs/quickCheckResult" }, { "type": "null" }] }
+      },
+      "additionalProperties": false
+    },
+    "completeness": {
+      "type": "object",
+      "required": ["complete", "missing", "warnings", "recoverableActions"],
+      "properties": {
+        "complete": { "type": "boolean" },
+        "missing": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "warnings": { "type": "array", "items": { "type": "string" } },
+        "recoverableActions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "typedEnvelope": {
+      "type": "object",
+      "required": ["schemaVersion", "contract", "status", "data", "provenance", "completeness"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "contract": { "$ref": "#/$defs/contractId" },
+        "status": { "enum": ["ok", "partial"] },
+        "data": {},
+        "provenance": { "type": "array", "items": { "$ref": "#/$defs/provenance" } },
+        "completeness": { "$ref": "#/$defs/completeness" }
+      },
+      "allOf": [
+        { "if": { "properties": { "contract": { "const": "hardware-target" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/hardwareTarget" } } } },
+        { "if": { "properties": { "contract": { "const": "recommendation-request" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/recommendationRequest" } } } },
+        { "if": { "properties": { "contract": { "const": "exact-configuration-candidate" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/exactConfigurationCandidate" } } } },
+        { "if": { "properties": { "contract": { "const": "fit-evidence-assessment" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/fitEvidenceAssessment" } } } },
+        { "if": { "properties": { "contract": { "const": "recommendation-portfolio" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/recommendationPortfolio" } } } },
+        { "if": { "properties": { "contract": { "const": "runner-handoff" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/runnerHandoff" } } } },
+        { "if": { "properties": { "contract": { "const": "benchmark-plan" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/benchmarkPlan" } } } },
+        { "if": { "properties": { "contract": { "const": "benchmark-result" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/benchmarkResult" } } } },
+        { "if": { "properties": { "contract": { "const": "quick-check-plan" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/quickCheckPlan" } } } },
+        { "if": { "properties": { "contract": { "const": "quick-check-result" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/quickCheckResult" } } } },
+        { "if": { "properties": { "contract": { "const": "verification-plan" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/verificationPlan" } } } },
+        { "if": { "properties": { "contract": { "const": "verification-result" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/verificationResult" } } } },
+        { "if": { "properties": { "status": { "const": "ok" } } }, "then": { "properties": { "completeness": { "type": "object", "properties": { "complete": { "const": true }, "missing": { "type": "array", "maxItems": 0 } } } } } },
+        { "if": { "properties": { "status": { "const": "partial" } } }, "then": { "properties": { "completeness": { "type": "object", "properties": { "complete": { "const": false }, "missing": { "type": "array", "minItems": 1 } } } } } }
+      ],
+      "additionalProperties": false
+    },
+    "nonDataEnvelope": {
+      "type": "object",
+      "required": ["schemaVersion", "contract", "status", "reasonCode", "message", "recoverableActions", "provenance", "warnings"],
+      "properties": {
+        "schemaVersion": { "const": 1 },
+        "contract": { "$ref": "#/$defs/contractId" },
+        "status": { "enum": ["unavailable", "blocked", "error"] },
+        "reasonCode": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 },
+        "recoverableActions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "provenance": { "type": "array", "items": { "$ref": "#/$defs/provenance" } },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    }
+  }
+}

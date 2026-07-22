@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "contract": "fit-evidence-assessment",
+  "status": "ok",
+  "data": {
+    "assessmentId": "assessment-fixture",
+    "candidateId": "candidate-fixture",
+    "hardwareTargetId": "hw-fixture",
+    "fit": "good",
+    "runPath": "gpu",
+    "memoryPools": {
+      "device": {
+        "modelBytes": 2491323904,
+        "contextBytes": 805306368,
+        "computeBytes": 536870912,
+        "reserveBytes": 1073741824,
+        "marginBytes": 536870912,
+        "requiredBytes": 5442105344,
+        "availableBytes": 12884901888
+      },
+      "host": {
+        "modelBytes": 0,
+        "contextBytes": 268435456,
+        "computeBytes": 1073741824,
+        "reserveBytes": 4294967296,
+        "marginBytes": 1073741824,
+        "requiredBytes": 6710886400,
+        "availableBytes": 25769803776
+      }
+    },
+    "performance": {
+      "promptTokensPerSecond": {
+        "low": 160,
+        "high": 190
+      },
+      "generationTokensPerSecond": {
+        "low": 55,
+        "high": 80
+      },
+      "timeToFirstTokenMs": {
+        "low": 120,
+        "high": 240
+      }
+    },
+    "evidence": {
+      "fit": [
+        {
+          "source": {
+            "id": "fixture-source",
+            "version": "1",
+            "revision": "fixture-revision",
+            "url": "https://example.invalid/source"
+          },
+          "retrievedAt": "2026-07-22T12:00:00Z",
+          "observedAt": "2026-07-22T11:00:00Z",
+          "method": "imported",
+          "hardwareMatch": "exact",
+          "configurationMatch": "exact",
+          "scope": {
+            "taskFamily": null,
+            "taskPackId": null,
+            "promptId": null,
+            "harnessId": "fixture-harness-v1"
+          },
+          "sampleCount": null,
+          "measurement": null,
+          "rawSourceRecordRef": "fixture://source-record"
+        }
+      ],
+      "promptSpeed": [
+        {
+          "source": {
+            "id": "fixture-source",
+            "version": "1",
+            "revision": "fixture-revision",
+            "url": "https://example.invalid/source"
+          },
+          "retrievedAt": "2026-07-22T12:00:00Z",
+          "observedAt": "2026-07-22T11:00:00Z",
+          "method": "imported",
+          "hardwareMatch": "exact",
+          "configurationMatch": "exact",
+          "scope": {
+            "taskFamily": null,
+            "taskPackId": null,
+            "promptId": null,
+            "harnessId": "fixture-harness-v1"
+          },
+          "sampleCount": null,
+          "measurement": null,
+          "rawSourceRecordRef": "fixture://source-record"
+        }
+      ],
+      "generationSpeed": [
+        {
+          "source": {
+            "id": "fixture-source",
+            "version": "1",
+            "revision": "fixture-revision",
+            "url": "https://example.invalid/source"
+          },
+          "retrievedAt": "2026-07-22T12:00:00Z",
+          "observedAt": "2026-07-22T11:00:00Z",
+          "method": "imported",
+          "hardwareMatch": "exact",
+          "configurationMatch": "exact",
+          "scope": {
+            "taskFamily": null,
+            "taskPackId": null,
+            "promptId": null,
+            "harnessId": "fixture-harness-v1"
+          },
+          "sampleCount": null,
+          "measurement": null,
+          "rawSourceRecordRef": "fixture://source-record"
+        }
+      ],
+      "timeToFirstToken": [
+        {
+          "source": {
+            "id": "fixture-source",
+            "version": "1",
+            "revision": "fixture-revision",
+            "url": "https://example.invalid/source"
+          },
+          "retrievedAt": "2026-07-22T12:00:00Z",
+          "observedAt": "2026-07-22T11:00:00Z",
+          "method": "imported",
+          "hardwareMatch": "exact",
+          "configurationMatch": "exact",
+          "scope": {
+            "taskFamily": null,
+            "taskPackId": null,
+            "promptId": null,
+            "harnessId": "fixture-harness-v1"
+          },
+          "sampleCount": null,
+          "measurement": null,
+          "rawSourceRecordRef": "fixture://source-record"
+        }
+      ],
+      "taskQuality": []
+    },
+    "blockingReasons": []
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

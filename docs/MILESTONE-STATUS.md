@@ -2,6 +2,12 @@
 
 This is an audited state ledger, not a roadmap. Update a row only after checking the milestone's acceptance and forbidden clauses in `agent-plan.md`. Every implementation checkpoint begins from this file.
 
+## Wave 0 architecture program
+
+| Checkpoint | Status | Evidence | Remaining before implementation |
+|---|---|---|---|
+| Documentation/design contracts — 2026-07-22 | Approved; commit pending | Product owner approved the actual brief, screen matrix and design foundation; resolved all ten v1 contract questions; approved execution direction/order; and authorized root-owned M-A. Reconciliation evidence: 51 Markdown files pass UTF-8/mojibake/relative-link validation; 18 positive schema fixtures pass and 11 negative fixtures are rejected; current path inventory is 104 production + 31 test paths with 0 unrepresented; root gate passes 119 tests/build; runner gate passes 26 Rust tests/build. | Create the isolated documentation/contracts commit after final gates and exact staged-diff review, then open `Checkpoint — Completing M-A`. |
+
 | Milestone | Status | Evidence | Remaining before completion |
 |---|---|---|---|
 | M-1 — Evidence foundation | Complete | Evidence types, scope policy and fail-closed contract tests landed in `1426c86`; full gate suite subsequently remains green. | None. |
@@ -26,4 +32,10 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 
 | R4 (existing-engine slice) — Benchmark | Complete (partial R4) | `runner/src-tauri/src/benchmark.rs`: explicit-consent benchmark spawning exactly the user's own `llama-bench` (single boundary-tested spawn site), watchdog kill-timeout, fail-closed JSON parsing pinned to a real-output fixture, results badged `verified-local` with full engine/config identity. Live end-to-end on the dev machine: Qwen3-4B on RTX 3060 Laptop via CUDA, 228 t/s prompt / 4.3 t/s generation at llama-bench defaults. Persona findings logged in `docs/persona-findings.md`; coverage-gap outcome added to the website engine from pass 1. | Full R4 (bundled pinned engine + T7 sandbox + quick-task suite + calibration transfer) remains gated on the Windows GPU sandbox stop-and-ask. User-flag/llama-swap-config benchmarking is backlog item 1. |
 
-**Next checkpoint (options): (a) benchmark with user flags + llama-swap config parsing (Ravi backlog item), (b) registry publisher-policy expansion (lmstudio-community/ggml-org), (c) GitHub mirror + hosting (requires product-owner permission — the push was classifier-blocked), (d) full R4 sandbox investigation.** Remaining OPEN stop-and-ask: Windows GPU sandbox depth (T7).
+**Current next checkpoint:** commit and close the approved 2026-07-22
+documentation/design-contract checkpoint, then complete the explicitly
+authorized root-owned M-A checkpoint in `worktree-execution-plan.md`; no
+implementation worktree exists or is permitted for M-A.
+Runner artifact binding, serving-config import, publisher expansion, hosting and
+full-R4 sandbox work remain separately scoped future decisions. Windows GPU
+sandbox depth (T7) remains an OPEN stop-and-ask.

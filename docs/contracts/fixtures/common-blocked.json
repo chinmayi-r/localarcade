@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "contract": "verification-plan",
+  "status": "blocked",
+  "reasonCode": "artifact.identity-mismatch",
+  "message": "The selected file does not match the approved artifact hash.",
+  "recoverableActions": [
+    "Choose the matching file."
+  ],
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "warnings": []
+}

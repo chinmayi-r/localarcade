@@ -1,5 +1,46 @@
 # Decisions
 
+## 2026-07-22 — Approve first-slice authorities and resolve contract v1
+
+- **Decision:** Approve the actual content of `PRODUCT-BRIEF.md`,
+  `screen-contract.md`, and `design-foundation.md`; approve the dependency
+  direction/order in `worktree-execution-plan.md`; and freeze the resolved v1
+  schema. V1 separates OS from accelerator kind/vendor/backend, preserves
+  lossless provenance and exact runtime/evidence detail, uses current
+  task/priority vocabulary, keeps artifact-size filtering without download,
+  enforces portfolio invariants, defines a canonical 24-hour informational
+  handoff, separates benchmark and quick-check records, and distinguishes
+  use-case envelopes from captured run outcomes.
+- **Why:** These decisions remove lossy or overloaded seams before M-A and keep
+  the first slice honest across website, runner, CLI, TypeScript, and Rust.
+- **Reversible:** Breaking field/enum/meaning changes require a new schema
+  version and migration fixtures. No production behavior is authorized beyond
+  the separately scoped root-owned M-A checkpoint.
+
+## 2026-07-22 — Approve the Wave 0 preservation baseline and first slice
+
+- **Decision:** The eight 2026-07-22 audit reports listed in `docs/README.md` are the repository audit. `docs/PRODUCT-BRIEF.md` is the concise product authority. The first implementation slice is owned-hardware website finder → scoped configuration portfolio → exact configuration detail → handoff to the separately gated desktop runner.
+- **Why:** The recovered repository contains valuable passing cores, conflicting design eras, and partial audit edits. A reviewed baseline permits modular progress without treating timestamps, prototypes, or draft architecture as implementation truth.
+- **Reversible:** The first-slice sequence may be extended by a later reviewed product decision. Preservation evidence remains historical fact.
+
+## 2026-07-22 — Use one utility-first website arrival
+
+- **Decision:** Arrival presents one immediately usable hardware/task form with one primary action. Secondary journeys may be links. Three equal entry cards, a marketing hero, persistent app chrome, and an arrival leaderboard are rejected.
+- **Why:** The website must deliver no-install value immediately and must not resemble a desktop application or imply public ranking evidence before inputs exist.
+- **Reversible:** Layout details may change within the same utility contract; changing the arrival model requires a product-brief revision.
+
+## 2026-07-22 — Sequence private Arena after finder and verification; defer public systems
+
+- **Decision:** Private Arena remains planned local product scope after finder and runner verification. Public Arena, uploads, voting, contribution contracts, and public evidence service remain deferred.
+- **Why:** Private audition can build on exact local configurations and measurements. Public systems add consent, abuse, retention, revocation, security, and service boundaries that are unnecessary for the first slice.
+- **Reversible:** Public work may be opened only through a later explicit contract/security checkpoint.
+
+## 2026-07-22 — Direct consolidation and limit the contract-freeze scope
+
+- **Decision:** Produce one consolidated screen matrix while preserving the two inventories as research, and freeze only the smallest first-slice contract set. The owner subsequently approved the matrix and resolved schema v1. Public contribution/service contracts remain excluded.
+- **Why:** A smaller versioned boundary is enough to connect the approved journey, minimizes speculative API commitments, and creates testable seams around passing code.
+- **Reversible:** Additive optional fields require review; breaking changes require a new schema version and migration fixtures.
+
 ## 2026-07-20 — R4 existing-engine slice: benchmark the user's own llama-bench under a watchdog
 
 - **Decision:** R4 ships first as an existing-engine slice: the runner spawns exactly one executable — `llama-bench` from a user-chosen engine directory — on a user-chosen model file, with a 600 s watchdog kill, fail-closed JSON parsing, and `verified-local` provenance. The T7 sandbox (AppContainer/Job Object depth) is NOT implemented in this slice; its stop-and-ask remains open and applies to the future bundled-engine path executing downloaded artifacts.

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "contract": "hardware-target",
+  "status": "ok",
+  "data": {
+    "hardwareTargetId": "hw-fixture",
+    "os": {
+      "family": "windows",
+      "version": "11"
+    },
+    "cpu": {
+      "displayName": "Fixture CPU",
+      "logicalCores": 16
+    },
+    "memory": {
+      "totalRamBytes": 34359738368,
+      "availableRamBytes": 25769803776,
+      "unified": false
+    },
+    "accelerators": [
+      {
+        "acceleratorId": "nvidia-fixture",
+        "displayName": "Fixture NVIDIA GPU",
+        "kind": "nvidia",
+        "vendor": "nvidia",
+        "backend": "cuda",
+        "deviceMemoryBytes": 12884901888,
+        "count": 1
+      }
+    ],
+    "fieldOrigins": {
+      "/os/family": "self-reported",
+      "/cpu/displayName": "self-reported",
+      "/memory/totalRamBytes": "confirmed",
+      "/memory/unified": "confirmed",
+      "/accelerators/0/acceleratorId": "imported",
+      "/accelerators/0/deviceMemoryBytes": "confirmed"
+    }
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

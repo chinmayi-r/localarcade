@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "contract": "exact-configuration-candidate",
+  "status": "ok",
+  "data": {
+    "candidateId": "candidate-fixture",
+    "modelFamily": {
+      "modelFamilyId": "qwen3-4b",
+      "displayName": "Qwen3 4B"
+    },
+    "artifact": {
+      "artifactId": "artifact-fixture",
+      "repository": "example/fixture",
+      "revision": "0123456789abcdef",
+      "filename": "fixture-Q4_K_M.gguf",
+      "sha256": "not-a-sha256",
+      "bytes": 2491323904,
+      "format": "GGUF",
+      "quantization": "Q4_K_M",
+      "license": "apache-2.0",
+      "status": "promoted"
+    },
+    "runtime": {
+      "runtimeConfigurationId": "runtime-fixture",
+      "product": "llama-cpp",
+      "engine": "llama.cpp",
+      "engineBuild": "b10061 (5d5306bf3)",
+      "backend": "cuda",
+      "chatTemplate": "chatml",
+      "contextTokens": 16384,
+      "kvCache": {
+        "key": "f16",
+        "value": "f16"
+      },
+      "gpuLayers": "all",
+      "batchSize": 2048,
+      "microBatchSize": 512,
+      "parallelism": 1,
+      "threads": 14,
+      "flashAttention": true,
+      "mmap": true,
+      "sampler": {
+        "temperature": null,
+        "topP": null,
+        "topK": null,
+        "minP": null,
+        "seed": null
+      },
+      "additionalFlags": []
+    },
+    "provenance": [
+      {
+        "source": {
+          "id": "fixture-source",
+          "version": "1",
+          "revision": "fixture-revision",
+          "url": "https://example.invalid/source"
+        },
+        "retrievedAt": "2026-07-22T12:00:00Z",
+        "observedAt": "2026-07-22T11:00:00Z",
+        "method": "imported",
+        "hardwareMatch": "exact",
+        "configurationMatch": "exact",
+        "scope": {
+          "taskFamily": null,
+          "taskPackId": null,
+          "promptId": null,
+          "harnessId": "fixture-harness-v1"
+        },
+        "sampleCount": null,
+        "measurement": null,
+        "rawSourceRecordRef": "fixture://source-record"
+      }
+    ]
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

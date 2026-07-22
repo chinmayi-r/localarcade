@@ -2,10 +2,33 @@
 
 These instructions apply to the entire repository.
 
+## Required orientation
+
+Read `docs/README.md` first. It defines document authority and prevents older
+milestone or screen inventories from overriding the current product direction.
+Then read `docs/PRODUCT-BRIEF.md`, `docs/strategy-and-product-rationale.md`,
+`docs/MILESTONE-STATUS.md`, and the documents required for the module or
+surface being changed. For interface work, also read
+`docs/prototypes/README.md` before consulting any recovered prototype.
+
+The current architecture target is M-A through M-P in
+`docs/modular-architecture-v2.md`. It is a design target, not proof that current
+code already conforms. Consult the approved 2026-07-22 Wave 0 audit reports
+listed in `docs/README.md` before reusing or replacing existing code. The
+product owner approved the actual content of `docs/PRODUCT-BRIEF.md`,
+`docs/screen-contract.md`, and `docs/design-foundation.md` on 2026-07-22. The
+resolved first-slice contracts in `docs/contracts/README.md` are also approved.
+The dependency direction/order in `docs/worktree-execution-plan.md` is approved;
+each implementation checkpoint still requires its own explicit scope contract.
+
 ## Two related products
 
 - **Website:** a useful, no-install model and configuration finder. Follow the familiar hardware-advisor pattern: normal website header, short explanation, one contained hardware form, one primary action, results below, and methodology later. Do not use persistent side rails, app chrome, or a leaderboard table on arrival. Do not put a marketing hero in front of the utility.
-- **Desktop app / runner:** a separate, future product for hardware detection, downloads, local benchmarks, and contributed measurements. Never imply that the website has detected hardware or run a benchmark when it has not.
+- **Desktop app / runner:** a separate application and permission boundary in
+  this repository. Detection, read-only inventory and existing-engine
+  measurements exist; downloads, contributions and public release remain
+  separately gated. Never imply that the website has detected hardware or run
+  a benchmark when it has not.
 
 ## Visual direction
 
@@ -34,7 +57,11 @@ These instructions apply to the entire repository.
 
 ## Milestone execution and checkpoints
 
-- `docs/agent-plan.md` is the execution contract and `docs/MILESTONE-STATUS.md` is the current audited state. Read both, plus every milestone-specific required document, before changing code.
+- `docs/worktree-execution-plan.md` is the next-slice execution contract and
+  `docs/MILESTONE-STATUS.md` is the current audited implementation state.
+  `docs/agent-plan.md` is the historical M-1–M9/R1–R4 contract. Read the current
+  plan, status ledger, and every checkpoint-specific contract before changing
+  code.
 - Execute milestones in dependency order. Adjacent milestones may share one work session only when the checkpoint names each milestone separately, earlier acceptance gates remain satisfied, and no later milestone consumes unfinished earlier work.
 - Before starting or advancing milestone work, post a user-visible checkpoint in this exact shape:
   - `Checkpoint — Completing M<N>` or `Checkpoint — Completing M<N> + M<N+1>`

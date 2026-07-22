@@ -16,6 +16,8 @@
     "registry:discover:hf": "npm run discover",
     "registry:import:hf": "npm run ingest",
     "registry:freshness": "tsx scripts/check-registry-freshness.ts",
+    "contracts:validate": "node docs/contracts/validate-fixtures.mjs",
+    "docs:validate": "node docs/validate-documentation.mjs",
     "check": "npm run typecheck && npm run lint && npm test && npm run build",
     "lint": "eslint app lib tests worker public/design-system/constellation.js eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
   },
@@ -32,6 +34,8 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
     "@vitejs/plugin-rsc": "0.5.26",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
     "react-server-dom-webpack": "19.2.6",

@@ -1,0 +1,296 @@
+<div id="local-arcade-wireframes">
+  <header class="wire-header">
+    <div class="wire-brand"><i data-lucide="gamepad-2" aria-hidden="true"></i> Local Arcade</div>
+    <nav class="viz-row" aria-label="Preview navigation">
+      <button type="button" class="btn btn-ghost" data-screen="entry">Finder</button>
+      <button type="button" class="btn btn-ghost" data-screen="evidence">Public evidence</button>
+      <button type="button" class="btn btn-ghost" data-screen="desktop">Desktop app</button>
+    </nav>
+  </header>
+
+  <main id="wire-screen" aria-live="polite"></main>
+</div>
+
+<style>
+  #local-arcade-wireframes { color: var(--foreground); }
+  #local-arcade-wireframes .wire-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+  #local-arcade-wireframes .wire-brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 500; }
+  #local-arcade-wireframes .wire-main { padding-top: 1.2rem; }
+  #local-arcade-wireframes .wire-intro { max-width: 46rem; margin-bottom: 1rem; }
+  #local-arcade-wireframes .wire-intro h2 { margin-bottom: 0.45rem; }
+  #local-arcade-wireframes .wire-intro p { margin: 0; color: var(--muted-foreground); }
+  #local-arcade-wireframes .path-card { display: flex; flex-direction: column; align-items: flex-start; gap: 0.65rem; text-align: left; }
+  #local-arcade-wireframes .path-card p { margin: 0; color: var(--muted-foreground); }
+  #local-arcade-wireframes .path-card .btn { margin-top: auto; }
+  #local-arcade-wireframes .wire-section { margin-top: 1.2rem; }
+  #local-arcade-wireframes .wire-section h3 { margin-bottom: 0.55rem; }
+  #local-arcade-wireframes .wire-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1rem; }
+  #local-arcade-wireframes .wire-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem; }
+  #local-arcade-wireframes .wire-back { margin-bottom: 0.7rem; }
+  #local-arcade-wireframes .choice-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; }
+  #local-arcade-wireframes .choice-list .btn { text-align: left; }
+  #local-arcade-wireframes .result-layout { display: grid; grid-template-columns: 1.35fr 1fr; gap: 1rem; }
+  #local-arcade-wireframes .result-title { display: flex; align-items: center; gap: 0.55rem; }
+  #local-arcade-wireframes .result-title h3 { margin: 0; }
+  #local-arcade-wireframes .evidence-list { list-style: none; padding: 0; margin: 0; }
+  #local-arcade-wireframes .evidence-list li { padding: 0.55rem 0; border-bottom: 1px solid var(--border); }
+  #local-arcade-wireframes .evidence-list li:last-child { border-bottom: 0; }
+  #local-arcade-wireframes .evidence-list strong { display: block; }
+  #local-arcade-wireframes .wire-note { margin-top: 1rem; color: var(--muted-foreground); }
+  @media (max-width: 640px) {
+    #local-arcade-wireframes .wire-header { align-items: flex-start; flex-direction: column; }
+    #local-arcade-wireframes .wire-form,
+    #local-arcade-wireframes .choice-list,
+    #local-arcade-wireframes .result-layout { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById("local-arcade-wireframes");
+  const screen = root.querySelector("#wire-screen");
+  let selectedPath = "fit";
+  let selectedJob = "Coding on a repository";
+
+  const pathData = {
+    fit: {
+      title: "Find what fits this computer",
+      copy: "Start with hardware and a broad kind of work. No local scan is implied.",
+      action: "Choose computer and work"
+    },
+    existing: {
+      title: "Check what I already use",
+      copy: "Enter an installed model or use the desktop app to inspect local model folders with permission.",
+      action: "Review an existing setup"
+    },
+    workflow: {
+      title: "Compare setups for a job",
+      copy: "Describe recurring coding, document Q&A, extraction, writing, or another workflow.",
+      action: "Describe a recurring job"
+    }
+  };
+
+  function icon(name) {
+    return `<i data-lucide="${name}" aria-hidden="true"></i>`;
+  }
+
+  function activateIcons() {
+    if (window.lucide) window.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+  }
+
+  function bind(selector, handler) {
+    root.querySelectorAll(selector).forEach((node) => node.addEventListener("click", handler));
+  }
+
+  function showEntry() {
+    screen.innerHTML = `
+      <section class="wire-main">
+        <div class="wire-intro">
+          <h2>Find a local AI setup that fits</h2>
+          <p>Choose the question you have. You can inspect the technical evidence later.</p>
+        </div>
+        <div class="viz-grid">
+          ${Object.entries(pathData).map(([id, item]) => `
+            <section class="card path-card">
+              <strong>${item.title}</strong>
+              <p>${item.copy}</p>
+              <button type="button" class="btn${id === "fit" ? " btn-primary" : ""}" data-path="${id}">${item.action}</button>
+            </section>
+          `).join("")}
+        </div>
+        <div class="wire-section">
+          <button type="button" class="btn btn-ghost" data-screen="evidence">Browse public measurements and compatibility evidence</button>
+        </div>
+      </section>`;
+    bind("[data-path]", (event) => {
+      selectedPath = event.currentTarget.dataset.path;
+      if (selectedPath === "fit") showFit();
+      if (selectedPath === "existing") showExisting();
+      if (selectedPath === "workflow") showWorkflow();
+    });
+    bind("[data-screen='evidence']", showEvidence);
+    activateIcons();
+  }
+
+  function backButton() {
+    return `<button type="button" class="btn btn-ghost wire-back" data-back>${icon("arrow-left")} Choose another path</button>`;
+  }
+
+  function showFit() {
+    screen.innerHTML = `
+      <section class="wire-main">
+        ${backButton()}
+        <div class="wire-intro">
+          <h2>What computer and work are we matching?</h2>
+          <p>The website uses only what you enter. Desktop detection is an optional later step.</p>
+        </div>
+        <div class="card wire-form">
+          <label class="form-label">Computer
+            <select class="form-select">
+              <option>Windows PC with NVIDIA GPU</option>
+              <option>Windows or Linux PC with AMD GPU</option>
+              <option>Apple silicon Mac</option>
+              <option>CPU-only or I do not know</option>
+            </select>
+          </label>
+          <label class="form-label">Confirmed graphics or unified memory
+            <select class="form-select">
+              <option>6 GB</option><option>8 GB</option><option>12 GB</option><option>16 GB or more</option><option>I do not know</option>
+            </select>
+          </label>
+          <label class="form-label">Main use
+            <select class="form-select">
+              <option>Everyday questions and writing</option><option>Coding</option><option>Documents and retrieval</option><option>Structured extraction</option>
+            </select>
+          </label>
+          <label class="form-label">What matters most
+            <select class="form-select">
+              <option>Balanced starting point</option><option>Best quality that fits</option><option>Fast responses</option><option>Smallest download</option>
+            </select>
+          </label>
+        </div>
+        <div class="wire-actions"><button type="button" class="btn btn-primary" data-result>Show supported setups</button></div>
+      </section>`;
+    bind("[data-back]", showEntry);
+    bind("[data-result]", showResult);
+    activateIcons();
+  }
+
+  function showExisting() {
+    screen.innerHTML = `
+      <section class="wire-main">
+        ${backButton()}
+        <div class="wire-intro">
+          <h2>What are you already running?</h2>
+          <p>Enter it manually here, or inspect local model stores in the desktop app after a permission preview.</p>
+        </div>
+        <div class="card wire-form">
+          <label class="form-label">Application or runtime
+            <select class="form-select"><option>LM Studio</option><option>Ollama</option><option>llama.cpp / llama-swap</option><option>Another runtime</option></select>
+          </label>
+          <label class="form-label">Model or file
+            <input class="form-control" value="Qwen3-4B-Instruct Q4_K_M" />
+          </label>
+          <label class="form-label">Computer
+            <input class="form-control" placeholder="GPU / Apple chip / CPU" />
+          </label>
+          <label class="form-label">What do you want to improve?
+            <select class="form-select"><option>Check whether settings make sense</option><option>Compare another installed model</option><option>Improve speed</option><option>Improve a recurring job</option></select>
+          </label>
+        </div>
+        <div class="wire-actions">
+          <button type="button" class="btn btn-primary" data-result>Review this setup</button>
+          <button type="button" class="btn" data-screen="desktop">Use desktop inspection</button>
+        </div>
+      </section>`;
+    bind("[data-back]", showEntry);
+    bind("[data-result]", showResult);
+    bind("[data-screen='desktop']", showDesktop);
+    activateIcons();
+  }
+
+  function showWorkflow() {
+    const jobs = ["Coding on a repository", "Document Q&A / RAG", "Invoice extraction or checking", "Writing or everyday questions", "Something else"];
+    screen.innerHTML = `
+      <section class="wire-main">
+        ${backButton()}
+        <div class="wire-intro">
+          <h2>What repeated job should the setup handle?</h2>
+          <p>Choose a starting shape. You do not need a benchmark dataset to begin.</p>
+        </div>
+        <div class="choice-list">
+          ${jobs.map((job) => `<button type="button" class="btn${job === selectedJob ? " btn-primary" : ""}" data-job="${job}">${job}</button>`).join("")}
+        </div>
+        <div class="card wire-section">
+          <label class="form-label">Describe one normal example
+            <textarea class="form-control" rows="3" placeholder="Example: answer questions from our policy PDFs and cite the page used."></textarea>
+          </label>
+          <label class="form-label">How would you notice a bad result?
+            <input class="form-control" placeholder="Wrong fields, failed tests, missing citation, or simply not useful" />
+          </label>
+        </div>
+        <div class="wire-actions"><button type="button" class="btn btn-primary" data-result>Find candidates</button></div>
+        <p class="wire-note">Public evidence can narrow candidates. A private comparison is optional and remains local.</p>
+      </section>`;
+    bind("[data-back]", showEntry);
+    bind("[data-job]", (event) => { selectedJob = event.currentTarget.dataset.job; showWorkflow(); });
+    bind("[data-result]", showResult);
+    activateIcons();
+  }
+
+  function showResult() {
+    const pathLabel = pathData[selectedPath].title;
+    screen.innerHTML = `
+      <section class="wire-main">
+        <button type="button" class="btn btn-ghost wire-back" data-back>${icon("arrow-left")} Revise inputs</button>
+        <div class="wire-intro">
+          <h2>A supported starting point</h2>
+          <p>${pathLabel}. This is a scoped recommendation, not a universal model leaderboard.</p>
+        </div>
+        <div class="result-layout">
+          <section class="card">
+            <div class="result-title">${icon("check-circle-2")}<h3>Qwen3 4B Instruct · Q4_K_M</h3></div>
+            <p><strong>Runtime:</strong> llama.cpp with a recommended 8K context target</p>
+            <p><strong>Why shown:</strong> fits the entered memory budget, has matching public runtime evidence, and supports the selected use.</p>
+            <div class="wire-actions"><button type="button" class="btn btn-primary">View exact setup</button><button type="button" class="btn" data-screen="desktop">Check it on this PC</button></div>
+          </section>
+          <section class="card">
+            <strong>What this result knows</strong>
+            <ul class="evidence-list">
+              <li><strong>Hardware fit · estimated</strong><span class="text-muted">Exact memory assumptions shown</span></li>
+              <li><strong>Similar systems · public measurements</strong><span class="text-muted">Hardware and runtime versions filter the range</span></li>
+              <li><strong>General task checks · public</strong><span class="text-muted">Useful for screening, not personal proof</span></li>
+              <li><strong>Your exact workflow · not tested</strong><span class="text-muted">Optional local comparison can close this gap</span></li>
+            </ul>
+          </section>
+        </div>
+      </section>`;
+    bind("[data-back]", () => {
+      if (selectedPath === "fit") showFit();
+      if (selectedPath === "existing") showExisting();
+      if (selectedPath === "workflow") showWorkflow();
+    });
+    bind("[data-screen='desktop']", showDesktop);
+    activateIcons();
+  }
+
+  function showEvidence() {
+    screen.innerHTML = `
+      <section class="wire-main">
+        <div class="wire-intro"><h2>Public evidence</h2><p>Browse measurements by exact model configuration, hardware, runtime, and test—not one global score.</p></div>
+        <div class="card">
+          <div class="wire-form">
+            <label class="form-label">Model or configuration<input class="form-control" placeholder="Search model, artifact, or runtime" /></label>
+            <label class="form-label">Hardware family<select class="form-select"><option>All compatible hardware</option><option>Exact device</option><option>Memory class</option></select></label>
+          </div>
+          <div class="wire-actions"><button type="button" class="btn btn-primary">View matching evidence</button><button type="button" class="btn" data-screen="entry">Use the guided finder</button></div>
+        </div>
+      </section>`;
+    bind("[data-screen='entry']", showEntry);
+    activateIcons();
+  }
+
+  function showDesktop() {
+    screen.innerHTML = `
+      <section class="wire-main">
+        <div class="wire-intro"><h2>Desktop app</h2><p>Optional local inspection and measurement. Nothing is scanned until the user previews and approves each source.</p></div>
+        <div class="viz-grid">
+          <section class="card"><strong>Inspect this computer</strong><p class="text-muted">Hardware only, with a manual alternative.</p></section>
+          <section class="card"><strong>Inspect model folders</strong><p class="text-muted">Separate read-only permission per product or path.</p></section>
+          <section class="card"><strong>Run a specific check</strong><p class="text-muted">Preview purpose, duration, load, exact configuration, and retained fields.</p></section>
+        </div>
+        <div class="wire-actions"><button type="button" class="btn" data-screen="entry">Back to website finder</button></div>
+      </section>`;
+    bind("[data-screen='entry']", showEntry);
+    activateIcons();
+  }
+
+  bind("[data-screen]", (event) => {
+    const target = event.currentTarget.dataset.screen;
+    if (target === "entry") showEntry();
+    if (target === "evidence") showEvidence();
+    if (target === "desktop") showDesktop();
+  });
+  showEntry();
+})();
+</script>

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "contract": "quick-check-plan",
+  "status": "ok",
+  "data": {
+    "quickCheckPlanId": "quick-plan-fixture",
+    "candidateId": "candidate-fixture",
+    "artifactPath": "C:\\Models\\fixture.gguf",
+    "expectedArtifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "runtime": {
+      "runtimeConfigurationId": "runtime-fixture",
+      "product": "llama-cpp",
+      "engine": "llama.cpp",
+      "engineBuild": "b10061 (5d5306bf3)",
+      "backend": "cuda",
+      "chatTemplate": "chatml",
+      "contextTokens": 16384,
+      "kvCache": {
+        "key": "f16",
+        "value": "f16"
+      },
+      "gpuLayers": "all",
+      "batchSize": 2048,
+      "microBatchSize": 512,
+      "parallelism": 1,
+      "threads": 14,
+      "flashAttention": true,
+      "mmap": true,
+      "sampler": {
+        "temperature": 0,
+        "topP": null,
+        "topK": null,
+        "minP": null,
+        "seed": 1
+      },
+      "additionalFlags": []
+    },
+    "checks": [
+      {
+        "checkId": "json-schema",
+        "criterion": "Return the exact required JSON object."
+      }
+    ],
+    "preflight": {
+      "power": "ac",
+      "thermal": "unknown",
+      "concurrentGpu": "unknown",
+      "requiresConfirmation": false,
+      "conditions": [
+        "Temperature and concurrent GPU telemetry are unavailable."
+      ]
+    },
+    "sideEffects": {
+      "executesLocalProcess": true,
+      "loadsModel": true,
+      "writesModelStore": false,
+      "network": false,
+      "upload": false
+    }
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

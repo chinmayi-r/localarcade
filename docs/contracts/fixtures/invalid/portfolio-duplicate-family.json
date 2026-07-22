@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "contract": "recommendation-portfolio",
+  "status": "ok",
+  "data": {
+    "requestId": "req-fixture",
+    "outcome": "ranked",
+    "message": "One evidence-supported starting point.",
+    "items": [
+      {
+        "role": "primary-match",
+        "modelFamilyId": "qwen3-4b",
+        "candidateId": "candidate-fixture",
+        "assessmentId": "assessment-fixture",
+        "why": [
+          "Fits both measured memory pools."
+        ],
+        "caveats": [
+          "Speed evidence is scoped to the named hardware and runtime."
+        ]
+      },
+      {
+        "role": "quality-option",
+        "modelFamilyId": "qwen3-4b",
+        "candidateId": "candidate-duplicate",
+        "assessmentId": "assessment-duplicate",
+        "why": [
+          "Fits both measured memory pools."
+        ],
+        "caveats": [
+          "Speed evidence is scoped to the named hardware and runtime."
+        ]
+      }
+    ],
+    "methodologyVersion": "portfolio-v1"
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

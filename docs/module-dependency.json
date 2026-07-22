@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "auditDate": "2026-07-22",
+  "authority": {
+    "status": "proposed-target-compared-with-current-code",
+    "targetSource": "docs/modular-architecture-v2.md",
+    "warning": "This graph records audit findings and recommendations; it does not authorize implementation."
+  },
+  "approvalOverlay": {
+    "approvedAt": "2026-07-22",
+    "firstSlice": "owned-hardware finder -> configuration portfolio -> exact detail -> separately gated runner handoff and verification",
+    "frozenDocumentationContracts": [
+      "hardware-target",
+      "recommendation-request",
+      "exact-configuration-candidate",
+      "fit-evidence-assessment",
+      "recommendation-portfolio",
+      "runner-handoff",
+      "verification-plan",
+      "verification-result",
+      "common-envelopes"
+    ],
+    "deferredModules": ["M-K private Arena until after first slice", "M-L", "M-M surface integration", "M-N"],
+    "executionPlan": "docs/worktree-execution-plan.md",
+    "warning": "The M-A status below still means no production shared-contract package exists; documentation schema v1 is frozen for its future checkpoint."
+  },
+  "modules": [
+    {
+      "id": "M-A",
+      "name": "shared-contracts",
+      "status": "missing",
+      "allowedDependencies": [],
+      "currentSources": ["lib/evidence/types.ts", "lib/registry/types.ts", "lib/runtime/types.ts", "lib/recommendation/types.ts", "lib/fit/types.ts", "lib/battles/types.ts", "runner/src-tauri/src/*.rs"],
+      "currentConsumers": ["all current domain modules and surfaces"],
+      "finding": "C1-C12 are fragmented and cross-language equivalents are not versioned together.",
+      "evidence": ["docs/modular-architecture-v2.md", "docs/system-operation-graph.md", "source import/type audit"]
+    },
+    {
+      "id": "M-B",
+      "name": "llmfit-core-adapter",
+      "status": "missing",
+      "allowedDependencies": ["M-A"],
+      "currentSources": [],
+      "currentConsumers": [],
+      "finding": "No production code references llmfit; the adoption audit is a proposal.",
+      "evidence": ["docs/llmfit-core-adoption-audit.md", "rg -i llmfit app lib runner scripts tests returned no matches"]
+    },
+    {
+      "id": "M-C",
+      "name": "model-artifact-registry",
+      "status": "implemented-precursor",
+      "allowedDependencies": ["M-A"],
+      "currentSources": ["lib/registry/**", "registry/**", "scripts/check-registry-freshness.ts", "scripts/discover-hugging-face.ts", "scripts/ingest.ts"],
+      "currentConsumers": ["lib/recommendation/catalog/real-candidates.ts", "lib/fit/fit.ts", "runner/src-tauri/src/hardware.rs"],
+      "finding": "Strong deterministic registry core exists, but consumers import generated records or embedded data without a frozen M-C interface.",
+      "evidence": ["tests/registry-*.test.*", "tests/hugging-face-importer.test.ts", "2026-07-22 root gates"]
+    },
+    {
+      "id": "M-D",
+      "name": "hardware-inventory",
+      "status": "implemented-precursor",
+      "allowedDependencies": ["M-A", "M-C"],
+      "currentSources": ["lib/accelerators/**", "runner/src-tauri/src/hardware.rs"],
+      "currentConsumers": ["app/components/finder/configuration-panel.tsx", "lib/recommendation/candidate-evaluation.ts", "runner/src/main.ts"],
+      "finding": "Exact registry and Windows detection are reusable; website and runner surfaces bypass an orchestrator, and non-Windows GPU detection is absent.",
+      "evidence": ["tests/accelerator-registry.test.ts", "runner hardware Rust tests", "app import scan"]
+    },
+    {
+      "id": "M-E",
+      "name": "runtime-compatibility",
+      "status": "partial",
+      "allowedDependencies": ["M-A", "M-C"],
+      "currentSources": ["lib/runtime/**", "lib/recommendation/catalog/real-candidates.ts"],
+      "currentConsumers": ["lib/recommendation/candidate-evaluation.ts", "lib/quick-test/**"],
+      "finding": "Runtime/build compatibility is tested, but candidate construction is owned by recommendation and serving-config import is absent.",
+      "evidence": ["tests/runtime-contract.test.ts", "lib/recommendation/catalog/real-candidates.ts"]
+    },
+    {
+      "id": "M-F",
+      "name": "fit-performance-estimator",
+      "status": "implemented-precursor",
+      "allowedDependencies": ["M-A", "M-B", "M-C", "M-D", "M-E", "M-G"],
+      "currentSources": ["lib/fit/**", "lib/priors/**", "lib/recommendation/candidate-evaluation.ts"],
+      "currentConsumers": ["lib/recommendation/engine.ts", "lib/recommendation/presentation.ts"],
+      "finding": "Pure fail-closed fit and scoped throughput envelopes pass; llmfit equivalence and adapter separation are unresolved.",
+      "evidence": ["tests/fit-*.test.*", "tests/throughput-*.test.*", "docs/llmfit-core-adoption-audit.md"]
+    },
+    {
+      "id": "M-G",
+      "name": "evidence-normalization",
+      "status": "implemented-precursor",
+      "allowedDependencies": ["M-A"],
+      "currentSources": ["lib/evidence/**", "registry/evidence/fit-profiles.json", "lib/priors/**"],
+      "currentConsumers": ["M-F precursor", "M-H precursor", "M-P presenters"],
+      "finding": "Evidence scope and claim honesty are strong; local fit-profile schema and draft vocabulary need unification.",
+      "evidence": ["tests/evidence-contract.test.ts", "tests/evidence-ui-types.test.ts", "docs/evidence-ranking-api-ux.md"]
+    },
+    {
+      "id": "M-H",
+      "name": "safe-recommendation",
+      "status": "implemented-precursor",
+      "allowedDependencies": ["M-A", "M-C", "M-D", "M-E", "M-F", "M-G"],
+      "currentSources": ["lib/recommendation/**"],
+      "currentConsumers": ["app/arena-app.tsx", "app/components/finder/recommendation-list.tsx"],
+      "finding": "Fail-closed recommendation is tested, but it also owns candidate assembly and presentation, and surfaces call it directly.",
+      "evidence": ["tests/recommendation-engine.test.ts", "tests/recommendation-policy.test.mjs", "app import scan"]
+    },
+    {
+      "id": "M-I",
+      "name": "local-model-inventory",
+      "status": "implemented-precursor",
+      "allowedDependencies": ["M-A", "M-C", "M-E"],
+      "currentSources": ["runner/src-tauri/src/model_store.rs"],
+      "currentConsumers": ["runner/src-tauri/src/lib.rs", "runner/src/main.ts"],
+      "finding": "Read-only consent-gated scan is reusable; hash upgrade and orchestrated interface are missing.",
+      "evidence": ["runner/src-tauri/tests/model_store_scan.rs", "tests/runner-boundary.test.mjs"]
+    },
+    {
+      "id": "M-J",
+      "name": "benchmark-verification",
+      "status": "partial",
+      "allowedDependencies": ["M-A", "M-D", "M-E", "M-I"],
+      "currentSources": ["runner/src-tauri/src/preflight.rs", "runner/src-tauri/src/benchmark.rs", "runner/src-tauri/src/quick_task.rs"],
+      "currentConsumers": ["runner/src-tauri/src/lib.rs", "runner/src/main.ts"],
+      "finding": "Existing-engine exact observations are reusable; bundled engine, T7 sandbox, GPU/thermal telemetry, artifact binding and calibration transfer are absent.",
+      "evidence": ["docs/MILESTONE-STATUS.md R4", "runner Rust tests", "tests/runner-boundary.test.mjs"]
+    },
+    {
+      "id": "M-K",
+      "name": "solo-arena",
+      "status": "missing",
+      "allowedDependencies": ["M-A", "M-E", "M-I", "M-J"],
+      "currentSources": ["lib/quick-test/suite.ts", "runner/src-tauri/src/quick_task.rs"],
+      "currentConsumers": [],
+      "finding": "Only fixed mechanical checks exist; there is no general execution plan/result, private comparison flow, history or result provenance contract.",
+      "evidence": ["recovered session line 11917", "recovered private Arena prototype screens", "source audit"]
+    },
+    {
+      "id": "M-L",
+      "name": "public-pair-contribution",
+      "status": "missing",
+      "allowedDependencies": ["M-A", "M-C", "M-E", "M-K"],
+      "currentSources": [],
+      "currentConsumers": ["M-M precursor could consume validated records only after M-L exists"],
+      "finding": "No pair generator, consent/review payload, upload, revocation or abuse boundary exists.",
+      "evidence": ["lib/battles/**", "docs/modular-architecture-v2.md", "recovered session line 11917"]
+    },
+    {
+      "id": "M-M",
+      "name": "aggregation-rating",
+      "status": "implemented-dark-precursor",
+      "allowedDependencies": ["M-A", "M-G", "M-L"],
+      "currentSources": ["lib/battles/**"],
+      "currentConsumers": [],
+      "finding": "Validated bucketed ratings pass and stay dark; there is no approved M-L producer or public consumer.",
+      "evidence": ["tests/battles-*.test.*", "docs/MILESTONE-STATUS.md M9"]
+    },
+    {
+      "id": "M-N",
+      "name": "public-evidence-service",
+      "status": "missing",
+      "allowedDependencies": ["M-A", "M-C", "M-G", "M-M"],
+      "currentSources": [],
+      "currentConsumers": [],
+      "finding": "No service/API/storage implementation exists; draft endpoints are not authorized.",
+      "evidence": ["docs/evidence-ranking-api-ux.md", "docs/interface-design-program.md", "source inventory"]
+    },
+    {
+      "id": "M-O",
+      "name": "application-orchestrator",
+      "status": "missing",
+      "allowedDependencies": ["M-A", "M-C", "M-D", "M-E", "M-F", "M-G", "M-H", "M-I", "M-J", "M-K", "M-L", "M-M", "M-N"],
+      "currentSources": [],
+      "currentConsumers": ["M-P should be its only surface consumer"],
+      "finding": "No orchestrator exists; direct imports/invokes are the primary current architecture violation.",
+      "evidence": ["app/arena-app.tsx", "app/components/finder/configuration-panel.tsx", "runner/src/main.ts", "runner/src-tauri/src/lib.rs"]
+    },
+    {
+      "id": "M-P",
+      "name": "surface-adapters",
+      "status": "implemented-legacy-surfaces",
+      "allowedDependencies": ["M-A", "M-O"],
+      "currentSources": ["app/**", "runner/index.html", "runner/src/**", "worker/index.ts"],
+      "currentConsumers": ["end users"],
+      "finding": "Accessible honest behaviors exist, but current shells bypass M-O and screen contracts are not frozen.",
+      "evidence": ["tests/evidence-ui.test.tsx", "tests/product-contract.test.mjs", "docs/interface-design-program.md", "docs/ui-reference-and-screen-plan.md"]
+    }
+  ],
+  "currentViolations": [
+    {
+      "from": "M-P",
+      "to": "M-H",
+      "path": "app/arena-app.tsx -> @/lib/recommendation",
+      "recommendedResolution": "route through M-O after C-contract freeze"
+    },
+    {
+      "from": "M-P",
+      "to": "M-D",
+      "path": "app/components/finder/configuration-panel.tsx -> @/lib/accelerators",
+      "recommendedResolution": "obtain hardware options through M-O"
+    },
+    {
+      "from": "M-P",
+      "to": "M-D/M-I/M-J",
+      "path": "runner/src/main.ts -> direct Tauri invoke commands",
+      "recommendedResolution": "expose application use cases through M-O"
+    },
+    {
+      "from": "M-H",
+      "to": "M-C/M-E/M-G",
+      "path": "lib/recommendation/catalog/real-candidates.ts assembles registry/runtime/evidence data",
+      "recommendedResolution": "move assembly to adapters/orchestrator and pass complete candidates to M-H"
+    }
+  ],
+  "requiredDependencyOrder": ["M-A", "M-B", "M-C", "M-D", "M-E", "M-G", "M-F", "M-H", "M-I", "M-J", "M-K", "M-L", "M-M", "M-N", "M-O", "M-P"],
+  "gateEvidence": {
+    "root": "npm.cmd run check passed 2026-07-22: typecheck, lint, 119 tests, freshness, build",
+    "runner": "npm.cmd run check passed 2026-07-22: typecheck, fmt, clippy, 26 Rust tests, build"
+  }
+}

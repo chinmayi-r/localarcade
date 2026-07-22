@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "contract": "recommendation-request",
+  "status": "ok",
+  "data": {
+    "requestId": "req-fixture",
+    "hardwareTargetId": "hw-fixture",
+    "task": {
+      "family": "coding",
+      "interactionStyle": "interactive",
+      "scopeLabel": "Work in a medium codebase",
+      "derivedContextTokens": 16384,
+      "needs": [
+        "structured-output",
+        "offline"
+      ]
+    },
+    "preferences": {
+      "priority": "capability",
+      "allowCpuOffload": true,
+      "installedOnly": false
+    },
+    "advanced": {
+      "forcedRuntime": null,
+      "maximumArtifactBytes": 8589934592
+    }
+  },
+  "provenance": [
+    {
+      "source": {
+        "id": "fixture-source",
+        "version": "1",
+        "revision": "fixture-revision",
+        "url": "https://example.invalid/source"
+      },
+      "retrievedAt": "2026-07-22T12:00:00Z",
+      "observedAt": "2026-07-22T11:00:00Z",
+      "method": "imported",
+      "hardwareMatch": "exact",
+      "configurationMatch": "exact",
+      "scope": {
+        "taskFamily": null,
+        "taskPackId": null,
+        "promptId": null,
+        "harnessId": "fixture-harness-v1"
+      },
+      "sampleCount": null,
+      "measurement": null,
+      "rawSourceRecordRef": "fixture://source-record"
+    }
+  ],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

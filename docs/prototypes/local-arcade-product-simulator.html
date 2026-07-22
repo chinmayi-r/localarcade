@@ -1,0 +1,348 @@
+<div id="local-arcade-simulator">
+  <style>
+    #local-arcade-simulator {
+      color: var(--foreground);
+      background: var(--background);
+    }
+    #local-arcade-simulator * { box-sizing: border-box; }
+    #local-arcade-simulator .la-shell { display: grid; gap: 1rem; }
+    #local-arcade-simulator .la-topbar,
+    #local-arcade-simulator .la-brand,
+    #local-arcade-simulator .la-tabs,
+    #local-arcade-simulator .la-actions,
+    #local-arcade-simulator .la-filter-row,
+    #local-arcade-simulator .la-message-head,
+    #local-arcade-simulator .la-model-head,
+    #local-arcade-simulator .la-progress-labels {
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      flex-wrap: wrap;
+    }
+    #local-arcade-simulator .la-topbar { justify-content: space-between; }
+    #local-arcade-simulator .la-brand strong { font-weight: 500; }
+    #local-arcade-simulator .la-tabs { border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+    #local-arcade-simulator .la-view { display: none; }
+    #local-arcade-simulator .la-view.is-active { display: block; }
+    #local-arcade-simulator .la-intro { max-width: 52rem; margin: 1.25rem auto; text-align: center; }
+    #local-arcade-simulator .la-intro p { color: var(--muted-foreground); }
+    #local-arcade-simulator .la-query { max-width: 52rem; margin: 1rem auto; }
+    #local-arcade-simulator .la-paths { margin-top: 1rem; }
+    #local-arcade-simulator .la-path { text-align: left; min-height: 6rem; }
+    #local-arcade-simulator .la-path strong { display: block; margin-bottom: .35rem; font-weight: 500; }
+    #local-arcade-simulator .la-path span { color: var(--muted-foreground); }
+    #local-arcade-simulator .la-workspace { display: grid; grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr); gap: 1rem; }
+    #local-arcade-simulator .la-sidebar { border-right: 1px solid var(--border); padding-right: 1rem; }
+    #local-arcade-simulator .la-sidebar nav { display: grid; gap: .35rem; }
+    #local-arcade-simulator .la-sidebar .btn { justify-content: flex-start; width: 100%; }
+    #local-arcade-simulator .la-main { min-width: 0; }
+    #local-arcade-simulator .la-panel { display: none; }
+    #local-arcade-simulator .la-panel.is-active { display: block; }
+    #local-arcade-simulator .la-chat { display: grid; gap: .8rem; margin: 1rem 0; }
+    #local-arcade-simulator .la-message { max-width: 88%; }
+    #local-arcade-simulator .la-message.user { margin-left: auto; }
+    #local-arcade-simulator .la-message .card { padding: .8rem 1rem; }
+    #local-arcade-simulator .la-message.user .card { background: var(--accent); color: var(--accent-foreground); }
+    #local-arcade-simulator .la-compose { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; align-items: end; }
+    #local-arcade-simulator .la-model-list { display: grid; gap: .45rem; margin-top: .9rem; }
+    #local-arcade-simulator .la-model-row { display: grid; grid-template-columns: minmax(9rem, 1fr) auto auto; gap: .65rem; align-items: center; padding: .65rem 0; border-bottom: 1px solid var(--border); }
+    #local-arcade-simulator .la-model-row:last-child { border-bottom: 0; }
+    #local-arcade-simulator .la-model-row strong { font-weight: 500; }
+    #local-arcade-simulator .la-pipeline { margin: 1rem 0; }
+    #local-arcade-simulator .la-track { height: .55rem; background: var(--muted); overflow: hidden; }
+    #local-arcade-simulator .la-fill { height: 100%; width: 0; background: var(--viz-series-1); transition: width .35s ease; }
+    #local-arcade-simulator .la-progress-labels { justify-content: space-between; margin-top: .4rem; color: var(--muted-foreground); }
+    #local-arcade-simulator .la-arena { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+    #local-arcade-simulator .la-output { min-height: 10rem; }
+    #local-arcade-simulator .la-output p { white-space: pre-wrap; }
+    #local-arcade-simulator .la-terminal { background: var(--card); color: var(--card-foreground); padding: 1rem; border: 1px solid var(--border); overflow-x: auto; }
+    #local-arcade-simulator .la-terminal pre { margin: 0; white-space: pre-wrap; }
+    #local-arcade-simulator .la-terminal .prompt { color: var(--foreground); }
+    #local-arcade-simulator .la-terminal .muted { color: var(--muted-foreground); }
+    #local-arcade-simulator .la-terminal .active { color: var(--foreground); font-weight: 500; }
+    #local-arcade-simulator .la-note { border-left: 3px solid var(--viz-series-1); padding-left: .8rem; color: var(--muted-foreground); }
+    #local-arcade-simulator .la-detail { margin-top: .75rem; color: var(--muted-foreground); }
+    @media (max-width: 620px) {
+      #local-arcade-simulator .la-workspace { grid-template-columns: 1fr; }
+      #local-arcade-simulator .la-sidebar { border-right: 0; border-bottom: 1px solid var(--border); padding: 0 0 .75rem; }
+      #local-arcade-simulator .la-sidebar nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      #local-arcade-simulator .la-sidebar .btn { justify-content: center; }
+      #local-arcade-simulator .la-arena { grid-template-columns: 1fr; }
+      #local-arcade-simulator .la-model-row { grid-template-columns: minmax(0, 1fr) auto; }
+      #local-arcade-simulator .la-model-row .la-evidence { grid-column: 1 / -1; }
+      #local-arcade-simulator .la-compose { grid-template-columns: 1fr; }
+      #local-arcade-simulator .la-message { max-width: 100%; }
+    }
+  </style>
+
+  <div class="la-shell">
+    <div class="la-topbar">
+      <div class="la-brand"><i data-lucide="gamepad-2" aria-hidden="true"></i><strong>Local Arcade</strong><span class="viz-badge">Illustrative prototype</span></div>
+      <div class="la-tabs" role="tablist" aria-label="Product surface">
+        <button class="btn btn-primary" type="button" role="tab" aria-selected="true" data-surface="website">Website</button>
+        <button class="btn" type="button" role="tab" aria-selected="false" data-surface="desktop">Desktop</button>
+        <button class="btn" type="button" role="tab" aria-selected="false" data-surface="cli">CLI</button>
+      </div>
+    </div>
+
+    <section class="la-view is-active" data-view="website" aria-label="Website prototype">
+      <div class="la-intro">
+        <span class="viz-badge">No install required</span>
+        <h2>Find local AI that fits your machine and your work</h2>
+        <p>Start with the question you already have. Local Arcade narrows exact model configurations using fit, evidence, and uncertainty—not a single mystery score.</p>
+      </div>
+      <div class="la-query card">
+        <label class="form-label" for="la-search">What are you trying to do?</label>
+        <div class="la-compose">
+          <input class="form-control" id="la-search" value="I want a fast local model for coding on my RTX 3060 laptop" />
+          <button class="btn btn-primary" id="la-search-go" type="button"><i data-lucide="search" aria-hidden="true"></i> Find options</button>
+        </div>
+        <div class="viz-grid la-paths" aria-label="Starting paths">
+          <button class="btn la-path" type="button" data-path="device"><span><strong>Find for my device</strong>Tell us hardware and a job; get five runnable configurations.</span></button>
+          <button class="btn la-path" type="button" data-path="existing"><span><strong>Check what I have</strong>Inspect a model or setup you already use.</span></button>
+          <button class="btn la-path" type="button" data-path="compare"><span><strong>Compare for a job</strong>See evidence for coding, writing, extraction, or your own task.</span></button>
+        </div>
+      </div>
+
+      <div id="la-web-results" hidden>
+        <div class="viz-controls">
+          <label class="form-label" for="la-device">Device
+            <select class="form-select" id="la-device">
+              <option>RTX 3060 Laptop · 6 GB VRAM · 16 GB RAM</option>
+              <option>Apple M2 · 16 GB unified memory</option>
+              <option>CPU only · 32 GB RAM</option>
+            </select>
+          </label>
+          <label class="form-label" for="la-task">Job
+            <select class="form-select" id="la-task">
+              <option value="coding">Coding assistant</option>
+              <option value="rag">Answer over my documents</option>
+              <option value="writing">Writing and editing</option>
+            </select>
+          </label>
+        </div>
+        <div class="la-pipeline" aria-label="Illustrative candidate narrowing">
+          <div class="la-track"><div class="la-fill" id="la-fill"></div></div>
+          <div class="la-progress-labels text-small"><span>452 known artifacts</span><span id="la-stage-label">5 shortlisted configurations</span></div>
+        </div>
+        <div class="la-model-head">
+          <h3>Your five starting points</h3>
+          <span class="viz-badge">Demo data—none of these results are measured here</span>
+        </div>
+        <div class="la-model-list" id="la-model-list"></div>
+        <p class="la-detail" id="la-web-detail">Select a configuration to see why it survived the narrowing.</p>
+      </div>
+    </section>
+
+    <section class="la-view" data-view="desktop" aria-label="Desktop app prototype">
+      <div class="la-workspace">
+        <aside class="la-sidebar">
+          <div class="la-brand"><i data-lucide="gamepad-2" aria-hidden="true"></i><strong>Local Arcade</strong></div>
+          <p class="text-small text-muted">Local device · discovery approved</p>
+          <nav aria-label="Desktop sections">
+            <button class="btn btn-primary" type="button" data-panel="chat"><i data-lucide="message-square" aria-hidden="true"></i> Chat</button>
+            <button class="btn" type="button" data-panel="arena"><i data-lucide="swords" aria-hidden="true"></i> Arena</button>
+            <button class="btn" type="button" data-panel="models"><i data-lucide="boxes" aria-hidden="true"></i> Models</button>
+            <button class="btn" type="button" data-panel="device"><i data-lucide="cpu" aria-hidden="true"></i> Device</button>
+            <button class="btn" type="button" data-panel="history"><i data-lucide="history" aria-hidden="true"></i> History</button>
+          </nav>
+        </aside>
+        <main class="la-main">
+          <section class="la-panel is-active" data-panel-view="chat">
+            <div class="la-model-head"><div><h3>Chat</h3><p class="text-muted">Qwen3 4B · Q4_K_M · llama.cpp</p></div><button class="btn" type="button" data-switch-arena>Compare this answer</button></div>
+            <div class="la-chat">
+              <div class="la-message user"><div class="card">Write a Python function that groups records by customer ID.</div></div>
+              <div class="la-message"><div class="la-message-head text-small"><strong>Qwen3 4B</strong><span class="viz-badge">Demo response</span></div><div class="card"><code>def group_by_customer(records):</code><br />Use a dictionary keyed by <code>customer_id</code>, append each record, and return the grouped values.</div></div>
+            </div>
+            <div class="la-compose"><textarea class="form-control" rows="2" aria-label="Message">Ask your local model…</textarea><button class="btn btn-primary" type="button">Send</button></div>
+          </section>
+
+          <section class="la-panel" data-panel-view="arena">
+            <div class="la-model-head"><div><h3>Private arena</h3><p class="text-muted">Your prompt, two selected configurations, run one at a time to avoid memory contention.</p></div><span class="viz-badge">Planned runner behavior</span></div>
+            <textarea class="form-control" rows="2" id="la-arena-prompt" aria-label="Arena prompt">Write a Python function that groups records by customer ID.</textarea>
+            <div class="la-arena">
+              <div class="card la-output"><strong>Output A</strong><p id="la-output-a">Hidden until both runs finish.</p><button class="btn" type="button" data-vote="A" disabled>Prefer A</button></div>
+              <div class="card la-output"><strong>Output B</strong><p id="la-output-b">Hidden until both runs finish.</p><button class="btn" type="button" data-vote="B" disabled>Prefer B</button></div>
+            </div>
+            <div class="la-actions"><button class="btn btn-primary" id="la-run-battle" type="button"><i data-lucide="play" aria-hidden="true"></i> Run sequential battle</button><button class="btn" type="button" data-vote="tie" disabled>About equal</button><span id="la-vote-status" class="text-muted">No result saved.</span></div>
+          </section>
+
+          <section class="la-panel" data-panel-view="models">
+            <h3>Models on this device</h3>
+            <p class="la-note">The real app would discover only after permission. This prototype uses the three configurations you mentioned.</p>
+            <div class="la-model-list">
+              <div class="la-model-row"><div><strong>Qwen3 4B Instruct 2507</strong><div class="text-small text-muted">Q4_K_M · 8K context</div></div><span class="viz-badge">Configured</span><button class="btn" type="button">Use</button></div>
+              <div class="la-model-row"><div><strong>Qwen3 8B</strong><div class="text-small text-muted">Q4_K_M · 4K context</div></div><span class="viz-badge">Observed slow</span><button class="btn" type="button">Details</button></div>
+              <div class="la-model-row"><div><strong>Gemma 3 4B IT</strong><div class="text-small text-muted">Q4_K_M · 8K context</div></div><span class="viz-badge">Configured</span><button class="btn" type="button">Use</button></div>
+            </div>
+          </section>
+
+          <section class="la-panel" data-panel-view="device">
+            <h3>This device</h3>
+            <div class="viz-grid">
+              <div class="card viz-stat"><span class="text-muted">GPU</span><div class="viz-stat-value">RTX 3060 Laptop</div><span>6 GB VRAM</span></div>
+              <div class="card viz-stat"><span class="text-muted">Runtime</span><div class="viz-stat-value">llama.cpp</div><span>llama-swap configured</span></div>
+              <div class="card viz-stat"><span class="text-muted">Evidence</span><div class="viz-stat-value">Partial</div><span>Exact measurements beat estimates</span></div>
+            </div>
+          </section>
+
+          <section class="la-panel" data-panel-view="history">
+            <h3>History</h3>
+            <p class="la-note">Local by default. Sharing a reproducible evidence bundle would be a separate, explicit action.</p>
+            <div class="table-responsive"><table class="table table-sm"><thead><tr><th>When</th><th>Activity</th><th>Stored as</th></tr></thead><tbody><tr><td>Today</td><td>Coding battle</td><td>Private preference</td></tr><tr><td>Today</td><td>Qwen3 4B probe</td><td>Local measurement</td></tr></tbody></table></div>
+          </section>
+        </main>
+      </div>
+    </section>
+
+    <section class="la-view" data-view="cli" aria-label="CLI prototype">
+      <div class="la-actions">
+        <button class="btn btn-primary" type="button" data-cli="find">Find models</button>
+        <button class="btn" type="button" data-cli="battle">Run a battle</button>
+        <button class="btn" type="button" data-cli="explain">Explain a result</button>
+        <span class="viz-badge">Illustrative commands and output</span>
+      </div>
+      <div class="la-terminal" aria-live="polite"><pre id="la-cli-output"></pre></div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById('local-arcade-simulator');
+      const modelsByTask = {
+        coding: [
+          ['Qwen3 4B Instruct 2507', 'Q4_K_M · llama.cpp · 8K', 'Estimated fit + one private observation'],
+          ['Gemma 3 4B IT', 'Q4_K_M · llama.cpp · 8K', 'Estimated fit · needs exact measurement'],
+          ['Qwen2.5 Coder 3B', 'Q5_K_M · llama.cpp · 8K', 'Public evidence · hardware estimate'],
+          ['Phi-4 Mini Instruct', 'Q4_K_M · llama.cpp · 8K', 'Public evidence · hardware estimate'],
+          ['SmolLM3 3B', 'Q6_K · llama.cpp · 8K', 'Sparse evidence · exploratory']
+        ],
+        rag: [
+          ['Qwen3 4B Instruct 2507', 'Q4_K_M · llama.cpp · 8K', 'Estimated fit · instruction evidence'],
+          ['Gemma 3 4B IT', 'Q4_K_M · llama.cpp · 8K', 'Estimated fit · long-context caveat'],
+          ['Phi-4 Mini Instruct', 'Q4_K_M · llama.cpp · 8K', 'Public evidence · retrieval not verified'],
+          ['Ministral 3B Instruct', 'Q5_K_M · llama.cpp · 8K', 'Sparse public evidence'],
+          ['Llama 3.2 3B Instruct', 'Q5_K_M · llama.cpp · 8K', 'Popular anchor · estimated fit']
+        ],
+        writing: [
+          ['Gemma 3 4B IT', 'Q4_K_M · llama.cpp · 8K', 'Estimated fit · preference evidence missing'],
+          ['Qwen3 4B Instruct 2507', 'Q4_K_M · llama.cpp · 8K', 'Private observation · style unverified'],
+          ['Llama 3.2 3B Instruct', 'Q5_K_M · llama.cpp · 8K', 'Popular anchor · public evidence'],
+          ['Phi-4 Mini Instruct', 'Q4_K_M · llama.cpp · 8K', 'Estimated fit · preference missing'],
+          ['SmolLM3 3B', 'Q6_K · llama.cpp · 8K', 'Sparse evidence · exploratory']
+        ]
+      };
+
+      const cliText = {
+        find: `<span class="prompt">$ localarcade find --device this --task coding --limit 5</span>
+<span class="muted">452 artifacts → 74 platform-compatible → 19 memory-fit → 8 evidence-backed</span>
+
+<span class="active">1. Qwen3 4B Instruct 2507 · Q4_K_M · llama.cpp</span>
+   fit: estimated   quality: partial evidence   confidence: medium
+2. Gemma 3 4B IT · Q4_K_M · llama.cpp
+   fit: estimated   quality: unverified here   confidence: low
+3–5. Three additional exact configurations
+
+Next: localarcade explain 1
+No benchmark ran. No model was downloaded.`,
+        battle: `<span class="prompt">$ localarcade battle --models qwen3-4b,gemma3-4b --sequential</span>
+Prompt: Write a Python function that groups records by customer ID.
+
+Running A… done
+Unloading A… done
+Running B… done
+
+Outputs are anonymous until you vote: [A] [B] [tie] [skip]
+Preference remains local unless you explicitly export it.`,
+        explain: `<span class="prompt">$ localarcade explain 1</span>
+Why it appeared:
+  ✓ platform and runtime compatible
+  ~ predicted to fit in available memory
+  ✓ exact configuration exists in registry
+  ~ task evidence is incomplete
+
+What would change the answer:
+  • an exact benchmark on this device
+  • a private comparison on your real coding prompts
+  • a different context-length requirement
+
+This is a recommendation with uncertainty, not a compatibility guarantee.`
+      };
+
+      function switchSurface(name) {
+        root.querySelectorAll('[data-surface]').forEach(button => {
+          const active = button.dataset.surface === name;
+          button.classList.toggle('btn-primary', active);
+          button.setAttribute('aria-selected', String(active));
+        });
+        root.querySelectorAll('[data-view]').forEach(view => view.classList.toggle('is-active', view.dataset.view === name));
+      }
+
+      function renderModels() {
+        const task = root.querySelector('#la-task').value;
+        const list = root.querySelector('#la-model-list');
+        list.innerHTML = modelsByTask[task].map((model, index) => `
+          <div class="la-model-row">
+            <div><strong>${index + 1}. ${model[0]}</strong><div class="text-small text-muted">${model[1]}</div></div>
+            <span class="la-evidence text-small">${model[2]}</span>
+            <button class="btn" type="button" data-model-index="${index}">Why?</button>
+          </div>`).join('');
+        list.querySelectorAll('[data-model-index]').forEach(button => button.addEventListener('click', () => {
+          const model = modelsByTask[task][Number(button.dataset.modelIndex)];
+          root.querySelector('#la-web-detail').textContent = `${model[0]} survived platform and estimated-memory checks. Its position is provisional because evidence strength is shown separately and this prototype did not run it.`;
+        }));
+      }
+
+      function showResults() {
+        root.querySelector('#la-web-results').hidden = false;
+        renderModels();
+        const fill = root.querySelector('#la-fill');
+        fill.style.width = '0%';
+        setTimeout(() => { fill.style.width = '100%'; }, 40);
+      }
+
+      function switchPanel(name) {
+        root.querySelectorAll('[data-panel]').forEach(button => button.classList.toggle('btn-primary', button.dataset.panel === name));
+        root.querySelectorAll('[data-panel-view]').forEach(panel => panel.classList.toggle('is-active', panel.dataset.panelView === name));
+      }
+
+      root.querySelectorAll('[data-surface]').forEach(button => button.addEventListener('click', () => switchSurface(button.dataset.surface)));
+      root.querySelector('#la-search-go').addEventListener('click', showResults);
+      root.querySelectorAll('[data-path]').forEach(button => button.addEventListener('click', showResults));
+      root.querySelector('#la-task').addEventListener('change', renderModels);
+      root.querySelectorAll('[data-panel]').forEach(button => button.addEventListener('click', () => switchPanel(button.dataset.panel)));
+      root.querySelector('[data-switch-arena]').addEventListener('click', () => switchPanel('arena'));
+
+      const battleButton = root.querySelector('#la-run-battle');
+      battleButton.addEventListener('click', () => {
+        battleButton.disabled = true;
+        battleButton.textContent = 'Running A…';
+        root.querySelector('#la-output-a').textContent = 'Running locally…';
+        root.querySelector('#la-output-b').textContent = 'Waiting for A to unload…';
+        setTimeout(() => {
+          battleButton.textContent = 'Running B…';
+          root.querySelector('#la-output-a').textContent = 'Completed; hidden until B finishes.';
+          root.querySelector('#la-output-b').textContent = 'Running locally…';
+        }, 550);
+        setTimeout(() => {
+          root.querySelector('#la-output-a').textContent = 'Use a defaultdict(list), append each record under its customer_id, then convert it to a regular dict.';
+          root.querySelector('#la-output-b').textContent = 'Iterate through the records and use setdefault(customer_id, []) before appending each record.';
+          root.querySelectorAll('[data-vote]').forEach(button => { button.disabled = false; });
+          battleButton.textContent = 'Run again';
+          battleButton.disabled = false;
+        }, 1150);
+      });
+      root.querySelectorAll('[data-vote]').forEach(button => button.addEventListener('click', () => {
+        root.querySelector('#la-vote-status').textContent = button.dataset.vote === 'tie' ? 'Saved locally: about equal.' : `Saved locally: preferred ${button.dataset.vote}.`;
+      }));
+
+      function switchCli(name) {
+        root.querySelectorAll('[data-cli]').forEach(button => button.classList.toggle('btn-primary', button.dataset.cli === name));
+        root.querySelector('#la-cli-output').innerHTML = cliText[name];
+      }
+      root.querySelectorAll('[data-cli]').forEach(button => button.addEventListener('click', () => switchCli(button.dataset.cli)));
+      switchCli('find');
+      if (window.lucide) window.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+    })();
+  </script>
+</div>
