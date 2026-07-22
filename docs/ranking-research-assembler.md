@@ -1,8 +1,10 @@
 # Ranking research assembler
 
-Status: **Active checkpoint dashboard**, 2026-07-22. This document tracks the
+Status: **Owner review**, 2026-07-22. This document tracks the
 owner-approved non-production ranking/audition research. It is an assembler
 view, not evidence that future modules are implemented.
+
+Owner-review synthesis: [ranking and audition findings](research/ranking-and-audition-findings.md).
 
 ## Status legend
 
@@ -51,9 +53,9 @@ flowchart TB
     RU["✅ upstream + community-results audit"]
     RR["✅ constraint / Pareto / diversity baselines"]
     RC["✅ consensus scenario corpus"]
-    RA["🟡 Apple/Metal external validation"]
-    RH["🟡 frozen comparison harness + scorecards"]
-    RPOL["⬜ owner-reviewed M-H policy recommendation"]
+    RA["✅ Apple/Metal external validation"]
+    RH["✅ comparison harness / actual matched scorecards blocked"]
+    RPOL["🟡 owner review: no M-H winner demonstrated"]
     RU --> RH
     RR --> RH
     RC --> RH
@@ -138,8 +140,8 @@ flowchart TB
 | upstream-baseline | ✅ integrated as `865cf60` | lane commit `e1ca38f` | llmfit rank/community pipeline and exact/lossy/unsupported audit | community rows remain scoped priors; data reuse unresolved |
 | ranking-methods | ✅ integrated as `5b45c35` | lane commit `28c7fe4` | hard constraints, interval Pareto, parameterized diversity, seven tests | experimental paths only; no product weights |
 | consensus-corpus | ✅ integrated as `db1f516` | lane commit `f1f67ac` | five scenarios, consideration/exclusion rules, schema and validator | consensus remains defeasible |
-| apple-validation | 🟡 active — `codex/research-apple`, `G:/LocalArcade-worktrees/apple` | research baseline `4e153f6` (contains M-A `55afbb2`) | Apple Silicon/Metal reference research | no production policy or unlicensed ingestion |
-| comparison-harness | 🟡 active — `codex/research-harness`, `G:/LocalArcade-worktrees/harness` | integrated baseline `db1f516` | reconciled interchange, fixtures, reproducible scorecards | no product weights or production imports |
+| apple-validation | ✅ integrated as `af06221` | lane commit `10ca283` | Apple/Metal evidence boundary, schema, fixtures, eight-source inventory | Anubis rows remain reference-only; terms unresolved |
+| comparison-harness | ✅ integrated as `6732d00` | lane commit `f02f28b` | reconciled interchange, two valid/two invalid fixtures, six harness tests | actual matched scorecards blocked on comparable inputs |
 
 ## Community-result questions assigned to upstream lane
 
@@ -174,10 +176,15 @@ not automatically eligible for exact Local Arcade ranking or publication.
 - ✅ Upstream/community audit integrated: `865cf60`.
 - ✅ Consensus corpus integrated: `db1f516`; five scenarios pass and two
   negative fixtures fail as intended.
-- 🟡 Apple/Metal lane active.
-- 🟡 Comparison-harness reconciliation active in a fifth isolated worktree.
+- ✅ Apple/Metal lane integrated: `af06221`.
+- ✅ Comparison harness integrated: `6732d00`; two valid fixtures pass, two
+  invalid fixtures fail, and six harness tests pass.
+- ✅ M-A measurement-series golden inconsistency corrected with a cross-runtime
+  semantic guard: `7bddf7e`.
 - ✅ Research-only comparison interchange v1 created under
   `research/comparison/`; valid smoke fixture passes and forward version fails.
-- ⬜ Lane artifacts reconciled into the shared interchange and harness.
-- ⬜ Comparative scorecards complete.
-- ⬜ Owner selects or rejects an M-H policy.
+- ✅ Lane semantics reconciled into the shared interchange and harness.
+- ⛔ Actual comparative scorecards blocked: identical candidate/configuration
+  inputs and admissible measured labels are not yet available.
+- 🟡 Owner decides whether to use llmfit as an attributed prior and whether to
+  fund matched evaluation before M-H.
