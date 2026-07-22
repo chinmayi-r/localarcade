@@ -1,6 +1,7 @@
 pub mod benchmark;
 pub mod contracts;
 pub mod hardware;
+pub mod hardware_target;
 pub mod model_store;
 
 use serde::Serialize;
