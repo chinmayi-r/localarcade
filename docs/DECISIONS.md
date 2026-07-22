@@ -1,5 +1,21 @@
 # Decisions
 
+## 2026-07-22 — Require comparative ranking research before M-H/M-O
+
+**Decision:** Approve the non-production ranking/audition research checkpoint
+and parallel worktrees after the isolated M-A commit. Treat llmfit as the fit
+and recommendation baseline, audit its community-submission pipeline, compare
+constraint/Pareto/diversity alternatives on frozen scenarios, and use Anubis as
+reference-only Apple evidence until dataset terms permit stronger use.
+
+**Why:** Local Arcade has not proved a recommendation improvement over llmfit.
+The algorithm must earn adoption through runnable precision, evidence honesty,
+calibration, diversity, regret and decision-cost results rather than aesthetic
+preference.
+
+**Reversible:** Yes. A negative result explicitly permits adopting more llmfit
+and focusing Local Arcade on exact identity, verification and auditioning.
+
 ## 2026-07-22 — M-A is a closed wire boundary with isolated legacy adapters
 
 **Decision:** Implement the approved v1 first-slice DTOs, validation and

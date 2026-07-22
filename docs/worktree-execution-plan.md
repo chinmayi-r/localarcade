@@ -34,6 +34,9 @@ M-A + M-C + M-D + M-E
  └─ M-J verification adapter
 
 M-C…M-J → M-O application use cases → M-P website and desktop surfaces
+
+M-B + M-C…M-G + frozen comparison corpus
+ └─ ranking and audition research → owner-selected M-H policy → M-O
 ```
 
 M-K private Arena follows this plan in a later program. M-L, M-M surface integration, and M-N are excluded. The existing dark M-M core remains untouched.
@@ -186,7 +189,52 @@ This checkpoint begins with a stop-and-review, not code.
 
 - All existing fit/property/golden/purity/throughput tests plus adapter equivalence pass.
 
-### Checkpoint 8 — Completing M-H
+### Checkpoint 8 — Ranking and audition research
+
+Status: **Product-owner-approved for execution**, 2026-07-22. This checkpoint
+may use parallel research worktrees after the isolated M-A commit.
+
+**Deliverables**
+
+- Re-audit the pinned and then-current llmfit candidate, fit, score, sort and
+  benchmark behavior.
+- Freeze consensus-sanity and measured-audition scenario corpora with exact
+  inputs, source dates, provenance and data-use status.
+- Compare llmfit, preserved Local Arcade, hard-constraint/evidence, Pareto and
+  diversity-aware non-production baselines over identical representable inputs.
+- Use Anubis as reference-only Apple validation until its dataset terms permit
+  stronger use.
+- Report runnable precision, supported-claim precision, consensus recall,
+  diversity, calibration, regret, justified disagreement and decision cost.
+- Recommend adoption of llmfit ordering, a minimal Local Arcade policy, or one
+  specified M-H algorithm. See `ranking-and-audition-research-plan.md`.
+
+**Parallel ownership after authorization**
+
+- upstream-baseline, ranking-methods, consensus-corpus and apple-validation are
+  isolated lanes; the root integration owner owns schemas, harness integration
+  and the final comparative report.
+- With four active slots, root plus three agents run concurrently; the remaining
+  lane starts when a slot completes.
+
+**Forbidden**
+
+- No production ranking, M-H/M-O implementation, click/vote learning, external
+  dataset ingestion without approved terms, GPL code copying, or public systems.
+
+**Accept**
+
+- The harness is reproducible, experimental algorithms have no production
+  imports, disagreements are machine-explainable, missing evidence fails
+  closed, and existing root/runner gates remain green.
+
+**Stop conditions**
+
+- Owner review is required before selecting M-H policy. Failure to demonstrate
+  material value over llmfit is a valid result and defaults toward more upstream
+  adoption rather than inventing a differentiating score.
+
+### Checkpoint 9 — Completing M-H
 
 **Deliverables**
 
@@ -202,7 +250,7 @@ This checkpoint begins with a stop-and-review, not code.
 
 - Existing recommendation golden/policy tests map to v1 envelopes without changed outcomes; import-boundary tests pass.
 
-### Checkpoint 9 — Completing M-I
+### Checkpoint 10 — Completing M-I
 
 **Deliverables**
 
@@ -217,7 +265,7 @@ This checkpoint begins with a stop-and-review, not code.
 
 - Existing integration/security tests plus envelope mapping pass.
 
-### Checkpoint 10 — Completing the approved existing-engine M-J adapter
+### Checkpoint 11 — Completing the approved existing-engine M-J adapter
 
 **Deliverables**
 
@@ -239,7 +287,7 @@ This checkpoint begins with a stop-and-review, not code.
 
 - U11/U12/U15 before cross-platform native release, bundled execution, sandbox, updater, download, or public benchmark claims.
 
-### Checkpoint 11 — Completing M-O
+### Checkpoint 12 — Completing M-O
 
 **Deliverables**
 
@@ -256,7 +304,7 @@ This checkpoint begins with a stop-and-review, not code.
 - Use-case integration tests cover every state in `screen-contract.md`.
 - Mechanical tests prove M-P is the only future surface consumer and M-O owns orchestration only.
 
-### Checkpoint 12 — Completing website M-P
+### Checkpoint 13 — Completing website M-P
 
 **Deliverables**
 
@@ -272,7 +320,7 @@ This checkpoint begins with a stop-and-review, not code.
 
 - W1–W4 state matrix, keyboard/focus/error summary, responsive breakpoints, reduced-motion and product-honesty E2E pass; full root gate passes.
 
-### Checkpoint 13 — Completing desktop M-P and end-to-end handoff
+### Checkpoint 14 — Completing desktop M-P and end-to-end handoff
 
 **Deliverables**
 

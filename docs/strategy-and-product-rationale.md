@@ -91,6 +91,14 @@ The adapter must remain replaceable. Current Local Arcade fit math has strong
 goldens and properties; llmfit does not replace it until an equivalence spike
 explains differences and preserves fail-closed behavior.
 
+Local Arcade has not yet proved that its recommendation decisions are better.
+Before M-H policy or M-O audition selection is frozen, the in-review
+`ranking-and-audition-research-plan.md` compares llmfit, preserved Local Arcade,
+constraint/Pareto/diversity baselines, community consensus and matched measured
+observations. If Local Arcade cannot reduce failed runs or decision cost while
+preserving evidence honesty, it should adopt more of llmfit and keep its
+differentiation in exact identity, verification and private auditioning.
+
 ### LM Studio, Ollama, llama.cpp and llama-swap
 
 LM Studio is technically a wrapper over runtimes, but discovery, setup, model

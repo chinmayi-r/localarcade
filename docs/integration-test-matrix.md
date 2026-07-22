@@ -8,18 +8,19 @@ Observed on the preserved dirty tree, 2026-07-22. A green cell proves only the n
 |---|---|---|
 | Root `npm.cmd run typecheck` | pass | Current TS contracts compile [T1]. |
 | Root `npm.cmd run lint` | pass | Static lint over app/lib/tests/worker/design-system [T1]. |
-| Root test suite | pass, 119 tests | 94 TS/TSX + 25 MJS boundary tests [T1]. |
+| Root test suite | pass, 127 tests | 100 TS/TSX + 27 MJS boundary tests after M-A [T1][T21]. |
 | Registry freshness + production build | pass | Registry reported 38 hours old; vinext build completed with only chunk-size/classification warnings [T1]. |
-| Documentation UTF-8/links | pass, 51 Markdown files | `npm.cmd run docs:validate` rejects invalid UTF-8, mojibake markers, and missing relative targets [T20]. |
+| Documentation UTF-8/links | pass, 53 Markdown files | `npm.cmd run docs:validate` rejects invalid UTF-8, mojibake markers, and missing relative targets [T20][T22]. |
 | Approved schema/fixtures | pass, 18 positive + 11 rejected negative | `npm.cmd run contracts:validate` compiles Draft 2020-12, checks portfolio/handoff/verification invariants, and proves invalid version/enum/required/hash/additional-field/semantic cases fail [T20]. |
 | Runner typecheck/fmt/Clippy | pass | Rust Clippy uses `-D warnings` [T1]. |
-| Runner Rust tests | pass, 26 tests | 17 unit + 1 benchmark live target + 7 model-store + 1 quick-task live target; live behavior env-dependent [T1]. |
+| Runner Rust tests | pass, 30 tests | 17 unit + 4 M-A contract + 1 benchmark live target + 7 model-store + 1 quick-task live target; live behavior env-dependent [T1][T21]. |
 | Runner Vite build | pass | Thin desktop frontend builds [T1]. |
 
 ## Current capability matrix
 
 | Boundary / behavior | Unit / contract | Integration | Live / E2E | Current result | Gap before target architecture | Evidence |
 |---|---|---|---|---|---|---|
+| M-A v1 JSON/envelope/handoff boundary | TS/Rust DTO, schema and semantic validation | same 18 positive/11 negative corpus | none required | covered/pass | owner review and isolated M-A commit | [T21] |
 | M-C discovery→lock→ingest→snapshot | importer, contract, generated | workflow boundary | build freshness | covered/pass | no M-C adapter contract or external API | [T2] |
 | Artifact exact-file trust route | generated test | discovery/ingest scripts | none | covered/pass | review UI and service provenance not covered | [T2] |
 | M-D accelerator identity→memory variants | accelerator tests | website form render | runner live detection unit | covered/pass on current paths | cross-language/common contract and non-Windows GPU detection | [T3] |
@@ -52,6 +53,8 @@ Observed on the preserved dirty tree, 2026-07-22. A green cell proves only the n
 | 1 | C1–C12 cross-language fixture suite | M-A, all | TS and Rust accept/reject identical canonical JSON; enum/version drift fails | shared contract does not exist | [T16] |
 | 2 | Existing fit vs M-B adapter equivalence | M-B/M-F | goldens/properties remain within explicitly approved tolerances; unsupported profiles fail closed | llmfit adoption is unresolved | [T5][T18] |
 | 3 | Registry/runtime/evidence→complete candidate adapter | M-C/E/G/H | M-H receives immutable complete candidates without importing stores | current assembly is inside M-H | [T8][T16] |
+| 3a | Consensus sanity benchmark | M-B–M-H research | sourced consensus candidates are considered or receive machine-readable scoped exclusion reasons; unsafe candidates never pass | catches inexplicable divergence without treating consensus as truth | [T22] |
+| 3b | Measured audition comparison | M-B–M-H research | llmfit/current/constraint/Pareto/diversity baselines receive equivalent inputs and report calibration, regret, justified disagreement and test cost separately | Local Arcade's claimed improvement is unproven | [T22] |
 | 4 | Surface import boundary | M-O/M-P | no file under `app/` or runner frontend imports/invokes M-C–M-N directly | current violations are mechanical | [T16] |
 | 5 | Finder use-case contract | M-D/F/H/O/P | manual and exact hardware inputs produce honest coverage/no-fit/results and task-derived context | protects useful website slice during shell replacement | [T3][T8][T9] |
 | 6 | Inventory→benchmark identity handoff | M-I/J/O | selected file hash/build/settings survive unchanged into observation | artifact binding is missing | [T11][T12] |
@@ -89,3 +92,8 @@ Preserve registry, accelerator, runtime, fit, evidence, throughput, recommendati
 - **[T19]** conflicting interface/screen inventories and current lack of visual/native UI automation.
 - **[T20]** `docs/validate-documentation.mjs` and
   `docs/contracts/validate-fixtures.mjs`, run successfully on 2026-07-22.
+- **[T21]** `lib/contracts/**`, `runner/src-tauri/src/contracts.rs`,
+  `tests/contracts-*`, `runner/src-tauri/tests/contracts_v1.rs`, and the final
+  M-A root/runner gates on 2026-07-22.
+- **[T22]** `docs/ranking-and-audition-research-plan.md`, the current llmfit
+  repository, Anubis repository/live analysis, and cited ranking research.

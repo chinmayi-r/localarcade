@@ -90,6 +90,10 @@ first-slice matrix. Prototypes remain illustrative design references.
 
 - `community-demand-research.md`
 - `llmfit-core-adoption-audit.md`
+- `ranking-and-audition-research-plan.md` — approved comparative research gate
+  before M-H/M-O; not production authorization.
+- `ranking-research-assembler.md` — active combined llmfit/Local Arcade Mermaid
+  dependency graph and parallel-lane progress dashboard.
 - `persona-findings.md`
 - `evidence-evaluation-contract.md`
 - `strategy-and-product-rationale.md` — conversation context and long-term

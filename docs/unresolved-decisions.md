@@ -36,8 +36,10 @@ lack approval or evidence.
 | U16 | Disposition of retired M7 code | Navigation is removed and milestone retired; useful task/scorer definitions overlap runner quick tasks [U16]. | Keep indefinitely; delete now; migrate then retire. | Migrate mechanical fixtures into M-K/M-J contracts, prove equivalence, then delete dormant browser surface in an approved checkpoint. | Cleanup only |
 | U18 | Where does quick-task execution belong? | Runner M-J owns current spawn; proposed M-K owns Solo Arena execution/results; legacy M7 owns task definitions [U18]. | All in M-J; all in M-K; split plan/result from execution adapter. | M-K owns C6/C7 plan/result and local history; M-J owns checked measurement/execution adapter. | M-J/M-K ownership |
 | U19 | Where does battle validation belong? | `lib/battles` validates pairs/votes and rates them, but proposed M-L should own contribution intake [U19]. | Keep combined; split validation; duplicate boundary validation. | M-L validates contribution envelope/consent; M-M defensively validates rating input using shared M-A contracts. | M-L/M-M |
+| U23 | Does Local Arcade materially improve recommendation decisions over llmfit? | Current llmfit already ranks fit/speed/quality/context and incorporates local/community measurements; Local Arcade's claimed advantage has not been evaluated [U8][U23]. | Adopt llmfit ordering; retain current Local Arcade policy; constraint/Pareto/diversity policy; learned ranking later. | Run the non-production comparison checkpoint in `ranking-and-audition-research-plan.md`; do not freeze M-H or M-O audition selection from intuition. | M-H/M-O |
+| U24 | May Anubis leaderboard records be ingested or redistributed? | Anubis code is GPL-3.0 and its live Apple benchmark analysis is public, but repository code licensing does not by itself establish dataset redistribution terms [U24]. | Reference-only external validation; licensed snapshot ingestion; exclude. | Use reference-only matched comparisons until owner/legal review confirms dataset terms and provenance requirements. | External data ingestion; not reference-only research |
 
-U8–U15 must be resolved at the checkpoint that first consumes them. U16 and U18 belong to the later private-Arena/cleanup sequence. U19 and the implementation/security parts of U20 remain outside the approved first slice.
+U8–U15 must be resolved at the checkpoint that first consumes them. U16 and U18 belong to the later private-Arena/cleanup sequence. U19 and the implementation/security parts of U20 remain outside the approved first slice. U23 must be reviewed before M-H/M-O; U24 blocks ingestion, not cited external validation.
 
 ## Evidence index
 
@@ -63,3 +65,5 @@ U8–U15 must be resolved at the checkpoint that first consumes them. U16 and U1
 - **[U20]** evidence/API/interface draft no-authorization clauses and absence of service source.
 - **[U21]** `G:/Lacuna-demo/SUPERSEDED.md`, active Lakuna search, recovered session line 11772.
 - **[U22]** recovered session lines 12167–12184 exact patch calls.
+- **[U23]** `docs/ranking-and-audition-research-plan.md`, current llmfit primary repository description, and the pinned llmfit audit.
+- **[U24]** Anubis primary repository and live benchmark-analysis pages checked 2026-07-22; no separate dataset license was established in this pass.

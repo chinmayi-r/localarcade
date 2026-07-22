@@ -7,7 +7,7 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 | Checkpoint | Status | Evidence | Remaining before implementation |
 |---|---|---|---|
 | Documentation/design contracts — 2026-07-22 | Approved and committed | Product owner approved the actual brief, screen matrix and design foundation; resolved all ten v1 contract questions; approved execution direction/order; and authorized root-owned M-A. The isolated Wave 0 documentation/contracts snapshot is commit `59e6dd1`. | None. |
-| M-A — Shared first-slice contracts | Complete and product-owner-approved; isolated commit pending | Isolated TypeScript and Rust v1 DTOs validate the same 18 positive fixtures and reject the same 11 negative fixtures; canonical runner-handoff SHA-256 and exact 24-hour expiry agree across runtimes; forward versions fail closed; adapter tests prove lossless representable round trips and explicit blocked mappings; import tests prove the core has no UI/domain/network/process dependency. Root `npm.cmd run check` passes 127 tests/build and runner `npm.cmd run check` passes 30 Rust tests/build without adding IPC commands. Current inventory is 110 production + 34 test paths with 0 unrepresented. | Create the owner-authorized isolated M-A commit, then start the approved parallel non-production ranking/audition research worktrees. |
+| M-A — Shared first-slice contracts | Complete, product-owner-approved and committed | Isolated TypeScript and Rust v1 DTOs validate the same 18 positive fixtures and reject the same 11 negative fixtures; canonical runner-handoff SHA-256 and exact 24-hour expiry agree across runtimes; forward versions fail closed; adapter tests prove lossless representable round trips and explicit blocked mappings; import tests prove the core has no UI/domain/network/process dependency. Root `npm.cmd run check` passes 127 tests/build and runner `npm.cmd run check` passes 30 Rust tests/build without adding IPC commands. Isolated commit: `55afbb2`. | None. The approved non-production ranking/audition research checkpoint is active; M-H/M-O remain blocked on its owner review. |
 
 | Milestone | Status | Evidence | Remaining before completion |
 |---|---|---|---|
@@ -33,10 +33,11 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 
 | R4 (existing-engine slice) — Benchmark | Complete (partial R4) | `runner/src-tauri/src/benchmark.rs`: explicit-consent benchmark spawning exactly the user's own `llama-bench` (single boundary-tested spawn site), watchdog kill-timeout, fail-closed JSON parsing pinned to a real-output fixture, results badged `verified-local` with full engine/config identity. Live end-to-end on the dev machine: Qwen3-4B on RTX 3060 Laptop via CUDA, 228 t/s prompt / 4.3 t/s generation at llama-bench defaults. Persona findings logged in `docs/persona-findings.md`; coverage-gap outcome added to the website engine from pass 1. | Full R4 (bundled pinned engine + T7 sandbox + quick-task suite + calibration transfer) remains gated on the Windows GPU sandbox stop-and-ask. User-flag/llama-swap-config benchmarking is backlog item 1. |
 
-**Current next checkpoint:** commit and close the approved 2026-07-22
-documentation/design-contract checkpoint, then complete the explicitly
-authorized root-owned M-A checkpoint in `worktree-execution-plan.md`; no
-implementation worktree exists or is permitted for M-A.
+**Current checkpoint:** the owner-approved non-production ranking/audition
+comparison after M-A commit `55afbb2`. Upstream, ranking-method,
+consensus-corpus and Apple-validation lanes run in parallel worktrees under one
+integration owner. M-H, M-O and all surface implementation remain prohibited
+until the comparative report is reviewed.
 Runner artifact binding, serving-config import, publisher expansion, hosting and
 full-R4 sandbox work remain separately scoped future decisions. Windows GPU
 sandbox depth (T7) remains an OPEN stop-and-ask.

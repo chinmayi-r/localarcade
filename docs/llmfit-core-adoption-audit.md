@@ -2,6 +2,13 @@
 
 Status: design input, not implementation authorization.
 
+Current-source check, 2026-07-22: upstream's primary README now describes local
+benchmark persistence, community benchmark contribution, JSON recommendations,
+and fit/speed/quality/context ranking. That strengthens llmfit as the comparison
+baseline and means this pinned v1.1.6 audit must be refreshed before an M-B
+integration decision. See `ranking-and-audition-research-plan.md`; no current
+production conclusion changed from this source check.
+
 Audited upstream: `AlexsJones/llmfit` v1.1.6 at commit
 `7ba90ce0f14756040db658933bfd5c6ad46ed4ea` on 2026-07-21.
 
