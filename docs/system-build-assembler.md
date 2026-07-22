@@ -8,7 +8,7 @@ audited; it does not mean Local Arcade adopted or reimplemented it.
 ## Legend
 
 - ✅ complete or audited, with evidence available
-- 🟡 active in an isolated worktree
+- 🟡 active on the integration branch
 - ⬜ queued behind an explicit dependency
 - ⏸ owner decision or research evidence required
 - ⛔ excluded from the approved first slice
@@ -67,11 +67,11 @@ flowchart LR
     direction TB
     MA["M-A contracts ✅"]
     MB["M-B pinned llmfit advisory ⏸"]
-    MC["M-C exact artifact registry 🟡"]
-    MD["M-D hardware resolver 🟡"]
-    ME["M-E exact candidate/runtime builder 🟡"]
+    MC["M-C exact artifact registry ✅"]
+    MD["M-D hardware resolver ✅"]
+    ME["M-E exact candidate/runtime builder ✅"]
     MF["M-F fit/performance adapter ⬜\npreserved core ✅"]
-    MG["M-G evidence policy ⬜\npreserved core ✅"]
+    MG["M-G evidence adapter ✅\npreserved core ✅"]
     MH["M-H portfolio ⏸\nlegacy core ✅"]
     MI["M-I read-only inventory ⬜\npreserved core ✅"]
     MJ["M-J verification adapter ⬜\npreserved core ✅"]
@@ -149,12 +149,12 @@ flowchart LR
 flowchart TB
   BASE["Preservation baseline ✅\n59e6dd1"] --> MA["M-A contracts ✅\n55afbb2 + corrections"]
 
-  subgraph W1["Parallel adapter wave — active"]
-    MC["M-C registry 🟡\ncodex/m-c-registry"]
-    MD["M-D hardware 🟡\ncodex/m-d-hardware"]
-    ME["M-E runtime/candidate 🟡\ncodex/m-e-runtime"]
-    MG["M-G evidence ⬜\nfirst free agent slot"]
-    PROTO["Matched ranking protocol 🟡\nassembler-owned"]
+  subgraph W1["Parallel adapter wave — integrated and green"]
+    MC["M-C registry ✅\n547d015"]
+    MD["M-D hardware ✅\nb788396"]
+    ME["M-E runtime/candidate ✅\n884dac2 + 1d0ddfb + 0f53fb9"]
+    MG["M-G evidence ✅\ne3689eb"]
+    PROTO["Matched ranking protocol ✅\n024fdc4"]
   end
 
   MA --> MC
@@ -192,11 +192,22 @@ flowchart TB
 
 | Track | Branch/worktree | Current state | Completion evidence |
 |---|---|---|---|
-| assembler and ranking protocol | `codex/implementation-assembler` — `G:/LocalArcade-worktrees/implementation-assembler` | 🟡 active | graphs, protocol, integration review, documentation and full gates |
-| M-C registry | `codex/m-c-registry` — `G:/LocalArcade-worktrees/m-c-registry` | 🟡 active | adapter/equivalence tests and unchanged snapshot semantics |
-| M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | 🟡 active | manual/detected/unknown/mismatch boundary tests |
-| M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | 🟡 active | exact candidate and incomplete-identity rejection tests |
-| M-G evidence | not cut | ⬜ queued | starts when one agent slot becomes free |
+| assembler and integration | `codex/wave1-domain-adapters` — `G:/LocalArcade` | ✅ first wave integrated | root and runner full gates green on 2026-07-22 |
+| M-C registry | `codex/m-c-registry` — `G:/LocalArcade-worktrees/m-c-registry` | ✅ integrated as `547d015` | adapter/equivalence tests and unchanged snapshot semantics |
+| M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ integrated as `b788396` | manual/detected/unknown/mismatch boundary tests; Rust parity |
+| M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |
+| M-G evidence | reused M-E review lane | ✅ integrated as `e3689eb` | exact/lossy/unsupported mappings and boundary tests |
+| M-I inventory | not cut | ⏸ owner decision required | choose an additive shared inventory-result contract or a module-local DTO deferred to M-O |
+| M-J verification | not cut | ⏸ owner decisions required | approve constrained Windows-first, user-supplied-engine and no-network boundary |
+
+## Gate snapshot — 2026-07-22
+
+- Root `npm.cmd run check`: ✅ typecheck, lint, 129 tests, 30 boundary tests,
+  registry freshness and production build.
+- Runner `npm.cmd run check`: ✅ TypeScript, Rust formatting, Clippy with
+  warnings denied, 40 Rust tests across all targets, and production build.
+- The first 120-second runner wrapper expired while Cargo waited for its build
+  lock; the unchanged command passed in 137.9 seconds with a longer wrapper.
 
 ## Mapping rule
 

@@ -8,6 +8,10 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 |---|---|---|---|
 | Documentation/design contracts — 2026-07-22 | Approved and committed | Product owner approved the actual brief, screen matrix and design foundation; resolved all ten v1 contract questions; approved execution direction/order; and authorized root-owned M-A. The isolated Wave 0 documentation/contracts snapshot is commit `59e6dd1`. | None. |
 | M-A — Shared first-slice contracts | Complete, product-owner-approved and committed | Isolated TypeScript and Rust v1 DTOs validate the same 18 positive fixtures and reject the same 11 negative fixtures; canonical runner-handoff SHA-256 and exact 24-hour expiry agree across runtimes; forward versions fail closed; adapter tests prove lossless representable round trips and explicit blocked mappings; import tests prove the core has no UI/domain/network/process dependency. Root `npm.cmd run check` passes 127 tests/build and runner `npm.cmd run check` passes 30 Rust tests/build without adding IPC commands. Isolated commit: `55afbb2`. | None. The approved non-production ranking/audition research checkpoint is active; M-H/M-O remain blocked on its owner review. |
+| M-C — Exact artifact registry contract adapter | Complete and committed | `547d015` maps immutable artifact identity and all provenance fields into M-A, preserves snapshot freshness/lifecycle/quarantine semantics, and fails closed on stale or invalid snapshots. The M-C→M-E seam was independently reviewed and exercised in the combined gate. | None for the adapter boundary. Registry expansion remains separately reviewed data work. |
+| M-D — Hardware target resolver | Complete and committed | `b788396` adds TypeScript and Rust adapters for manual, detected, ambiguous, contradictory, unknown and CPU-only hardware states. It preserves field origins, never invents capacity, and keeps Apple unified memory as one pool. | Non-Windows detection remains explicit manual/unavailable behavior until a platform adapter is approved. |
+| M-E — Exact runtime candidate adapter | Complete and committed | `884dac2`, `1d0ddfb` and integration fix `0f53fb9` build only complete exact candidates from M-C identity, enforce nested KV/sampler and numeric schema constraints, and fail closed on unknown product/build/backend/compatibility. | No serving defaults, fit, ranking, download or process behavior belongs here. |
+| M-G — Evidence adapter | Complete and committed | `e3689eb` maps exact personal measurements, scoped community evidence, sourced throughput priors and compatible fit components without upgrading claims. Identity mismatches, contradictory records and lossy GPU/offload pool splits fail closed. | Evidence collection, public contribution and ranking policy remain outside this adapter. |
 
 | Milestone | Status | Evidence | Remaining before completion |
 |---|---|---|---|
@@ -33,11 +37,11 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 
 | R4 (existing-engine slice) — Benchmark | Complete (partial R4) | `runner/src-tauri/src/benchmark.rs`: explicit-consent benchmark spawning exactly the user's own `llama-bench` (single boundary-tested spawn site), watchdog kill-timeout, fail-closed JSON parsing pinned to a real-output fixture, results badged `verified-local` with full engine/config identity. Live end-to-end on the dev machine: Qwen3-4B on RTX 3060 Laptop via CUDA, 228 t/s prompt / 4.3 t/s generation at llama-bench defaults. Persona findings logged in `docs/persona-findings.md`; coverage-gap outcome added to the website engine from pass 1. | Full R4 (bundled pinned engine + T7 sandbox + quick-task suite + calibration transfer) remains gated on the Windows GPU sandbox stop-and-ask. User-flag/llama-swap-config benchmarking is backlog item 1. |
 
-**Current checkpoint:** the owner-approved non-production ranking/audition
-comparison after M-A commit `55afbb2`. Upstream, ranking-method,
-consensus-corpus and Apple-validation lanes run in parallel worktrees under one
-integration owner. M-H, M-O and all surface implementation remain prohibited
-until the comparative report is reviewed.
-Runner artifact binding, serving-config import, publisher expansion, hosting and
-full-R4 sandbox work remain separately scoped future decisions. Windows GPU
-sandbox depth (T7) remains an OPEN stop-and-ask.
+**Current checkpoint:** M-C, M-D, M-E and M-G are integrated on
+`codex/wave1-domain-adapters`. The combined root gate is green (129 TypeScript
+tests, 30 boundary tests and production build); the runner gate is green (40
+Rust tests across all targets and production build). M-I is paused on the
+inventory-result contract boundary. M-J is paused on Windows-first,
+user-supplied-engine and no-network scope decisions. M-B and M-H remain paused
+on their recorded owner/research gates. M-O and all surface implementation
+remain prohibited until their dependencies and checkpoint decisions close.
