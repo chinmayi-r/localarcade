@@ -1,4 +1,5 @@
 pub mod benchmark;
+pub mod contracts;
 pub mod hardware;
 pub mod model_store;
 

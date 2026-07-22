@@ -6,7 +6,7 @@ Audit date: 2026-07-22. “Module” means the proposed target in `docs/modular-
 
 | Module | Proposed responsibility | Current implementation | Status / recommendation | Evidence |
 |---|---|---|---|---|
-| M-A | Shared C1–C12 contracts | Types are fragmented across evidence, registry, runtime, recommendation, battles, and Rust | missing as a shared package; revise reusable types only after candidate first-slice contracts are approved | [S1][S2] |
+| M-A | Shared first-slice v1 contracts | Approved DTOs, envelopes, canonical handoff serialization and validation now exist in isolated TypeScript and Rust packages; legacy hardware/recommendation mappings are explicit and fail closed | complete for the approved first slice; preserve legacy types behind adapters until their owning module checkpoints | [S1][S2][S18] |
 | M-B | llmfit core adapter | No code imports llmfit | missing; decide integration and licensing first | [S3] |
 | M-C | Model/artifact registry | Strong registry discovery/import/snapshot/freshness implementation | reuse behind an M-C interface; generated data remains generated | [S4] |
 | M-D | Hardware inventory/reconciliation | Sourced accelerator catalog plus Windows runner detection | reuse behind adapters; add non-Windows implementations and remove UI coupling | [S5] |
@@ -44,6 +44,11 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `lib/accelerators/lookup.ts` | M-D | Exact lookup and memory-variant derivation | accelerator registry | reuse unchanged internally | [S5] |
 | `lib/accelerators/types.ts` | M-A/M-D | Accelerator identity/provenance types | accelerator/typecheck | revise into shared contract | [S2][S5] |
 | `lib/accelerators/validation.ts` | M-D | Fail-closed catalog validation | accelerator registry | reuse unchanged | [S5] |
+| `lib/contracts/types.ts` | M-A | Approved first-slice v1 DTOs and envelopes | shared corpus/typecheck | reuse unchanged as the v1 TypeScript wire authority | [S18] |
+| `lib/contracts/canonical.ts` | M-A | Deterministic canonical JSON and handoff SHA-256 | contract corpus | reuse unchanged | [S18] |
+| `lib/contracts/validator.ts` | M-A | Draft 2020-12 plus cross-record semantic validation | 18 positive/11 negative fixtures | reuse unchanged | [S18] |
+| `lib/contracts/adapters/recommendation.ts` | M-A adapter | Lossless current hardware/request translations and explicit blocked mappings | adapter round-trip/rejection tests | reuse until M-D/M-H adapters supersede it | [S18] |
+| `lib/contracts/index.ts` | M-A | Core-only TypeScript exports | import-boundary test | reuse unchanged | [S18] |
 | `lib/battles/flag.ts` | M-M | Keeps battle feature dark | battle boundary | reuse unchanged until approval | [S12] |
 | `lib/battles/index.ts` | M-M | Public dark-core exports | battle tests | revise as M-M adapter | [S12] |
 | `lib/battles/policy.ts` | M-M | Editable vote/rating thresholds | battle rating | reuse unchanged | [S12] |
@@ -93,6 +98,7 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `runner/index.html` | M-P | Desktop controls and consent/preflight structure | runner build; no DOM interaction test | revise with approved D-screens | [S11][S15] |
 | `runner/src/styles.css` | M-P | Thin runner styling | build; visual untested | revise with approved D-screens | [S15] |
 | `runner/src-tauri/src/main.rs` | M-P composition | Starts Tauri library | Cargo gates | reuse unchanged | [S15] |
+| `runner/src-tauri/src/contracts.rs` | M-A | Rust mirror DTOs, typed validation, canonical serialization and handoff integrity | shared corpus/Clippy/fmt | reuse unchanged as the v1 Rust wire boundary | [S18] |
 | `runner/src-tauri/src/lib.rs` | composition; missing M-O | Registers direct Tauri commands | Cargo/root boundary | revise into orchestrator composition | [S13] |
 | `runner/src-tauri/src/hardware.rs` | M-D | Read-only Windows DXGI/system detection and registry reconciliation | Rust unit/live | reuse behind platform adapter | [S5] |
 | `runner/src-tauri/src/model_store.rs` | M-I | Read-only Ollama/LM Studio/extra GGUF scan | Rust integration/root boundary | reuse behind adapter | [S10] |
@@ -116,6 +122,8 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `tests/battles-validation.test.ts` | M-M | pair/vote fail-closed validation | reuse unchanged | [S12][S14] |
 | `tests/empty-state.e2e.test.tsx` | M-P/M-H | honest zero-data state | reuse behavior; revise harness with UI | [S14] |
 | `tests/evidence-contract.test.ts` | M-G | scope, claim derivation, immutable identity | reuse unchanged | [S8][S14] |
+| `tests/contracts-v1.test.ts` | M-A | TypeScript shared-corpus, canonical hash, adapter round-trip and rejection coverage | reuse unchanged | [S18] |
+| `tests/contracts-boundary.test.mjs` | M-A | Core import/I/O isolation and adapter containment | reuse unchanged | [S18] |
 | `tests/evidence-ui.test.tsx` | M-P/M-D/M-F/M-G | exact hardware, evidence badges, independent pools | reuse behavior; revise surface harness | [S14] |
 | `tests/evidence-ui-types.test.ts` | M-A/M-G/M-P | rejects badge-less numeric display | reuse unchanged | [S8][S14] |
 | `tests/fit-golden.test.ts` | M-F | llama.cpp allocation goldens | reuse; run equivalence against llmfit | [S7][S14] |
@@ -142,6 +150,7 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `tests/fixtures/registry-lifecycle-golden.json` | M-C | lifecycle expected snapshot | reuse unchanged | [S4] |
 | `tests/fixtures/unknown-throughput-golden.json` | M-F/M-G | unknown-evidence fail-closed case | reuse unchanged | [S7] |
 | `runner/src-tauri/tests/benchmark_live.rs` | M-J | env-gated real benchmark smoke | reuse; strengthen artifact binding later | [S11][S14] |
+| `runner/src-tauri/tests/contracts_v1.rs` | M-A | Rust shared-corpus parity, canonical ordering and forward-version rejection | reuse unchanged | [S18] |
 | `runner/src-tauri/tests/model_store_scan.rs` | M-I | fixture stores, identity, duplicates, errors, live read-only smoke | reuse unchanged | [S10][S14] |
 | `runner/src-tauri/tests/quick_task_live.rs` | M-J/M-K precursor | env-gated configuration-bound task smoke | reuse; strengthen execution/result contract | [S11][S14] |
 
@@ -163,17 +172,17 @@ These are not domain modules, but they participate in production or tests and ar
 ## 2026-07-22 current-path verification
 
 The source inventory was regenerated from the current tree rather than relying
-on the earlier count of 70. It contains **135 shipped source/static/test paths**:
-**104 production paths** and **31 test paths** (including four test JSON
+on the earlier count of 70. It contains **144 shipped source/static/test paths**:
+**110 production paths** and **34 test paths** (including four test JSON
 fixtures). Production includes `app`, `lib`, `build`, `worker`, `scripts`,
 `design-system`, `public`, `runner/index.html`, runner source, three runner
 source assets, and 16 runner icon files. Tests include all root tests/fixtures
-and all three Rust integration-test files. Every one of the 135 paths is
+and all four Rust integration-test files. Every one of the 144 paths is
 represented either by an exact row above or the explicit `public/*`,
 `runner/src/assets/*`, or `runner/src-tauri/icons/*` group; **unrepresented
 count: 0** [S17].
 
-Excluded from the 135 count, but still classified in “Production-support and
+Excluded from the 144 count, but still classified in “Production-support and
 generated files,” are package/build configuration, registry source/generated
 data, Tauri capability/configuration, workflows, and packaging. Also excluded:
 Markdown and recovered HTML prototypes (documentation/design references),
@@ -201,5 +210,8 @@ exclusions do not hide an unclassified production or test implementation.
 - **[S15]** full source/config read and build output; no targeted behavioral test found beyond stated gates.
 - **[S16]** M7 retired status, removed navigation, retained `lib/quick-test` and UI/tests.
 - **[S17]** `rg --files` inventory regenerated 2026-07-22 from the paths named
-  above; exact totals are 104 production and 31 test paths after adding
-  `runner/index.html` and the 16 runner icon files.
+  above; exact totals are 110 production and 34 test paths after adding the six
+  M-A source paths and three M-A test paths.
+- **[S18]** `lib/contracts/**`, `runner/src-tauri/src/contracts.rs`, the shared
+  18-positive/11-negative corpus, M-A boundary/adapter tests, and passing root
+  and runner gates on 2026-07-22.

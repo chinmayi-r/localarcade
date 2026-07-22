@@ -1,5 +1,23 @@
 # Decisions
 
+## 2026-07-22 — M-A is a closed wire boundary with isolated legacy adapters
+
+**Decision:** Implement the approved v1 first-slice DTOs, validation and
+canonical handoff serialization as dependency-free TypeScript/Rust contract
+cores. Keep current recommendation/hardware translations in an explicit
+TypeScript adapter; unsupported or lossy translations return `mapping.*`
+blocked results. Reject forward schema versions. Do not expose a Tauri command
+or change any production consumer during M-A.
+
+**Why:** This makes the approved contract independently testable in both
+languages while preserving the passing legacy domain cores until their owning
+module checkpoints. It also prevents a convenience translation from silently
+inventing the newly required runtime, provenance or memory fields.
+
+**Reversible:** Yes. Adapter implementations and package layout may change
+without changing v1 wire meaning; changing the v1 schema itself requires owner
+approval.
+
 ## 2026-07-22 — Approve first-slice authorities and resolve contract v1
 
 - **Decision:** Approve the actual content of `PRODUCT-BRIEF.md`,
