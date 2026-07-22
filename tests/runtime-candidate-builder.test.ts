@@ -1,13 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import registryJson from "../registry/generated/artifacts.json";
-import type { Provenance } from "../lib/contracts";
+import { toRegistryArtifactIdentity } from "../lib/registry";
 import type { RegistrySnapshot } from "../lib/registry";
 import { buildExactConfigurationCandidate, evaluateArtifactCompatibility } from "../lib/runtime";
 import type { CandidateBuildInput, CompatibilityAssertion, ProductId, RuntimeBuild } from "../lib/runtime";
 
 const registry = registryJson as RegistrySnapshot;
 const artifact = registry.artifacts.find((record) => record.status === "promoted")!;
+const mappedArtifact = toRegistryArtifactIdentity(artifact);
+assert.equal(mappedArtifact.kind, "ok");
+if (mappedArtifact.kind !== "ok") throw new Error("registry fixture must cross M-C");
+const registryArtifact = mappedArtifact.value;
 const build: RuntimeBuild = {
   engineId: "llama.cpp",
   version: "1.2.0",
@@ -33,23 +37,9 @@ const compatibility: CompatibilityAssertion = {
   },
   evidence: [{ url: "https://example.invalid/runtime", checkedAt: "2026-07-22T12:00:00Z", sourceRevision: "fixture" }],
 };
-const provenance: Provenance = {
-  source: { id: "m-e-test", version: "1", revision: "fixture", url: "https://example.invalid/runtime" },
-  retrievedAt: "2026-07-22T12:00:00Z",
-  observedAt: null,
-  method: "imported",
-  hardwareMatch: "not-applicable",
-  configurationMatch: "exact",
-  scope: { taskFamily: null, taskPackId: null, promptId: null, harnessId: null },
-  sampleCount: null,
-  measurement: null,
-  rawSourceRecordRef: "fixture://runtime-compatibility",
-};
-
 const completeInput: CandidateBuildInput = {
   candidateId: "candidate-m-e-fixture",
-  modelFamily: { modelFamilyId: artifact.family, displayName: artifact.model },
-  artifact,
+  registryArtifact,
   compatibility,
   package: { layout: "gguf-single", files: [artifact.fileName] },
   runtime: {
@@ -69,15 +59,15 @@ const completeInput: CandidateBuildInput = {
     sampler: { temperature: null, topP: null, topK: null, minP: null, seed: null },
     additionalFlags: [],
   },
-  provenance: [provenance],
 };
 
 test("M-E builds a complete exact candidate without changing artifact or runtime identity", () => {
   const result = buildExactConfigurationCandidate(completeInput);
   assert.equal(result.kind, "ok");
   if (result.kind !== "ok") return;
-  assert.equal(result.candidate.artifact.artifactId, artifact.id);
-  assert.equal(result.candidate.artifact.sha256, artifact.sha256);
+  assert.equal(result.candidate.artifact.artifactId, registryArtifact.artifact.artifactId);
+  assert.equal(result.candidate.artifact.sha256, registryArtifact.artifact.sha256);
+  assert.deepEqual(result.candidate.provenance, registryArtifact.provenance);
   assert.equal(result.candidate.runtime.product, "llama-cpp");
   assert.equal(result.candidate.runtime.engine, "llama.cpp");
   assert.equal(result.candidate.runtime.engineBuild, "b10061-5d5306bf3");
@@ -167,7 +157,7 @@ test("M-E fails closed when compatibility evidence is unknown or incomplete", ()
 test("M-E rejects runtime context beyond the admitted artifact limit", () => {
   const result = buildExactConfigurationCandidate({
     ...completeInput,
-    runtime: { ...completeInput.runtime!, contextTokens: artifact.maxContextTokens + 1 },
+    runtime: { ...completeInput.runtime!, contextTokens: registryArtifact.registryMetadata.maxContextTokens + 1 },
   });
   assert.equal(result.kind, "blocked");
   if (result.kind === "blocked") {

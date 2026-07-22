@@ -20,4 +20,6 @@ test("M-E remains a pure adapter with no serving-config, fit, ranking, download 
   ]) {
     assert.doesNotMatch(source, forbidden);
   }
+  assert.match(source, /from ["']\.\.\/registry\/contracts["']/);
+  assert.doesNotMatch(source, /registry\/types|ArtifactRegistryRecord/);
 });

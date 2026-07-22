@@ -1,5 +1,5 @@
-import type { ExactConfigurationCandidate, Provenance, RuntimeConfiguration } from "../contracts";
-import type { ArtifactRegistryRecord } from "../registry/types";
+import type { ExactConfigurationCandidate, RuntimeConfiguration } from "../contracts";
+import type { RegistryArtifactIdentityV1 } from "../registry/contracts";
 import { products } from "./catalog";
 import { evaluateArtifactCompatibility } from "./compatibility";
 import type { ArtifactPackageLayout, CompatibilityAssertion, ProductId, RuntimeBuild } from "./types";
@@ -24,8 +24,7 @@ export type ExplicitRuntimeSettings = {
 
 export type CandidateBuildInput = {
   candidateId?: string;
-  modelFamily?: { modelFamilyId: string; displayName: string };
-  artifact?: ArtifactRegistryRecord;
+  registryArtifact?: RegistryArtifactIdentityV1;
   runtime?: ExplicitRuntimeSettings;
   compatibility?: CompatibilityAssertion;
   package?: {
@@ -33,7 +32,6 @@ export type CandidateBuildInput = {
     files?: string[];
     modelArchitecture?: string;
   };
-  provenance?: Provenance[];
 };
 
 export type CandidateBuildResult =
@@ -64,11 +62,8 @@ function isNullableNumberInRange(value: unknown, minimum: number, maximum = Numb
 export function buildExactConfigurationCandidate(input: CandidateBuildInput): CandidateBuildResult {
   const missing: string[] = [];
   if (!input.candidateId) missing.push("candidateId");
-  if (!input.modelFamily?.modelFamilyId) missing.push("modelFamily.modelFamilyId");
-  if (!input.modelFamily?.displayName) missing.push("modelFamily.displayName");
-  if (!input.artifact) missing.push("artifact");
+  if (!input.registryArtifact) missing.push("registryArtifact");
   if (!input.compatibility) missing.push("compatibility");
-  if (!input.provenance?.length) missing.push("provenance");
   if (!input.package?.layout) missing.push("package.layout");
   if (!input.package?.files) missing.push("package.files");
   if (!input.runtime) {
@@ -112,24 +107,12 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
       }
     }
   }
-  if (input.artifact) {
-    if (input.artifact.status !== "promoted") missing.push("artifact.status:promoted");
-    if (!input.artifact.id) missing.push("artifact.artifactId");
-    if (!input.artifact.publisher) missing.push("artifact.publisher");
-    if (!input.artifact.repository) missing.push("artifact.repository");
-    if (!input.artifact.revision) missing.push("artifact.revision");
-    if (!input.artifact.fileName) missing.push("artifact.filename");
-    if (!/^[a-f0-9]{64}$/.test(input.artifact.sha256)) missing.push("artifact.sha256");
-    if (input.artifact.fileSizeBytes < 1) missing.push("artifact.bytes");
-    if (!input.artifact.format) missing.push("artifact.format");
-    if (!input.artifact.quantization) missing.push("artifact.quantization");
-    if (!input.artifact.license.id) missing.push("artifact.license");
-  }
   if (missing.length) {
     return { kind: "blocked", reasonCode: "candidate-incomplete", message: "Exact candidate identity is incomplete.", missing: [...new Set(missing)], reasons: [] };
   }
 
-  const artifact = input.artifact!;
+  const registryArtifact = input.registryArtifact!;
+  const artifact = registryArtifact.artifact;
   const runtime = input.runtime!;
   const build = runtime.runtimeBuild!;
   const productId = runtime.productId!;
@@ -146,15 +129,15 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
       reasons: [`Product ${productId} does not expose engine ${build.engineId}.`],
     };
   }
-  if (runtime.contextTokens! > artifact.maxContextTokens) {
+  if (runtime.contextTokens! > registryArtifact.registryMetadata.maxContextTokens) {
     return {
       kind: "blocked", reasonCode: "runtime-incompatible", message: "The requested runtime context exceeds the artifact limit.", missing: [],
-      reasons: [`Context ${runtime.contextTokens} exceeds artifact maximum ${artifact.maxContextTokens}.`],
+      reasons: [`Context ${runtime.contextTokens} exceeds artifact maximum ${registryArtifact.registryMetadata.maxContextTokens}.`],
     };
   }
 
   const compatibility = evaluateArtifactCompatibility(input.compatibility!, {
-    artifactId: artifact.id,
+    artifactId: artifact.artifactId,
     productId,
     runtimeBuild: build,
     packageLayout: input.package?.layout,
@@ -181,19 +164,8 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
     kind: "ok",
     candidate: {
       candidateId: input.candidateId!,
-      modelFamily: input.modelFamily!,
-      artifact: {
-        artifactId: artifact.id,
-        repository: `${artifact.publisher}/${artifact.repository}`,
-        revision: artifact.revision,
-        filename: artifact.fileName,
-        sha256: artifact.sha256,
-        bytes: artifact.fileSizeBytes,
-        format: artifact.format,
-        quantization: artifact.quantization,
-        license: artifact.license.id,
-        status: "promoted",
-      },
+      modelFamily: registryArtifact.modelFamily,
+      artifact,
       runtime: {
         runtimeConfigurationId: runtime.runtimeConfigurationId!,
         product: productId,
@@ -213,7 +185,7 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
         sampler: runtime.sampler!,
         additionalFlags: runtime.additionalFlags!,
       },
-      provenance: input.provenance!,
+      provenance: registryArtifact.provenance,
     },
   };
 }
