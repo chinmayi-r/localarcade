@@ -159,9 +159,10 @@ fn forward_versions_fail_closed() {
 
 #[test]
 fn measurement_evidence_cannot_contradict_its_raw_series() {
-    let mut fixture: serde_json::Value =
-        serde_json::from_str(include_str!("../../../docs/contracts/fixtures/benchmark-result.ok.json"))
-            .expect("benchmark fixture");
+    let mut fixture: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/benchmark-result.ok.json"
+    ))
+    .expect("benchmark fixture");
     fixture["data"]["series"][1]["evidence"]["measurement"]["interval"] =
         json!({"lower": 170, "upper": 180});
     assert!(validate_contract_json(&fixture.to_string()).is_err());
