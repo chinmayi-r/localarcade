@@ -263,7 +263,9 @@ may use parallel research worktrees after the isolated M-A commit.
 
 **Accept**
 
-- Existing integration/security tests plus envelope mapping pass.
+- Existing integration/security tests plus the approved module-local inventory
+  DTO mapping pass. The shared UI/orchestration envelope is deferred to M-O;
+  this checkpoint does not expand M-A.
 
 ### Checkpoint 11 — Completing the approved existing-engine M-J adapter
 
@@ -285,7 +287,11 @@ may use parallel research worktrees after the isolated M-A commit.
 
 **Stop conditions**
 
-- U11/U12/U15 before cross-platform native release, bundled execution, sandbox, updater, download, or public benchmark claims.
+- U11/U12/U15 are resolved for this checkpoint as Windows-first,
+  user-supplied-existing-engine and runner-no-network only. Stop before any
+  cross-platform parity claim, bundled execution, child-network-isolation
+  claim, sandbox, updater, download, upload or public benchmark/calibration
+  claim; T7 remains open.
 
 ### Checkpoint 12 — Completing M-O
 

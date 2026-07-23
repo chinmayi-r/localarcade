@@ -73,8 +73,8 @@ flowchart LR
     MF["M-F fit/performance adapter ⬜\npreserved core ✅"]
     MG["M-G evidence adapter ✅\npreserved core ✅"]
     MH["M-H portfolio ⏸\nlegacy core ✅"]
-    MI["M-I read-only inventory ⬜\npreserved core ✅"]
-    MJ["M-J verification adapter ⬜\npreserved core ✅"]
+    MI["M-I read-only inventory 🟡\npreserved core ✅"]
+    MJ["M-J verification adapter 🟡\npreserved core under review"]
     MK["M-K private Arena ⬜ later"]
     MLN["M-L/M-M/M-N public systems ⛔"]
     MO["M-O orchestration ⬜"]
@@ -197,8 +197,8 @@ flowchart TB
 | M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ integrated as `b788396` | manual/detected/unknown/mismatch boundary tests; Rust parity |
 | M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |
 | M-G evidence | reused M-E review lane | ✅ integrated as `e3689eb` | exact/lossy/unsupported mappings and boundary tests |
-| M-I inventory | not cut | ⏸ owner decision required | choose an additive shared inventory-result contract or a module-local DTO deferred to M-O |
-| M-J verification | not cut | ⏸ owner decisions required | approve constrained Windows-first, user-supplied-engine and no-network boundary |
+| M-I inventory | `codex/m-i-inventory` — `G:/LocalArcade-worktrees/m-i-inventory` | 🟡 active | module-local DTO approved; shared orchestration envelope deferred to M-O |
+| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | 🟡 active | Windows-first, user-supplied-engine, runner-no-network boundary approved; T7 remains open |
 
 ## Gate snapshot — 2026-07-22
 
