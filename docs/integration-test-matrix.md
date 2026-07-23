@@ -11,7 +11,7 @@ Observed on the preserved dirty tree, 2026-07-22. A green cell proves only the n
 | Root test suite | pass, 127 tests | 100 TS/TSX + 27 MJS boundary tests after M-A [T1][T21]. |
 | Registry freshness + production build | pass | Registry reported 38 hours old; vinext build completed with only chunk-size/classification warnings [T1]. |
 | Documentation UTF-8/links | pass, 53 Markdown files | `npm.cmd run docs:validate` rejects invalid UTF-8, mojibake markers, and missing relative targets [T20][T22]. |
-| Approved schema/fixtures | pass, 18 positive + 11 rejected negative | `npm.cmd run contracts:validate` compiles Draft 2020-12, checks portfolio/handoff/verification invariants, and proves invalid version/enum/required/hash/additional-field/semantic cases fail [T20]. |
+| Approved schema/fixtures | pass, 19 positive + 12 rejected schema negatives + 7 semantic negatives | `npm.cmd run contracts:validate` compiles Draft 2020-12, checks portfolio/handoff/verification/admission invariants, and proves invalid version/enum/required/hash/additional-field/semantic cases fail [T20]. |
 | Runner typecheck/fmt/Clippy | pass | Rust Clippy uses `-D warnings` [T1]. |
 | Runner Rust tests | pass, 30 tests | 17 unit + 4 M-A contract + 1 benchmark live target + 7 model-store + 1 quick-task live target; live behavior env-dependent [T1][T21]. |
 | Runner Vite build | pass | Thin desktop frontend builds [T1]. |
@@ -20,7 +20,7 @@ Observed on the preserved dirty tree, 2026-07-22. A green cell proves only the n
 
 | Boundary / behavior | Unit / contract | Integration | Live / E2E | Current result | Gap before target architecture | Evidence |
 |---|---|---|---|---|---|---|
-| M-A v1 JSON/envelope/handoff boundary | TS/Rust DTO, schema and semantic validation | same 18 positive/11 negative corpus | none required | covered/pass | owner review and isolated M-A commit | [T21] |
+| M-A v1 JSON/envelope/handoff/admission boundary | TS/Rust DTO, schema and semantic validation | same 19 positive/12 schema-negative corpus plus semantic mutations | none required | covered/pass | U25 receipt independently reviewed; M-O binding remains future work | [T21] |
 | M-C discovery→lock→ingest→snapshot | importer, contract, generated | workflow boundary | build freshness | covered/pass | no M-C adapter contract or external API | [T2] |
 | Artifact exact-file trust route | generated test | discovery/ingest scripts | none | covered/pass | review UI and service provenance not covered | [T2] |
 | M-D accelerator identity→memory variants | accelerator tests | website form render | runner live detection unit | covered/pass on current paths | cross-language/common contract and non-Windows GPU detection | [T3] |

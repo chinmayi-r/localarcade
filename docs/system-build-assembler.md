@@ -74,7 +74,7 @@ flowchart LR
     MG["M-G evidence adapter ✅\npreserved core ✅"]
     MH["M-H portfolio ⏸\nlegacy core ✅"]
     MI["M-I read-only inventory ✅\npreserved core ✅"]
-    MJ["M-J verification adapter ✅\nexecution integration ⏸"]
+    MJ["M-J verification adapter ✅\nadmission boundary ✅"]
     MK["M-K private Arena ⬜ later"]
     MLN["M-L/M-M/M-N public systems ⛔"]
     MO["M-O orchestration ⬜"]
@@ -180,7 +180,7 @@ flowchart TB
   PROTO --> MH
   MH --> MO["M-O use cases ⬜"]
   MI --> MO
-  MJ --> PROOF["M-E compatibility proof carrier ⏸\nowner decision U25"]
+  MJ --> PROOF["M-E compatibility admission receipt ✅\nU25 resolved"]
   PROOF --> MO
   MO --> WEB["M-P website ⬜"]
   MO --> DESK["M-P desktop ⬜"]
@@ -199,14 +199,14 @@ flowchart TB
 | M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |
 | M-G evidence | reused M-E review lane | ✅ integrated as `e3689eb` | exact/lossy/unsupported mappings and boundary tests |
 | M-I inventory | `codex/m-i-inventory` — `G:/LocalArcade-worktrees/m-i-inventory` | ✅ integrated as `8d26720`, `6a9d860`, `dc87da1` | 11 inventory tests, 2 boundary tests, TypeScript equivalence, and independent mutation audit |
-| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | ✅ adapter integrated as `cea7514`, `e797b33`, `86257f2`; execution integration ⏸ | 15 adapter tests and 8 boundary checks; M-A v1 lacks an M-E compatibility-proof carrier, recorded as U25 |
+| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | ✅ adapter and admission boundary integrated | Original adapter commits `cea7514`, `e797b33`, `86257f2`; additive M-A receipt binds successful M-E evaluation to exact M-J preparation; M-O execution use case remains queued |
 
 ## Gate snapshot — 2026-07-22
 
-- Root `npm.cmd run check`: ✅ typecheck, lint, 131 TypeScript tests, 33 boundary tests,
+- Root `npm.cmd run check`: ✅ typecheck, lint, 135 TypeScript tests, 33 boundary tests,
   registry freshness and production build.
 - Runner `npm.cmd run check`: ✅ TypeScript, Rust formatting, Clippy with
-  warnings denied, 67 Rust tests across all targets, and production build.
+  warnings denied, 71 Rust tests across all targets, and production build.
 - Parallel worktrees had polluted the shared Cargo target with incompatible
   `serde_json` artifacts. The authoritative runner gate passed from a fresh
   external `CARGO_TARGET_DIR` in 310.6 seconds without changing repository files.

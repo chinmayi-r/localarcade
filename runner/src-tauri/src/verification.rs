@@ -6,12 +6,13 @@
 //! artifact and executable paths explicitly supplied for this action.
 
 use crate::contracts::{
-    AcceleratorBackend, Aggregate, BenchmarkPlan, BenchmarkResult, CheckStatus, ConcurrentGpu,
-    DomainStatus, ExactConfigurationCandidate, HardwareMatch, Interval, MeasurementKind,
-    MeasurementSeries, MeasurementUnit, Power, Preflight, Provenance, ProvenanceMeasurement,
-    ProvenanceMethod, ProvenanceScope, QuickCheck, QuickCheckOutcome, QuickCheckPlan,
-    QuickCheckResult, RuntimeConfiguration, SideEffects, Source, Stability, Thermal,
-    VerificationPlan, VerificationResult,
+    validate_compatibility_admission_receipt, AcceleratorBackend, Aggregate, ArtifactPackageLayout,
+    BenchmarkPlan, BenchmarkResult, CheckStatus, CompatibilityAdmissionReceipt, ConcurrentGpu,
+    CpuArchitecture, DomainStatus, ExactConfigurationCandidate, HardwareMatch, Interval,
+    MeasurementKind, MeasurementSeries, MeasurementUnit, OsFamily, Power, Preflight, Provenance,
+    ProvenanceMeasurement, ProvenanceMethod, ProvenanceScope, QuickCheck, QuickCheckOutcome,
+    QuickCheckPlan, QuickCheckResult, RuntimeConfiguration, SideEffects, Source, Stability,
+    Thermal, VerificationPlan, VerificationResult,
 };
 use crate::hardware_target::{HardwareResolution, ResolutionState};
 use crate::model_store::inventory::{
@@ -26,8 +27,6 @@ const SHA256_HEX_LENGTH: usize = 64;
 const MAX_STABLE_RELATIVE_RANGE: f64 = 0.20;
 const CHILD_ISOLATION_WARNING: &str =
     "m-j.child-isolation-not-enforced: the selected executable is user supplied; network isolation is not enforced by this adapter";
-const M_E_PROOF_WARNING: &str =
-    "m-j.m-e-compatibility-proof-unavailable: M-A v1 omits the M-E compatibility assertion and package OS/architecture proof; owner approval of a schema change or narrower local revalidation is required before execution integration";
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ExistingToolKind {
@@ -128,9 +127,30 @@ pub struct VerificationPreparationRequest {
     pub verification_plan_id: String,
     pub hardware_target: ConfirmedHardwareTarget,
     pub candidate: ExactConfigurationCandidate,
+    pub compatibility_admission: ValidatedCompatibilityAdmissionReceipt,
     pub inventory_selection: VerifiedInventorySelection,
     pub benchmark: Option<BenchmarkPreparation>,
     pub quick_check: Option<QuickCheckPreparation>,
+}
+
+/// A compatibility receipt that has passed M-A's structural and semantic
+/// validation. The wrapped value is immutable so M-J never consumes an
+/// unchecked or subsequently mutated wire DTO.
+#[derive(Debug, Clone, PartialEq)]
+pub struct ValidatedCompatibilityAdmissionReceipt {
+    receipt: CompatibilityAdmissionReceipt,
+}
+
+impl ValidatedCompatibilityAdmissionReceipt {
+    pub fn new(receipt: CompatibilityAdmissionReceipt) -> Result<Self, Vec<String>> {
+        validate_compatibility_admission_receipt(&receipt)
+            .map_err(|error| vec![format!("m-j.compatibility.receipt-invalid:{error}")])?;
+        Ok(Self { receipt })
+    }
+
+    pub fn receipt(&self) -> &CompatibilityAdmissionReceipt {
+        &self.receipt
+    }
 }
 
 /// A local artifact selection which M-I resolved against immutable registry
@@ -460,6 +480,11 @@ pub fn prepare_verification(
         &request.candidate,
         &mut issues,
     );
+    validate_compatibility_admission(
+        &request.compatibility_admission,
+        &request.candidate,
+        &mut issues,
+    );
     if !matches!(
         request.candidate.artifact.status,
         crate::contracts::ArtifactStatus::Promoted
@@ -535,7 +560,7 @@ pub fn prepare_verification(
         artifact: artifact.expect("checked artifact exists after validation"),
         benchmark_tool,
         quick_check_tool,
-        warnings: vec![CHILD_ISOLATION_WARNING.into(), M_E_PROOF_WARNING.into()],
+        warnings: vec![CHILD_ISOLATION_WARNING.into()],
     })
 }
 
@@ -988,6 +1013,88 @@ fn validate_inventory_candidate(
     }
     if candidate.runtime.chat_template.as_deref() != Some(selection.chat_template.as_str()) {
         issues.push("m-j.inventory.candidate-chat-template-mismatch".into());
+    }
+}
+
+fn validate_compatibility_admission(
+    admission: &ValidatedCompatibilityAdmissionReceipt,
+    candidate: &ExactConfigurationCandidate,
+    issues: &mut Vec<String>,
+) {
+    let receipt = admission.receipt();
+    let target = &receipt.target;
+    let runtime = &candidate.runtime;
+    let comparisons = [
+        (
+            receipt.candidate_id.as_str(),
+            candidate.candidate_id.as_str(),
+            "m-j.compatibility.candidate-id-mismatch",
+        ),
+        (
+            receipt.artifact_id.as_str(),
+            candidate.artifact.artifact_id.as_str(),
+            "m-j.compatibility.artifact-id-mismatch",
+        ),
+        (
+            receipt.artifact_sha256.as_str(),
+            candidate.artifact.sha256.as_str(),
+            "m-j.compatibility.artifact-hash-mismatch",
+        ),
+        (
+            receipt.runtime_configuration_id.as_str(),
+            runtime.runtime_configuration_id.as_str(),
+            "m-j.compatibility.runtime-configuration-id-mismatch",
+        ),
+        (
+            target.product.as_str(),
+            runtime.product.as_str(),
+            "m-j.compatibility.product-mismatch",
+        ),
+        (
+            target.engine.as_str(),
+            runtime.engine.as_str(),
+            "m-j.compatibility.engine-mismatch",
+        ),
+        (
+            target.engine_build.as_str(),
+            runtime.engine_build.as_deref().unwrap_or_default(),
+            "m-j.compatibility.engine-build-mismatch",
+        ),
+        (
+            target.quantization_scheme.as_str(),
+            candidate.artifact.quantization.as_str(),
+            "m-j.compatibility.quantization-mismatch",
+        ),
+    ];
+    for (admitted, selected, reason) in comparisons {
+        if admitted != selected {
+            issues.push(reason.into());
+        }
+    }
+    if target.backend != runtime.backend {
+        issues.push("m-j.compatibility.backend-mismatch".into());
+    }
+    if target.operating_system != OsFamily::Windows {
+        issues.push("m-j.compatibility.operating-system-mismatch".into());
+    }
+    let current_architecture = match std::env::consts::ARCH {
+        "x86_64" => Some(CpuArchitecture::X86_64),
+        "aarch64" => Some(CpuArchitecture::Aarch64),
+        _ => None,
+    };
+    match current_architecture {
+        Some(architecture) if target.cpu_architecture == architecture => {}
+        Some(_) => issues.push("m-j.compatibility.cpu-architecture-mismatch".into()),
+        None => issues.push("m-j.compatibility.cpu-architecture-unsupported".into()),
+    }
+    if target.package_layout != ArtifactPackageLayout::GgufSingle {
+        issues.push("m-j.compatibility.package-layout-unsupported".into());
+    }
+    if target.declared_package_files.len() != 1
+        || target.declared_package_files.first().map(String::as_str)
+            != Some(candidate.artifact.filename.as_str())
+    {
+        issues.push("m-j.compatibility.declared-package-files-mismatch".into());
     }
 }
 

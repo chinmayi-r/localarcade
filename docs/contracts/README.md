@@ -4,7 +4,7 @@ Status: **Product-owner-approved first-slice contract v1**, 2026-07-22. These fi
 
 ## Files
 
-- [`local-arcade-first-slice-v1.schema.json`](local-arcade-first-slice-v1.schema.json): JSON Schema 2020-12 envelope and eight domain payloads.
+- [`local-arcade-first-slice-v1.schema.json`](local-arcade-first-slice-v1.schema.json): JSON Schema 2020-12 envelope and thirteen contract IDs, including the additive U25 admission receipt.
 - [`fixtures/`](fixtures/): valid golden envelopes referenced by the screen contract.
 - [`current-type-mapping.md`](current-type-mapping.md): compatibility map and required adapters for existing TypeScript and Rust types.
 - [`compatibility-report.md`](compatibility-report.md): exact field/enum comparison and owner decisions.
@@ -23,6 +23,7 @@ Status: **Product-owner-approved first-slice contract v1**, 2026-07-22. These fi
 | `benchmark-plan` / `benchmark-result` | Exact performance/stability protocol and separate measurement series | M-J/M-O → D3/D5/C5 |
 | `quick-check-plan` / `quick-check-result` | Separate mechanical-task protocol and per-check evidence | M-J/M-O → D3/D5/C5 |
 | `verification-plan` / `verification-result` | Higher-level references to the independently typed plans/results | M-J/M-O → D3/D5/C5 |
+| `compatibility-admission-receipt` | Versioned M-E admission decision bound to exact candidate, runtime, OS/architecture, package facts and source assertion | M-E → M-J/M-O |
 
 All contracts use the approved `ok`, `unavailable`, `blocked`, `partial`, or `error` use-case envelope. `partial` retains contract-typed data plus explicit completeness, missing portions, warnings, and recovery actions. Domain run outcomes remain inside typed data. Public contribution, battle/vote/rating, upload, and public-service contracts are excluded.
 
@@ -45,10 +46,12 @@ npm.cmd run contracts:validate
 
 The command compiles the Draft 2020-12 schema, validates every positive JSON
 fixture, checks cross-field portfolio/handoff invariants, and proves rejection
-of eleven fixtures under `fixtures/invalid/`: unsupported schema version,
+of twelve fixtures under `fixtures/invalid/`: unsupported schema version,
 invalid origin/priority enums, missing required task, malformed artifact hash,
 unknown result fields, duplicate portfolio families, invalid handoff expiry,
 untyped partial data, an empty verification plan, and the rejected legacy
-combined-sample shape. Existing
+combined-sample shape, and a non-admitted compatibility decision. Receipt
+semantic negatives additionally prove assertion/target and required-package
+bindings fail closed. Existing
 root/runner tests remain separate acceptance evidence; these fixtures become
 implementation tests only in a future approved M-A checkpoint.

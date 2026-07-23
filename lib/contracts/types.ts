@@ -4,7 +4,7 @@ export const contractIds = [
   "hardware-target", "recommendation-request", "exact-configuration-candidate",
   "fit-evidence-assessment", "recommendation-portfolio", "runner-handoff",
   "benchmark-plan", "benchmark-result", "quick-check-plan", "quick-check-result",
-  "verification-plan", "verification-result",
+  "verification-plan", "verification-result", "compatibility-admission-receipt",
 ] as const;
 export type ContractId = (typeof contractIds)[number];
 export type Origin = "detected" | "self-reported" | "imported" | "confirmed" | "unknown";
@@ -76,6 +76,51 @@ export type ExactConfigurationCandidate = {
   };
   runtime: RuntimeConfiguration;
   provenance: Provenance[];
+};
+
+export type CompatibilityAssertionStatus = "verified" | "documented" | "experimental" | "inferred";
+export type CompatibilityAdmissionReceipt = {
+  compatibilityAdmissionId: string;
+  receiptVersion: 1;
+  policy: { id: "m-e.compatibility"; version: "1" };
+  candidateId: string;
+  artifactId: string;
+  artifactSha256: string;
+  runtimeConfigurationId: string;
+  decision: "admitted";
+  target: {
+    product: string;
+    engine: string;
+    engineBuild: string;
+    runtimeVersion: string | null;
+    exactBuild: string | null;
+    operatingSystem: OsFamily;
+    cpuArchitecture: "x86_64" | "aarch64";
+    backend: AcceleratorBackend;
+    featureFlags: string[];
+    packageLayout: "gguf-single" | "gguf-split" | "hf-transformers" | "mlx-lm" | "mlx-swift-lm" | "ollama-package";
+    declaredPackageFiles: string[];
+    modelArchitecture: string | null;
+    quantizationScheme: string;
+  };
+  assertion: {
+    artifactId: string;
+    productId: string;
+    engineId: string;
+    status: CompatibilityAssertionStatus;
+    runtimeConstraint: { minVersion: string | null; maxVersion: string | null; exactBuild: string | null };
+    conditions: {
+      operatingSystems: string[] | null;
+      cpuArchitectures: string[] | null;
+      backends: string[] | null;
+      modelArchitectures: string[] | null;
+      packageLayouts: string[] | null;
+      quantizationSchemes: string[] | null;
+      requiredFiles: string[] | null;
+      limitations: string[] | null;
+    };
+    evidence: Array<{ url: string; checkedAt: string; sourceRevision: string | null }>;
+  };
 };
 
 export type MemoryPool = {
@@ -157,6 +202,7 @@ export type ContractDataMap = {
   "benchmark-plan": BenchmarkPlan; "benchmark-result": BenchmarkResult;
   "quick-check-plan": QuickCheckPlan; "quick-check-result": QuickCheckResult;
   "verification-plan": VerificationPlan; "verification-result": VerificationResult;
+  "compatibility-admission-receipt": CompatibilityAdmissionReceipt;
 };
 export type Completeness = { complete: boolean; missing: string[]; warnings: string[]; recoverableActions: string[] };
 export type TypedEnvelope<K extends ContractId = ContractId> = K extends ContractId ? {

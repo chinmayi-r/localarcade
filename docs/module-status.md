@@ -46,7 +46,7 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `lib/accelerators/validation.ts` | M-D | Fail-closed catalog validation | accelerator registry | reuse unchanged | [S5] |
 | `lib/contracts/types.ts` | M-A | Approved first-slice v1 DTOs and envelopes | shared corpus/typecheck | reuse unchanged as the v1 TypeScript wire authority | [S18] |
 | `lib/contracts/canonical.ts` | M-A | Deterministic canonical JSON and handoff SHA-256 | contract corpus | reuse unchanged | [S18] |
-| `lib/contracts/validator.ts` | M-A | Draft 2020-12 plus cross-record semantic validation | 18 positive/11 negative fixtures | reuse unchanged | [S18] |
+| `lib/contracts/validator.ts` | M-A | Draft 2020-12 plus cross-record semantic validation, including compatibility admission | 19 positive/12 schema-negative fixtures plus semantic mutations | reuse unchanged | [S18] |
 | `lib/contracts/adapters/recommendation.ts` | M-A adapter | Lossless current hardware/request translations and explicit blocked mappings | adapter round-trip/rejection tests | reuse until M-D/M-H adapters supersede it | [S18] |
 | `lib/contracts/index.ts` | M-A | Core-only TypeScript exports | import-boundary test | reuse unchanged | [S18] |
 | `lib/battles/flag.ts` | M-M | Keeps battle feature dark | battle boundary | reuse unchanged until approval | [S12] |

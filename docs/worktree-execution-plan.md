@@ -291,9 +291,11 @@ may use parallel research worktrees after the isolated M-A commit.
   runner and root gates. It consumes only M-I-verified identity, rehashes the
   selected artifact/tools, preserves partial typed results and has no IPC or
   network capability.
-- Execution integration is paused at U25: M-A v1 has no carrier for M-E's
-  compatibility assertion or package OS/architecture evidence. M-O must not
-  reconstruct or imply that proof.
+- U25 is resolved by an independently versioned M-A compatibility-admission
+  receipt. M-E preserves its successful assertion and evaluated target facts;
+  M-J requires a validated receipt and binds it to exact candidate, artifact
+  hash, runtime, Windows architecture and package members. M-O must carry both
+  together and may not reconstruct or imply a missing receipt.
 
 **Stop conditions**
 

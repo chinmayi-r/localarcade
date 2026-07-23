@@ -4,6 +4,7 @@
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashSet;
+use url::Url;
 
 pub const SCHEMA_VERSION: u64 = 1;
 
@@ -302,6 +303,120 @@ pub struct ExactConfigurationCandidate {
     pub artifact: Artifact,
     pub runtime: RuntimeConfiguration,
     pub provenance: Vec<Provenance>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CompatibilityAdmissionReceipt {
+    pub compatibility_admission_id: String,
+    pub receipt_version: u64,
+    pub policy: CompatibilityAdmissionPolicy,
+    pub candidate_id: String,
+    pub artifact_id: String,
+    pub artifact_sha256: String,
+    pub runtime_configuration_id: String,
+    pub decision: CompatibilityAdmissionDecision,
+    pub target: CompatibilityAdmissionTarget,
+    pub assertion: CompatibilityAdmissionAssertion,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct CompatibilityAdmissionPolicy {
+    pub id: String,
+    pub version: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum CompatibilityAdmissionDecision {
+    Admitted,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CpuArchitecture {
+    X86_64,
+    Aarch64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum ArtifactPackageLayout {
+    GgufSingle,
+    GgufSplit,
+    HfTransformers,
+    MlxLm,
+    MlxSwiftLm,
+    OllamaPackage,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CompatibilityAdmissionTarget {
+    pub product: String,
+    pub engine: String,
+    pub engine_build: String,
+    pub runtime_version: Option<String>,
+    pub exact_build: Option<String>,
+    pub operating_system: OsFamily,
+    pub cpu_architecture: CpuArchitecture,
+    pub backend: AcceleratorBackend,
+    pub feature_flags: Vec<String>,
+    pub package_layout: ArtifactPackageLayout,
+    pub declared_package_files: Vec<String>,
+    pub model_architecture: Option<String>,
+    pub quantization_scheme: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "kebab-case")]
+pub enum CompatibilityAssertionStatus {
+    Verified,
+    Documented,
+    Experimental,
+    Inferred,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CompatibilityAdmissionAssertion {
+    pub artifact_id: String,
+    pub product_id: String,
+    pub engine_id: String,
+    pub status: CompatibilityAssertionStatus,
+    pub runtime_constraint: CompatibilityRuntimeConstraint,
+    pub conditions: CompatibilityAdmissionConditions,
+    pub evidence: Vec<CompatibilityAdmissionEvidence>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CompatibilityRuntimeConstraint {
+    pub min_version: Option<String>,
+    pub max_version: Option<String>,
+    pub exact_build: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CompatibilityAdmissionConditions {
+    pub operating_systems: Option<Vec<String>>,
+    pub cpu_architectures: Option<Vec<String>>,
+    pub backends: Option<Vec<String>>,
+    pub model_architectures: Option<Vec<String>>,
+    pub package_layouts: Option<Vec<String>>,
+    pub quantization_schemes: Option<Vec<String>>,
+    pub required_files: Option<Vec<String>>,
+    pub limitations: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CompatibilityAdmissionEvidence {
+    pub url: String,
+    pub checked_at: String,
+    pub source_revision: Option<String>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -681,6 +796,7 @@ const CONTRACTS: &[&str] = &[
     "quick-check-result",
     "verification-plan",
     "verification-result",
+    "compatibility-admission-receipt",
 ];
 
 fn decode<T: DeserializeOwned>(value: &Value) -> Result<T, String> {
@@ -787,6 +903,10 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
             if item.artifact.bytes == 0 || item.provenance.is_empty() {
                 return Err("candidate values are out of range".into());
             }
+        }
+        "compatibility-admission-receipt" => {
+            let item: CompatibilityAdmissionReceipt = decode(value)?;
+            validate_compatibility_admission_receipt(&item)?;
         }
         "fit-evidence-assessment" => {
             let _: FitEvidenceAssessment = decode(value)?;
@@ -952,6 +1072,160 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
             }
         }
         _ => return Err("unknown contract".into()),
+    }
+    Ok(())
+}
+
+pub fn validate_compatibility_admission_receipt(
+    receipt: &CompatibilityAdmissionReceipt,
+) -> Result<(), String> {
+    nonempty(
+        &receipt.compatibility_admission_id,
+        "compatibilityAdmissionId",
+    )?;
+    nonempty(&receipt.candidate_id, "candidateId")?;
+    nonempty(&receipt.artifact_id, "artifactId")?;
+    hash(&receipt.artifact_sha256, "artifactSha256")?;
+    nonempty(&receipt.runtime_configuration_id, "runtimeConfigurationId")?;
+    if receipt.receipt_version != 1
+        || receipt.policy.id != "m-e.compatibility"
+        || receipt.policy.version != "1"
+    {
+        return Err("compatibility receipt version or policy is unsupported".into());
+    }
+    let target = &receipt.target;
+    for (value, field) in [
+        (&target.product, "target.product"),
+        (&target.engine, "target.engine"),
+        (&target.engine_build, "target.engineBuild"),
+        (&target.quantization_scheme, "target.quantizationScheme"),
+    ] {
+        nonempty(value, field)?;
+    }
+    if target.runtime_version.as_deref().is_some_and(str::is_empty)
+        || target.exact_build.as_deref().is_some_and(str::is_empty)
+        || target
+            .model_architecture
+            .as_deref()
+            .is_some_and(str::is_empty)
+        || target.feature_flags.iter().any(String::is_empty)
+        || target.declared_package_files.is_empty()
+        || target.declared_package_files.iter().any(String::is_empty)
+    {
+        return Err("compatibility target contains an empty required value".into());
+    }
+    if target.feature_flags.iter().collect::<HashSet<_>>().len() != target.feature_flags.len()
+        || target
+            .declared_package_files
+            .iter()
+            .collect::<HashSet<_>>()
+            .len()
+            != target.declared_package_files.len()
+    {
+        return Err("compatibility target arrays must be unique".into());
+    }
+    if target.declared_package_files.iter().any(|file| {
+        file.starts_with('/')
+            || file.contains('\\')
+            || file.split('/').any(|part| part == "..")
+            || (file.len() > 1 && file.as_bytes()[1] == b':')
+    }) {
+        return Err("declared package files must be normalized relative members".into());
+    }
+    if target
+        .exact_build
+        .as_deref()
+        .or(target.runtime_version.as_deref())
+        != Some(target.engine_build.as_str())
+    {
+        return Err("compatibility target build identity must match engineBuild".into());
+    }
+
+    let assertion = &receipt.assertion;
+    if assertion.artifact_id != receipt.artifact_id
+        || assertion.product_id != target.product
+        || assertion.engine_id != target.engine
+    {
+        return Err("compatibility assertion identity must match its receipt target".into());
+    }
+    if assertion.evidence.is_empty() {
+        return Err("compatibility assertion requires complete source evidence".into());
+    }
+    for evidence in &assertion.evidence {
+        if Url::parse(&evidence.url).is_err()
+            || evidence
+                .source_revision
+                .as_deref()
+                .is_some_and(str::is_empty)
+            || seconds(&evidence.checked_at).is_err()
+        {
+            return Err("compatibility assertion requires complete source evidence".into());
+        }
+    }
+    let target_values = [
+        (
+            assertion.conditions.operating_systems.as_ref(),
+            match &target.operating_system {
+                OsFamily::Windows => Some("windows"),
+                OsFamily::Macos => Some("macos"),
+                OsFamily::Linux => Some("linux"),
+                OsFamily::Other => Some("other"),
+            },
+        ),
+        (
+            assertion.conditions.cpu_architectures.as_ref(),
+            match &target.cpu_architecture {
+                CpuArchitecture::X86_64 => Some("x86_64"),
+                CpuArchitecture::Aarch64 => Some("aarch64"),
+            },
+        ),
+        (
+            assertion.conditions.backends.as_ref(),
+            Some(match &target.backend {
+                AcceleratorBackend::Cuda => "cuda",
+                AcceleratorBackend::Rocm => "rocm",
+                AcceleratorBackend::Metal => "metal",
+                AcceleratorBackend::Vulkan => "vulkan",
+                AcceleratorBackend::Cpu => "cpu",
+                AcceleratorBackend::Other => "other",
+            }),
+        ),
+        (
+            assertion.conditions.package_layouts.as_ref(),
+            Some(match &target.package_layout {
+                ArtifactPackageLayout::GgufSingle => "gguf-single",
+                ArtifactPackageLayout::GgufSplit => "gguf-split",
+                ArtifactPackageLayout::HfTransformers => "hf-transformers",
+                ArtifactPackageLayout::MlxLm => "mlx-lm",
+                ArtifactPackageLayout::MlxSwiftLm => "mlx-swift-lm",
+                ArtifactPackageLayout::OllamaPackage => "ollama-package",
+            }),
+        ),
+        (
+            assertion.conditions.model_architectures.as_ref(),
+            target.model_architecture.as_deref(),
+        ),
+        (
+            assertion.conditions.quantization_schemes.as_ref(),
+            Some(target.quantization_scheme.as_str()),
+        ),
+    ];
+    if target_values.into_iter().any(|(allowed, actual)| {
+        allowed.is_some_and(|values| actual.is_none_or(|value| !values.iter().any(|v| v == value)))
+    }) {
+        return Err("compatibility target does not satisfy its assertion".into());
+    }
+    if assertion
+        .conditions
+        .required_files
+        .as_ref()
+        .is_some_and(|required| {
+            required
+                .iter()
+                .any(|file| !target.declared_package_files.contains(file))
+        })
+    {
+        return Err("compatibility target is missing an assertion-required file".into());
     }
     Ok(())
 }

@@ -1,4 +1,4 @@
-import type { ExactConfigurationCandidate, RuntimeConfiguration } from "../contracts";
+import type { CompatibilityAdmissionReceipt, ExactConfigurationCandidate, RuntimeConfiguration } from "../contracts";
 import type { RegistryArtifactIdentityV1 } from "../registry/contracts";
 import { products } from "./catalog";
 import { evaluateArtifactCompatibility } from "./compatibility";
@@ -23,6 +23,7 @@ export type ExplicitRuntimeSettings = {
 };
 
 export type CandidateBuildInput = {
+  compatibilityAdmissionId: string;
   candidateId?: string;
   registryArtifact?: RegistryArtifactIdentityV1;
   runtime?: ExplicitRuntimeSettings;
@@ -35,7 +36,7 @@ export type CandidateBuildInput = {
 };
 
 export type CandidateBuildResult =
-  | { kind: "ok"; candidate: ExactConfigurationCandidate }
+  | { kind: "ok"; candidate: ExactConfigurationCandidate; compatibilityReceipt: CompatibilityAdmissionReceipt }
   | { kind: "blocked"; reasonCode: "candidate-incomplete" | "compatibility-unknown" | "runtime-incompatible"; message: string; missing: string[]; reasons: string[] };
 
 const runtimeFields = [
@@ -59,8 +60,52 @@ function isNullableNumberInRange(value: unknown, minimum: number, maximum = Numb
   return value === null || (typeof value === "number" && Number.isFinite(value) && value >= minimum && value <= maximum);
 }
 
+function normalizeOperatingSystem(value: string): CompatibilityAdmissionReceipt["target"]["operatingSystem"] | null {
+  switch (value.toLowerCase()) {
+    case "win32":
+    case "windows":
+      return "windows";
+    case "darwin":
+    case "macos":
+      return "macos";
+    case "linux":
+      return "linux";
+    default:
+      return null;
+  }
+}
+
+function normalizeCpuArchitecture(value: string): CompatibilityAdmissionReceipt["target"]["cpuArchitecture"] | null {
+  switch (value.toLowerCase()) {
+    case "x64":
+    case "amd64":
+    case "x86_64":
+      return "x86_64";
+    case "arm64":
+    case "aarch64":
+      return "aarch64";
+    default:
+      return null;
+  }
+}
+
+function normalizeOperatingSystemConditions(values: string[] | undefined): string[] | null {
+  return values?.map((value) => normalizeOperatingSystem(value) ?? value) ?? null;
+}
+
+function normalizeCpuArchitectureConditions(values: string[] | undefined): string[] | null {
+  return values?.map((value) => normalizeCpuArchitecture(value) ?? value) ?? null;
+}
+
+function isAdmissionStatus(
+  status: CompatibilityAssertion["status"],
+): status is CompatibilityAdmissionReceipt["assertion"]["status"] {
+  return status === "verified" || status === "documented" || status === "experimental" || status === "inferred";
+}
+
 export function buildExactConfigurationCandidate(input: CandidateBuildInput): CandidateBuildResult {
   const missing: string[] = [];
+  if (!input.compatibilityAdmissionId) missing.push("compatibilityAdmissionId");
   if (!input.candidateId) missing.push("candidateId");
   if (!input.registryArtifact) missing.push("registryArtifact");
   if (!input.compatibility) missing.push("compatibility");
@@ -160,32 +205,110 @@ export function buildExactConfigurationCandidate(input: CandidateBuildInput): Ca
     return { kind: "blocked", reasonCode: "runtime-incompatible", message: "The selected backend is not representable in the v1 candidate contract.", missing: [], reasons: [`Backend ${build.backend} requires a contract adapter or version change.`] };
   }
 
+  const operatingSystem = normalizeOperatingSystem(build.os);
+  const cpuArchitecture = normalizeCpuArchitecture(build.cpuArchitecture);
+  if (!operatingSystem || !cpuArchitecture) {
+    return {
+      kind: "blocked",
+      reasonCode: "runtime-incompatible",
+      message: "The runtime platform identity is not representable in the compatibility receipt.",
+      missing: [],
+      reasons: [
+        ...(!operatingSystem ? [`Operating system ${build.os} is not representable.`] : []),
+        ...(!cpuArchitecture ? [`CPU architecture ${build.cpuArchitecture} is not representable.`] : []),
+      ],
+    };
+  }
+
+  const candidate: ExactConfigurationCandidate = {
+    candidateId: input.candidateId!,
+    modelFamily: registryArtifact.modelFamily,
+    artifact,
+    runtime: {
+      runtimeConfigurationId: runtime.runtimeConfigurationId!,
+      product: productId,
+      engine: build.engineId,
+      engineBuild: build.exactBuild ?? build.version!,
+      backend: build.backend,
+      chatTemplate: runtime.chatTemplate!,
+      contextTokens: runtime.contextTokens!,
+      kvCache: runtime.kvCache!,
+      gpuLayers: runtime.gpuLayers!,
+      batchSize: runtime.batchSize!,
+      microBatchSize: runtime.microBatchSize!,
+      parallelism: runtime.parallelism!,
+      threads: runtime.threads!,
+      flashAttention: runtime.flashAttention!,
+      mmap: runtime.mmap!,
+      sampler: runtime.sampler!,
+      additionalFlags: runtime.additionalFlags!,
+    },
+    provenance: registryArtifact.provenance,
+  };
+  const assertion = input.compatibility!;
+  if (!isAdmissionStatus(assertion.status)) {
+    return {
+      kind: "blocked",
+      reasonCode: "compatibility-unknown",
+      message: "The compatibility assertion does not carry an admitted status.",
+      missing: ["compatibility.status"],
+      reasons: [],
+    };
+  }
+
   return {
     kind: "ok",
-    candidate: {
-      candidateId: input.candidateId!,
-      modelFamily: registryArtifact.modelFamily,
-      artifact,
-      runtime: {
-        runtimeConfigurationId: runtime.runtimeConfigurationId!,
-        product: productId,
-        engine: build.engineId,
-        engineBuild: build.exactBuild ?? build.version!,
-        backend: build.backend,
-        chatTemplate: runtime.chatTemplate!,
-        contextTokens: runtime.contextTokens!,
-        kvCache: runtime.kvCache!,
-        gpuLayers: runtime.gpuLayers!,
-        batchSize: runtime.batchSize!,
-        microBatchSize: runtime.microBatchSize!,
-        parallelism: runtime.parallelism!,
-        threads: runtime.threads!,
-        flashAttention: runtime.flashAttention!,
-        mmap: runtime.mmap!,
-        sampler: runtime.sampler!,
-        additionalFlags: runtime.additionalFlags!,
+    candidate,
+    compatibilityReceipt: {
+      compatibilityAdmissionId: input.compatibilityAdmissionId,
+      receiptVersion: 1,
+      policy: { id: "m-e.compatibility", version: "1" },
+      candidateId: candidate.candidateId,
+      artifactId: candidate.artifact.artifactId,
+      artifactSha256: candidate.artifact.sha256,
+      runtimeConfigurationId: candidate.runtime.runtimeConfigurationId,
+      decision: "admitted",
+      target: {
+        product: candidate.runtime.product,
+        engine: candidate.runtime.engine,
+        engineBuild: candidate.runtime.engineBuild!,
+        runtimeVersion: build.version ?? null,
+        exactBuild: build.exactBuild ?? null,
+        operatingSystem,
+        cpuArchitecture,
+        backend: candidate.runtime.backend,
+        featureFlags: [...build.featureFlags],
+        packageLayout: input.package!.layout!,
+        declaredPackageFiles: [...input.package!.files!],
+        modelArchitecture: input.package!.modelArchitecture ?? null,
+        quantizationScheme: candidate.artifact.quantization,
       },
-      provenance: registryArtifact.provenance,
+      assertion: {
+        artifactId: assertion.artifactId,
+        productId: assertion.productId,
+        engineId: assertion.engineId,
+        status: assertion.status,
+        runtimeConstraint: {
+          minVersion: assertion.runtimeConstraint.minVersion ?? null,
+          maxVersion: assertion.runtimeConstraint.maxVersion ?? null,
+          exactBuild: assertion.runtimeConstraint.exactBuild ?? null,
+        },
+        conditions: {
+          operatingSystems: normalizeOperatingSystemConditions(assertion.conditions.operatingSystems),
+          cpuArchitectures: normalizeCpuArchitectureConditions(assertion.conditions.cpuArchitectures),
+          backends: assertion.conditions.backends ? [...assertion.conditions.backends] : null,
+          modelArchitectures: assertion.conditions.modelArchitectures ? [...assertion.conditions.modelArchitectures] : null,
+          packageLayouts: assertion.conditions.packageLayouts ? [...assertion.conditions.packageLayouts] : null,
+          quantizationSchemes: assertion.conditions.quantizationSchemes ? [...assertion.conditions.quantizationSchemes] : null,
+          requiredFiles: assertion.conditions.requiredFiles ? [...assertion.conditions.requiredFiles] : null,
+          limitations: assertion.conditions.limitations ? [...assertion.conditions.limitations] : null,
+        },
+        evidence: assertion.evidence.map((item) => ({
+          url: item.url,
+          checkedAt: item.checkedAt,
+          sourceRevision: item.sourceRevision ?? null,
+        })),
+      },
     },
   };
 }

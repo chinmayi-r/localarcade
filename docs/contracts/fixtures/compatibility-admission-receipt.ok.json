@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "contract": "compatibility-admission-receipt",
+  "status": "ok",
+  "data": {
+    "compatibilityAdmissionId": "compatibility-admission-fixture",
+    "receiptVersion": 1,
+    "policy": { "id": "m-e.compatibility", "version": "1" },
+    "candidateId": "candidate-fixture",
+    "artifactId": "artifact-fixture",
+    "artifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "runtimeConfigurationId": "runtime-fixture",
+    "decision": "admitted",
+    "target": {
+      "product": "llama-cpp",
+      "engine": "llama.cpp",
+      "engineBuild": "b10061 (5d5306bf3)",
+      "runtimeVersion": null,
+      "exactBuild": "b10061 (5d5306bf3)",
+      "operatingSystem": "windows",
+      "cpuArchitecture": "x86_64",
+      "backend": "cuda",
+      "featureFlags": ["cuda"],
+      "packageLayout": "gguf-single",
+      "declaredPackageFiles": ["fixture-Q4_K_M.gguf"],
+      "modelArchitecture": "qwen3",
+      "quantizationScheme": "Q4_K_M"
+    },
+    "assertion": {
+      "artifactId": "artifact-fixture",
+      "productId": "llama-cpp",
+      "engineId": "llama.cpp",
+      "status": "verified",
+      "runtimeConstraint": { "minVersion": null, "maxVersion": null, "exactBuild": "b10061 (5d5306bf3)" },
+      "conditions": {
+        "operatingSystems": ["windows"],
+        "cpuArchitectures": ["x86_64"],
+        "backends": ["cuda"],
+        "modelArchitectures": ["qwen3"],
+        "packageLayouts": ["gguf-single"],
+        "quantizationSchemes": ["Q4_K_M"],
+        "requiredFiles": ["fixture-Q4_K_M.gguf"],
+        "limitations": []
+      },
+      "evidence": [
+        {
+          "url": "https://example.invalid/runtime-compatibility",
+          "checkedAt": "2026-07-22T12:00:00Z",
+          "sourceRevision": "fixture-revision"
+        }
+      ]
+    }
+  },
+  "provenance": [],
+  "completeness": { "complete": true, "missing": [], "warnings": [], "recoverableActions": [] }
+}

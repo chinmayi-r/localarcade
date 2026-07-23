@@ -12,6 +12,7 @@ Compatibility meanings: **direct** = same meaning and mechanically adaptable; **
 | `fit-evidence-assessment` | `FitResult`, two-pool result in `memory-pools.ts`, `ComparativeValue`, `EvidenceRecord`/`EvidenceClaim` | benchmark/preflight types are observations, not fit assessments | partial | M-F/M-G adapter preserves detailed device/system pools, prompt/decode/TTFT ranges, and every orthogonal provenance dimension. Mapping must not upgrade source or match scope. |
 | `recommendation-portfolio` | `RecommendationOutcome`, `RecommendationItem`, `RecommendationRole` | none | partial | M-H/M-O adapter maps current roles (`quality-option`, `fast-option`, etc.) to v1 portfolio roles only where policy meaning matches, keeps five-family limit, and maps `no-coverage` to `coverage-gap`. No ordering is added to compatible-only outcomes. |
 | `runner-handoff` | no shared handoff type; candidate/query types are components | no handoff type | none | M-A canonical serializer embeds request, target, exact candidate and evidence summary with version/time/24-hour expiry/hash. It contains no model data or side-effect authorization. |
+| `compatibility-admission-receipt` | `RuntimeBuild`, `CompatibilityAssertion`, and M-E package input contain every evaluated fact; the exact candidate previously discarded OS/architecture/package/assertion detail | M-J previously had only candidate/tool identity and an explicit missing-proof warning | direct after normalization | M-E emits the independently versioned receipt only after successful compatibility evaluation. OS and architecture aliases normalize to frozen literals; unknown aliases fail closed. M-J accepts only a typed validated receipt and binds it to candidate, inventory and current Windows architecture. |
 | benchmark/quick-check plans and results | runtime/evidence types provide components | benchmark, preflight and quick-task structs | partial | Keep plan/result types separate; retain warmups, raw measurement series, per-series/check evidence and diagnostics. Higher-level verification references both. |
 | Common envelopes | `RecommendationOutcome` has domain unions but no shared status envelope | command results often return structs or `Result<_, String>` | none/conflict | M-A defines one versioned envelope and stable reason-code registry. M-O maps domain unions and typed Rust errors; surfaces never parse free-form strings to choose behavior. |
 
@@ -36,4 +37,7 @@ Compatibility meanings: **direct** = same meaning and mechanically adaptable; **
 5. Benchmark parser fixtures map raw samples and conditioned/calibration exclusions without evidence upgrade.
 6. Import-boundary tests prove website and runner surfaces consume only M-O use cases and M-A DTOs after adapters land.
 
-Until M-A tests exist, compatibility is approved and documented—not implemented.
+The original M-A corpus and the additive U25 admission-receipt corpus now carry
+these proofs in TypeScript and Rust. Later M-O work must bind the receipt and
+candidate in one use-case result; the receipt is not a public or cryptographic
+attestation.

@@ -42,6 +42,30 @@ function semanticErrors(envelope) {
     const actual = crypto.createHash("sha256").update(canonicalJson(payload)).digest("hex");
     if (claimed !== actual) errors.push("handoff contentHash does not match its canonical snapshot");
   }
+  if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "compatibility-admission-receipt") {
+    const { assertion, target } = envelope.data;
+    if (assertion.artifactId !== envelope.data.artifactId) errors.push("compatibility assertion artifactId must match receipt artifactId");
+    if (assertion.productId !== target.product) errors.push("compatibility assertion productId must match target product");
+    if (assertion.engineId !== target.engine) errors.push("compatibility assertion engineId must match target engine");
+    if ((target.exactBuild ?? target.runtimeVersion) !== target.engineBuild) errors.push("compatibility target build identity must match engineBuild");
+    for (const [allowed, actual, label] of [
+      [assertion.conditions.operatingSystems, target.operatingSystem, "operating system"],
+      [assertion.conditions.cpuArchitectures, target.cpuArchitecture, "CPU architecture"],
+      [assertion.conditions.backends, target.backend, "backend"],
+      [assertion.conditions.packageLayouts, target.packageLayout, "package layout"],
+      [assertion.conditions.modelArchitectures, target.modelArchitecture, "model architecture"],
+      [assertion.conditions.quantizationSchemes, target.quantizationScheme, "quantization scheme"],
+    ]) {
+      if (allowed !== null && (actual === null || !allowed.includes(actual))) errors.push(`compatibility target ${label} must satisfy the assertion`);
+    }
+    if (assertion.conditions.requiredFiles !== null
+        && assertion.conditions.requiredFiles.some((file) => !target.declaredPackageFiles.includes(file))) {
+      errors.push("compatibility target must contain every assertion-required package file");
+    }
+    if (target.declaredPackageFiles.some((file) => file.startsWith("/") || file.includes("\\") || file.split("/").includes("..") || /^[a-zA-Z]:/.test(file))) {
+      errors.push("declared package files must be normalized relative members");
+    }
+  }
   if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "verification-plan") {
     const plan = envelope.data;
     if (plan.benchmarkPlan === null && plan.quickCheckPlan === null) {
@@ -102,6 +126,7 @@ for (const file of validFiles) {
 
 const planFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "verification-plan.ok.json"), "utf8"));
 const resultFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "verification-result.ok.json"), "utf8"));
+const compatibilityFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "compatibility-admission-receipt.ok.json"), "utf8"));
 for (const [name, base, mutate] of [
   ["runtime-id-conflict", planFixture, (value) => {
     value.data.quickCheckPlan.runtime.runtimeConfigurationId = value.data.benchmarkPlan.runtime.runtimeConfigurationId;
@@ -112,6 +137,12 @@ for (const [name, base, mutate] of [
   ["completed-empty-result", resultFixture, (value) => {
     value.data.benchmarkResult = null;
     value.data.quickCheckResult = null;
+  }],
+  ["compatibility-assertion-target-mismatch", compatibilityFixture, (value) => {
+    value.data.assertion.productId = "different-product";
+  }],
+  ["compatibility-required-file-missing", compatibilityFixture, (value) => {
+    value.data.target.declaredPackageFiles = ["different.gguf"];
   }],
 ]) {
   const value = structuredClone(base);

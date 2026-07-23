@@ -2,7 +2,7 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import schema from "../../docs/contracts/local-arcade-first-slice-v1.schema.json";
 import { canonicalJson, handoffContentHash } from "./canonical";
-import type { BenchmarkResult, ContractEnvelope, MeasurementSeries, RecommendationPortfolio, RunnerHandoff, VerificationPlan, VerificationResult } from "./types";
+import type { BenchmarkResult, CompatibilityAdmissionReceipt, ContractEnvelope, MeasurementSeries, RecommendationPortfolio, RunnerHandoff, VerificationPlan, VerificationResult } from "./types";
 
 const validateSchema = addFormats(new Ajv2020({ allErrors: true, strict: true })).compile(schema);
 export type ContractValidation = { ok: true; value: ContractEnvelope } | { ok: false; errors: string[] };
@@ -19,6 +19,9 @@ function semanticErrors(value: ContractEnvelope): string[] {
     const handoff = value.data as RunnerHandoff;
     if (Date.parse(handoff.expiresAt) - Date.parse(handoff.createdAt) !== 86_400_000) errors.push("handoff expiry must be exactly 24 hours");
     if (handoff.contentHash !== handoffContentHash(handoff)) errors.push("handoff contentHash does not match its canonical snapshot");
+  }
+  if (value.contract === "compatibility-admission-receipt") {
+    errors.push(...compatibilityReceiptErrors(value.data as CompatibilityAdmissionReceipt));
   }
   if (value.contract === "verification-plan") {
     const plan = value.data as VerificationPlan;
@@ -52,6 +55,34 @@ function semanticErrors(value: ContractEnvelope): string[] {
       .some((nested) => nested !== null && nested.domainStatus !== "completed")) {
       errors.push("completed verification result cannot contain an incomplete nested result");
     }
+  }
+  return errors;
+}
+
+function compatibilityReceiptErrors(receipt: CompatibilityAdmissionReceipt): string[] {
+  const errors: string[] = [];
+  const { assertion, target } = receipt;
+  if (assertion.artifactId !== receipt.artifactId) errors.push("compatibility assertion artifactId must match receipt artifactId");
+  if (assertion.productId !== target.product) errors.push("compatibility assertion productId must match target product");
+  if (assertion.engineId !== target.engine) errors.push("compatibility assertion engineId must match target engine");
+  if ((target.exactBuild ?? target.runtimeVersion) !== target.engineBuild) errors.push("compatibility target build identity must match engineBuild");
+  const checks: Array<[string[] | null, string | null, string]> = [
+    [assertion.conditions.operatingSystems, target.operatingSystem, "operating system"],
+    [assertion.conditions.cpuArchitectures, target.cpuArchitecture, "CPU architecture"],
+    [assertion.conditions.backends, target.backend, "backend"],
+    [assertion.conditions.packageLayouts, target.packageLayout, "package layout"],
+    [assertion.conditions.modelArchitectures, target.modelArchitecture, "model architecture"],
+    [assertion.conditions.quantizationSchemes, target.quantizationScheme, "quantization scheme"],
+  ];
+  for (const [allowed, actual, label] of checks) {
+    if (allowed !== null && (actual === null || !allowed.includes(actual))) errors.push(`compatibility target ${label} must satisfy the assertion`);
+  }
+  if (assertion.conditions.requiredFiles !== null
+    && assertion.conditions.requiredFiles.some((file) => !target.declaredPackageFiles.includes(file))) {
+    errors.push("compatibility target must contain every assertion-required package file");
+  }
+  if (target.declaredPackageFiles.some((file) => file.startsWith("/") || file.includes("\\") || file.split("/").includes("..") || /^[a-zA-Z]:/.test(file))) {
+    errors.push("declared package files must be normalized relative members");
   }
   return errors;
 }

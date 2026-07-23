@@ -51,7 +51,9 @@ test("M-J verification adapter has no IPC, network, download, update, upload, or
   ]) assert.doesNotMatch(source, forbidden);
   assert.match(source, /SideEffects\s*\{[\s\S]*?executes_local_process:\s*true,[\s\S]*?loads_model:\s*true,[\s\S]*?writes_model_store:\s*false,[\s\S]*?network:\s*false,[\s\S]*?upload:\s*false,[\s\S]*?\}/);
   assert.match(source, /child-isolation-not-enforced/);
-  assert.match(source, /m-e-compatibility-proof-unavailable/);
+  assert.match(source, /ValidatedCompatibilityAdmissionReceipt/);
+  assert.match(source, /validate_compatibility_admission/);
+  assert.doesNotMatch(source, /m-e-compatibility-proof-unavailable/);
 });
 
 test("R1 frontend makes no external requests", async () => {

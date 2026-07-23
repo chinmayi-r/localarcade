@@ -24,7 +24,7 @@ async function jsonFiles(directory: string): Promise<string[]> {
 
 test("TypeScript accepts every shared positive contract fixture", async () => {
   const files = await jsonFiles(fixtureRoot);
-  assert.equal(files.length, 18);
+  assert.equal(files.length, 19);
   for (const file of files) {
     const result = parseContract(await readFile(join(fixtureRoot, file), "utf8"));
     assert.equal(result.ok, true, `${file}: ${result.ok ? "" : result.errors.join("; ")}`);
@@ -34,7 +34,7 @@ test("TypeScript accepts every shared positive contract fixture", async () => {
 test("TypeScript rejects every shared negative contract fixture", async () => {
   const directory = join(fixtureRoot, "invalid");
   const files = await jsonFiles(directory);
-  assert.equal(files.length, 11);
+  assert.equal(files.length, 12);
   for (const file of files) {
     assert.equal(parseContract(await readFile(join(directory, file), "utf8")).ok, false, file);
   }
@@ -129,4 +129,24 @@ test("verification identities and nested statuses fail closed", async () => {
   emptyResult.data.benchmarkResult = null;
   emptyResult.data.quickCheckResult = null;
   assert.equal(validateContract(emptyResult).ok, false, "completed verification requires evidence");
+});
+
+test("compatibility admission receipts fail closed on altered evaluation facts", async () => {
+  const fixture = JSON.parse(await readFile(join(fixtureRoot, "compatibility-admission-receipt.ok.json"), "utf8"));
+
+  const productMismatch = structuredClone(fixture);
+  productMismatch.data.assertion.productId = "other-product";
+  assert.equal(validateContract(productMismatch).ok, false, "assertion product must bind the evaluated target");
+
+  const missingRequiredFile = structuredClone(fixture);
+  missingRequiredFile.data.target.declaredPackageFiles = ["other.gguf"];
+  assert.equal(validateContract(missingRequiredFile).ok, false, "required package members must be present");
+
+  const buildMismatch = structuredClone(fixture);
+  buildMismatch.data.target.engineBuild = "other-build";
+  assert.equal(validateContract(buildMismatch).ok, false, "resolved build must bind the original build fields");
+
+  const forwardReceipt = structuredClone(fixture);
+  forwardReceipt.data.receiptVersion = 2;
+  assert.equal(validateContract(forwardReceipt).ok, false, "unknown receipt versions fail closed");
 });

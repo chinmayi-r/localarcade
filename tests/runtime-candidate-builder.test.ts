@@ -32,16 +32,19 @@ const compatibility: CompatibilityAssertion = {
     cpuArchitectures: ["x64"],
     backends: ["cuda"],
     packageLayouts: ["gguf-single"],
+    modelArchitectures: ["qwen3"],
     quantizationSchemes: [artifact.quantization],
     requiredFiles: [artifact.fileName],
+    limitations: ["Fixture admission only."],
   },
   evidence: [{ url: "https://example.invalid/runtime", checkedAt: "2026-07-22T12:00:00Z", sourceRevision: "fixture" }],
 };
 const completeInput: CandidateBuildInput = {
+  compatibilityAdmissionId: "compatibility-admission-m-e-fixture",
   candidateId: "candidate-m-e-fixture",
   registryArtifact,
   compatibility,
-  package: { layout: "gguf-single", files: [artifact.fileName] },
+  package: { layout: "gguf-single", files: [artifact.fileName], modelArchitecture: "qwen3" },
   runtime: {
     runtimeConfigurationId: "runtime-m-e-fixture",
     productId: "llama-cpp",
@@ -73,9 +76,111 @@ test("M-E builds a complete exact candidate without changing artifact or runtime
   assert.equal(result.candidate.runtime.engineBuild, "b10061-5d5306bf3");
   assert.equal(result.candidate.runtime.backend, "cuda");
   assert.deepEqual(result.candidate.runtime.sampler, completeInput.runtime!.sampler);
+  assert.deepEqual(result.compatibilityReceipt, {
+    compatibilityAdmissionId: "compatibility-admission-m-e-fixture",
+    receiptVersion: 1,
+    policy: { id: "m-e.compatibility", version: "1" },
+    candidateId: "candidate-m-e-fixture",
+    artifactId: registryArtifact.artifact.artifactId,
+    artifactSha256: registryArtifact.artifact.sha256,
+    runtimeConfigurationId: "runtime-m-e-fixture",
+    decision: "admitted",
+    target: {
+      product: "llama-cpp",
+      engine: "llama.cpp",
+      engineBuild: "b10061-5d5306bf3",
+      runtimeVersion: "1.2.0",
+      exactBuild: "b10061-5d5306bf3",
+      operatingSystem: "windows",
+      cpuArchitecture: "x86_64",
+      backend: "cuda",
+      featureFlags: ["cuda"],
+      packageLayout: "gguf-single",
+      declaredPackageFiles: [artifact.fileName],
+      modelArchitecture: "qwen3",
+      quantizationScheme: artifact.quantization,
+    },
+    assertion: {
+      artifactId: artifact.id,
+      productId: "llama-cpp",
+      engineId: "llama.cpp",
+      status: "verified",
+      runtimeConstraint: { minVersion: "1.0.0", maxVersion: "2.0.0", exactBuild: "b10061-5d5306bf3" },
+      conditions: {
+        operatingSystems: ["windows"],
+        cpuArchitectures: ["x86_64"],
+        backends: ["cuda"],
+        modelArchitectures: ["qwen3"],
+        packageLayouts: ["gguf-single"],
+        quantizationSchemes: [artifact.quantization],
+        requiredFiles: [artifact.fileName],
+        limitations: ["Fixture admission only."],
+      },
+      evidence: [{ url: "https://example.invalid/runtime", checkedAt: "2026-07-22T12:00:00Z", sourceRevision: "fixture" }],
+    },
+  });
+});
+
+test("M-E normalizes supported OS and architecture aliases in target and assertion", () => {
+  const aliases = [
+    ["win32", "amd64", "windows", "x86_64"],
+    ["windows", "x86_64", "windows", "x86_64"],
+    ["darwin", "arm64", "macos", "aarch64"],
+    ["macos", "aarch64", "macos", "aarch64"],
+    ["linux", "x64", "linux", "x86_64"],
+  ] as const;
+  for (const [os, architecture, expectedOs, expectedArchitecture] of aliases) {
+    const result = buildExactConfigurationCandidate({
+      ...completeInput,
+      compatibility: {
+        ...compatibility,
+        conditions: { ...compatibility.conditions, operatingSystems: [os], cpuArchitectures: [architecture] },
+      },
+      runtime: { ...completeInput.runtime!, runtimeBuild: { ...build, os, cpuArchitecture: architecture } },
+    });
+    assert.equal(result.kind, "ok", `${os}/${architecture}`);
+    if (result.kind !== "ok") continue;
+    assert.equal(result.compatibilityReceipt.target.operatingSystem, expectedOs);
+    assert.equal(result.compatibilityReceipt.target.cpuArchitecture, expectedArchitecture);
+    assert.deepEqual(result.compatibilityReceipt.assertion.conditions.operatingSystems, [expectedOs]);
+    assert.deepEqual(result.compatibilityReceipt.assertion.conditions.cpuArchitectures, [expectedArchitecture]);
+  }
+});
+
+test("M-E fails closed when an admitted platform identity cannot be normalized", () => {
+  for (const [label, os, cpuArchitecture] of [
+    ["operating system", "freebsd", "x64"],
+    ["CPU architecture", "windows", "riscv64"],
+  ] as const) {
+    const result = buildExactConfigurationCandidate({
+      ...completeInput,
+      compatibility: {
+        ...compatibility,
+        conditions: { ...compatibility.conditions, operatingSystems: [os], cpuArchitectures: [cpuArchitecture] },
+      },
+      runtime: { ...completeInput.runtime!, runtimeBuild: { ...build, os, cpuArchitecture } },
+    });
+    assert.equal(result.kind, "blocked", label);
+    if (result.kind === "blocked") {
+      assert.equal(result.reasonCode, "runtime-incompatible");
+      assert.match(result.reasons.join(" "), /not representable/);
+    }
+  }
+});
+
+test("M-E preserves every currently admitted assertion status", () => {
+  for (const status of ["verified", "documented", "experimental", "inferred"] as const) {
+    const result = buildExactConfigurationCandidate({ ...completeInput, compatibility: { ...compatibility, status } });
+    assert.equal(result.kind, "ok", status);
+    if (result.kind === "ok") assert.equal(result.compatibilityReceipt.assertion.status, status);
+  }
 });
 
 test("M-E reports every absent explicit runtime field and never supplies defaults", () => {
+  const missingAdmissionId = buildExactConfigurationCandidate({ ...completeInput, compatibilityAdmissionId: "" });
+  assert.equal(missingAdmissionId.kind, "blocked");
+  if (missingAdmissionId.kind === "blocked") assert.ok(missingAdmissionId.missing.includes("compatibilityAdmissionId"));
+
   const result = buildExactConfigurationCandidate({ ...completeInput, runtime: { productId: "llama-cpp", runtimeBuild: { ...build, exactBuild: undefined, version: undefined } } });
   assert.equal(result.kind, "blocked");
   if (result.kind !== "blocked") return;
@@ -171,7 +276,7 @@ test("M-E rejects product, engine, backend, package and build incompatibilities"
     ["product", { ...completeInput, compatibility: { ...compatibility, productId: "ollama" as const } }],
     ["engine", { ...completeInput, runtime: { ...completeInput.runtime!, runtimeBuild: { ...build, engineId: "mlx-lm" as const } } }],
     ["backend", { ...completeInput, runtime: { ...completeInput.runtime!, runtimeBuild: { ...build, backend: "metal" as const } } }],
-    ["package", { ...completeInput, package: { layout: "hf-transformers" as const, files: [artifact.fileName] } }],
+    ["package", { ...completeInput, package: { layout: "hf-transformers" as const, files: [artifact.fileName], modelArchitecture: "qwen3" } }],
     ["build", { ...completeInput, runtime: { ...completeInput.runtime!, runtimeBuild: { ...build, exactBuild: "different-build" } } }],
   ];
   for (const [label, input] of cases) {

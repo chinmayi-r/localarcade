@@ -105,6 +105,27 @@ fn candidate(artifact_hash: &str) -> ExactConfigurationCandidate {
     }
 }
 
+fn compatibility_admission() -> ValidatedCompatibilityAdmissionReceipt {
+    let envelope: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/compatibility-admission-receipt.ok.json"
+    ))
+    .unwrap();
+    let mut receipt: CompatibilityAdmissionReceipt =
+        serde_json::from_value(envelope["data"].clone()).unwrap();
+    receipt.candidate_id = "candidate-1".into();
+    receipt.artifact_id = "artifact-1".into();
+    receipt.artifact_sha256 = "0".repeat(64);
+    receipt.runtime_configuration_id = "runtime-1".into();
+    receipt.target.engine_build = "b10061-5d5306bf3".into();
+    receipt.target.exact_build = Some("b10061-5d5306bf3".into());
+    receipt.assertion.runtime_constraint.exact_build = Some("b10061-5d5306bf3".into());
+    receipt.target.declared_package_files = vec!["fixture.gguf".into()];
+    receipt.target.quantization_scheme = "Q4_K_M".into();
+    receipt.assertion.artifact_id = "artifact-1".into();
+    receipt.assertion.conditions.required_files = Some(vec!["fixture.gguf".into()]);
+    ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap()
+}
+
 fn preflight() -> Preflight {
     Preflight {
         power: Power::Ac,
@@ -222,10 +243,15 @@ fn request() -> VerificationPreparationRequest {
         &inventory_artifact(artifact_path, &hash(artifact_bytes)),
     )
     .unwrap();
+    let mut compatibility_admission = compatibility_admission();
+    let mut receipt = compatibility_admission.receipt().clone();
+    receipt.artifact_sha256 = hash(artifact_bytes);
+    compatibility_admission = ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap();
     VerificationPreparationRequest {
         verification_plan_id: "verification-1".into(),
         hardware_target: confirmed_hardware(),
         candidate: candidate(&hash(artifact_bytes)),
+        compatibility_admission,
         inventory_selection,
         benchmark: Some(BenchmarkPreparation {
             plan_id: "benchmark-1".into(),
@@ -332,10 +358,161 @@ fn preparation_hashes_only_selected_files_and_binds_exact_identity() {
         .warnings()
         .iter()
         .any(|warning| warning.contains("isolation-not-enforced")));
-    assert!(prepared
-        .warnings()
-        .iter()
-        .any(|warning| warning.contains("m-e-compatibility-proof-unavailable")));
+    assert_eq!(prepared.warnings().len(), 1);
+}
+
+#[test]
+fn preparation_requires_compatibility_admission_bound_to_exact_selection() {
+    let mutate = |request: &mut VerificationPreparationRequest,
+                  update: fn(&mut CompatibilityAdmissionReceipt)| {
+        let mut receipt = request.compatibility_admission.receipt().clone();
+        update(&mut receipt);
+        request.compatibility_admission =
+            ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap();
+    };
+
+    let mut value = request();
+    mutate(&mut value, |receipt| receipt.candidate_id = "other".into());
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("candidate-id-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.artifact_id = "other".into();
+        receipt.assertion.artifact_id = "other".into();
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("artifact-id-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.artifact_sha256 = "f".repeat(64)
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("artifact-hash-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.runtime_configuration_id = "other".into()
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("runtime-configuration-id-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.target.engine_build = "other".into();
+        receipt.target.exact_build = Some("other".into());
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("engine-build-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.target.product = "other".into();
+        receipt.assertion.product_id = "other".into();
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("product-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.target.engine = "other".into();
+        receipt.assertion.engine_id = "other".into();
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("engine-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.target.backend = AcceleratorBackend::Vulkan;
+        receipt.assertion.conditions.backends = Some(vec!["vulkan".into()]);
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("backend-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.target.quantization_scheme = "Q5_K_M".into();
+        receipt.assertion.conditions.quantization_schemes = Some(vec!["Q5_K_M".into()]);
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("quantization-mismatch"));
+
+    let mut value = request();
+    mutate(&mut value, |receipt| {
+        receipt.target.declared_package_files = vec!["other.gguf".into()];
+        receipt.assertion.conditions.required_files = Some(vec!["other.gguf".into()]);
+    });
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("declared-package-files-mismatch"));
+}
+
+#[test]
+fn preparation_rejects_admission_for_other_platform_or_package_route() {
+    let mut value = request();
+    let mut receipt = value.compatibility_admission.receipt().clone();
+    receipt.target.operating_system = OsFamily::Linux;
+    receipt.assertion.conditions.operating_systems = Some(vec!["linux".into()]);
+    value.compatibility_admission = ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap();
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("operating-system-mismatch"));
+
+    let mut value = request();
+    let mut receipt = value.compatibility_admission.receipt().clone();
+    let (other_architecture, other_architecture_name) = if std::env::consts::ARCH == "aarch64" {
+        (CpuArchitecture::X86_64, "x86_64")
+    } else {
+        (CpuArchitecture::Aarch64, "aarch64")
+    };
+    receipt.target.cpu_architecture = other_architecture;
+    receipt.assertion.conditions.cpu_architectures = Some(vec![other_architecture_name.into()]);
+    value.compatibility_admission = ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap();
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("cpu-architecture-mismatch"));
+
+    let mut value = request();
+    let mut receipt = value.compatibility_admission.receipt().clone();
+    receipt.target.package_layout = ArtifactPackageLayout::GgufSplit;
+    receipt.assertion.conditions.package_layouts = Some(vec!["gguf-split".into()]);
+    value.compatibility_admission = ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap();
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("package-layout-unsupported"));
+}
+
+#[test]
+fn invalid_compatibility_receipt_never_reaches_preparation() {
+    let mut receipt = compatibility_admission().receipt().clone();
+    receipt.assertion.artifact_id = "different".into();
+    assert!(ValidatedCompatibilityAdmissionReceipt::new(receipt)
+        .unwrap_err()
+        .join(" ")
+        .contains("receipt-invalid"));
 }
 
 #[test]

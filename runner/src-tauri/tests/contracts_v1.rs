@@ -3,6 +3,10 @@ use serde_json::json;
 
 const POSITIVE: &[(&str, &str)] = &[
     (
+        "compatibility-admission-receipt.ok.json",
+        include_str!("../../../docs/contracts/fixtures/compatibility-admission-receipt.ok.json"),
+    ),
+    (
         "benchmark-plan.ok.json",
         include_str!("../../../docs/contracts/fixtures/benchmark-plan.ok.json"),
     ),
@@ -78,6 +82,12 @@ const POSITIVE: &[(&str, &str)] = &[
 
 const NEGATIVE: &[(&str, &str)] = &[
     (
+        "compatibility-admission-bad-decision.json",
+        include_str!(
+            "../../../docs/contracts/fixtures/invalid/compatibility-admission-bad-decision.json"
+        ),
+    ),
+    (
         "candidate-bad-hash.json",
         include_str!("../../../docs/contracts/fixtures/invalid/candidate-bad-hash.json"),
     ),
@@ -125,7 +135,7 @@ const NEGATIVE: &[(&str, &str)] = &[
 
 #[test]
 fn rust_accepts_every_shared_positive_fixture() {
-    assert_eq!(POSITIVE.len(), 18);
+    assert_eq!(POSITIVE.len(), 19);
     for (name, fixture) in POSITIVE {
         assert!(
             validate_contract_json(fixture).is_ok(),
@@ -137,7 +147,7 @@ fn rust_accepts_every_shared_positive_fixture() {
 
 #[test]
 fn rust_rejects_every_shared_negative_fixture() {
-    assert_eq!(NEGATIVE.len(), 11);
+    assert_eq!(NEGATIVE.len(), 12);
     for (name, fixture) in NEGATIVE {
         assert!(validate_contract_json(fixture).is_err(), "{name}");
     }
@@ -206,4 +216,20 @@ fn verification_identities_and_nested_statuses_fail_closed() {
     empty_result["data"]["benchmarkResult"] = serde_json::Value::Null;
     empty_result["data"]["quickCheckResult"] = serde_json::Value::Null;
     assert!(validate_contract_json(&empty_result.to_string()).is_err());
+}
+
+#[test]
+fn compatibility_receipt_source_formats_fail_closed() {
+    let baseline: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/compatibility-admission-receipt.ok.json"
+    ))
+    .expect("compatibility receipt fixture");
+
+    let mut bad_url = baseline.clone();
+    bad_url["data"]["assertion"]["evidence"][0]["url"] = json!("not a URI");
+    assert!(validate_contract_json(&bad_url.to_string()).is_err());
+
+    let mut bad_time = baseline;
+    bad_time["data"]["assertion"]["evidence"][0]["checkedAt"] = json!("not a timestamp");
+    assert!(validate_contract_json(&bad_time.to_string()).is_err());
 }
