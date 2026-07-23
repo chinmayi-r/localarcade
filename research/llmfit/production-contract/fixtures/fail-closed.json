@@ -1,0 +1,235 @@
+{
+  "unknownUpstreamEnum": {
+    "providerOutput": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "unsupported",
+      "requestId": "rec_unknown_enum",
+      "reasonCode": "llmfit.upstream-enum.unsupported",
+      "message": "The pinned provider returned an unrecognized run-mode value.",
+      "unsupportedPath": "candidates[0].runMode",
+      "unsupportedValue": "NeuralWarp",
+      "providerInvoked": true,
+      "recoverableActions": [
+        "upgrade-adapter-after-review"
+      ],
+      "provenance": [
+        {
+          "source": {
+            "id": "llmfit-core",
+            "version": "1.1.6",
+            "revision": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+            "url": "https://github.com/AlexsJones/llmfit"
+          },
+          "retrievedAt": "2026-07-22T20:00:00.000Z",
+          "observedAt": null,
+          "method": "estimate",
+          "hardwareMatch": "exact",
+          "configurationMatch": "family-proxy",
+          "scope": {
+            "taskFamily": "general",
+            "taskPackId": null,
+            "promptId": null,
+            "harnessId": "llmfit-core-v1.1.6"
+          },
+          "sampleCount": null,
+          "measurement": null,
+          "rawSourceRecordRef": "llmfit-core:v1.1.6:raw:unknown-enum"
+        }
+      ],
+      "rawSourceRecordRef": "llmfit-core:v1.1.6:raw:unknown-enum",
+      "warnings": []
+    }
+  },
+  "missingHardware": {
+    "input": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory-request",
+      "requestId": "rec_missing_hardware",
+      "hardwareTarget": {
+        "hardwareTargetId": "hw_missing_memory",
+        "os": {
+          "family": "windows",
+          "version": null
+        },
+        "cpu": {
+          "displayName": null,
+          "logicalCores": null
+        },
+        "memory": {
+          "totalRamBytes": 34359738368,
+          "availableRamBytes": null,
+          "unified": null
+        },
+        "accelerators": [
+          {
+            "acceleratorId": null,
+            "displayName": "Unconfirmed accelerator",
+            "kind": "other",
+            "vendor": "other",
+            "backend": "other",
+            "deviceMemoryBytes": null,
+            "count": 1
+          }
+        ],
+        "fieldOrigins": {
+          "memory.totalRamBytes": "self-reported",
+          "memory.availableRamBytes": "unknown",
+          "memory.unified": "unknown",
+          "accelerators[0].backend": "unknown",
+          "accelerators[0].deviceMemoryBytes": "unknown"
+        }
+      },
+      "query": {
+        "taskFamily": "general",
+        "interactionStyle": "interactive",
+        "desiredContextTokens": 8192,
+        "forcedRuntime": null
+      }
+    },
+    "expected": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "blocked",
+      "requestId": "rec_missing_hardware",
+      "reasonCode": "llmfit.hardware.required-facts-missing",
+      "message": "Confirm accelerator backend, device memory, and unified-memory layout before requesting upstream advice.",
+      "missing": [
+        "hardwareTarget.cpu.displayName",
+        "hardwareTarget.cpu.logicalCores",
+        "hardwareTarget.memory.availableRamBytes",
+        "hardwareTarget.memory.unified",
+        "hardwareTarget.accelerators[0].backend",
+        "hardwareTarget.accelerators[0].deviceMemoryBytes"
+      ],
+      "providerInvoked": false,
+      "recoverableActions": [
+        "confirm-hardware-manually"
+      ],
+      "provenance": [],
+      "warnings": []
+    }
+  },
+  "unknownForcedRuntime": {
+    "input": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory-request",
+      "requestId": "rec_unknown_runtime",
+      "query": {
+        "taskFamily": "coding",
+        "interactionStyle": "interactive",
+        "desiredContextTokens": 8192,
+        "forcedRuntime": "made-up-runtime"
+      }
+    },
+    "expected": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "blocked",
+      "requestId": "rec_unknown_runtime",
+      "reasonCode": "llmfit.override.invalid",
+      "message": "The requested runtime is not recognized by the pinned adapter.",
+      "providerInvoked": false,
+      "recoverableActions": [
+        "remove-runtime-constraint",
+        "choose-supported-runtime"
+      ],
+      "provenance": [],
+      "warnings": []
+    }
+  },
+  "knownForcedRuntime": {
+    "expected": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "blocked",
+      "requestId": "rec_known_runtime",
+      "reasonCode": "llmfit.override.unsupported-in-pinned-adapter",
+      "message": "Pinned llmfit v1.1.6 cannot combine explicit SystemSpecs with a forced-runtime recommendation override.",
+      "providerInvoked": false,
+      "recoverableActions": [
+        "remove-runtime-constraint"
+      ],
+      "provenance": [],
+      "warnings": []
+    }
+  },
+  "unknownAvailableRam": {
+    "expected": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "blocked",
+      "requestId": "rec_unknown_available_ram",
+      "reasonCode": "llmfit.hardware.required-facts-missing",
+      "message": "Available system memory is required for the pinned upstream calculation and cannot be inferred from total memory.",
+      "missing": [
+        "hardwareTarget.memory.availableRamBytes"
+      ],
+      "providerInvoked": false,
+      "recoverableActions": [
+        "confirm-available-memory"
+      ],
+      "provenance": [],
+      "warnings": []
+    }
+  },
+  "heterogeneousAccelerators": {
+    "expected": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "unsupported",
+      "requestId": "rec_heterogeneous_accelerators",
+      "reasonCode": "llmfit.hardware.topology-not-representable",
+      "message": "Pinned llmfit v1.1.6 cannot preserve this heterogeneous accelerator topology.",
+      "unsupportedPaths": [
+        "hardwareTarget.accelerators[0]",
+        "hardwareTarget.accelerators[1]"
+      ],
+      "providerInvoked": false,
+      "recoverableActions": [
+        "continue-without-upstream-advice"
+      ],
+      "provenance": [],
+      "warnings": []
+    }
+  },
+  "upstreamUnavailable": {
+    "expected": {
+      "schemaVersion": 1,
+      "capability": "llmfit-advisory",
+      "status": "unavailable",
+      "requestId": "rec_provider_unavailable",
+      "reasonCode": "llmfit.provider.unavailable",
+      "message": "The pinned llmfit provider could not produce advice.",
+      "providerInvoked": true,
+      "recoverableActions": [
+        "retry"
+      ],
+      "provenance": [
+        {
+          "source": {
+            "id": "llmfit-core",
+            "version": "1.1.6",
+            "revision": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+            "url": "https://github.com/AlexsJones/llmfit"
+          },
+          "retrievedAt": null,
+          "observedAt": null,
+          "method": "estimate",
+          "hardwareMatch": "unknown",
+          "configurationMatch": "unknown",
+          "scope": {
+            "taskFamily": "general",
+            "taskPackId": null,
+            "promptId": null,
+            "harnessId": "llmfit-core-v1.1.6"
+          },
+          "sampleCount": null,
+          "measurement": null,
+          "rawSourceRecordRef": null
+        }
+      ],
+      "warnings": []
+    }
+  }
+}

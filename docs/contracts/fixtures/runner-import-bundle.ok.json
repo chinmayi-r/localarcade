@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "contract": "runner-import-bundle",
+  "status": "ok",
+  "data": {
+    "importBundleVersion": 1,
+    "contentHash": "28a5182d052884328f922b96098ba566f62ec6388a3c8bbce5a825b2c3f7e324",
+    "handoff": {
+      "handoffId": "handoff-fixture",
+      "schemaVersion": 1,
+      "createdAt": "2026-07-22T12:00:00Z",
+      "expiresAt": "2026-07-23T12:00:00Z",
+      "contentHash": "67c482e7ee488479765d341d97dcb1568ed8c0dc4b118e4fc7ff43ef90bf3f1a",
+      "recommendationRequest": {
+        "requestId": "req-fixture",
+        "hardwareTargetId": "hw-fixture",
+        "task": {
+          "family": "coding",
+          "interactionStyle": "interactive",
+          "scopeLabel": "Work in a medium codebase",
+          "derivedContextTokens": 16384,
+          "needs": ["structured-output", "offline"]
+        },
+        "preferences": {
+          "priority": "balanced",
+          "allowCpuOffload": true,
+          "installedOnly": false
+        },
+        "advanced": {
+          "forcedRuntime": null,
+          "maximumArtifactBytes": 8589934592
+        }
+      },
+      "hardwareTarget": {
+        "hardwareTargetId": "hw-fixture",
+        "os": { "family": "windows", "version": "11" },
+        "cpu": { "displayName": "Fixture CPU", "logicalCores": 16 },
+        "memory": {
+          "totalRamBytes": 34359738368,
+          "availableRamBytes": 25769803776,
+          "unified": false
+        },
+        "accelerators": [
+          {
+            "acceleratorId": "nvidia-fixture",
+            "displayName": "Fixture NVIDIA GPU",
+            "kind": "nvidia",
+            "vendor": "nvidia",
+            "backend": "cuda",
+            "deviceMemoryBytes": 12884901888,
+            "count": 1
+          }
+        ],
+        "fieldOrigins": {
+          "/os/family": "self-reported",
+          "/cpu/displayName": "self-reported",
+          "/memory/totalRamBytes": "confirmed",
+          "/memory/unified": "confirmed",
+          "/accelerators/0/acceleratorId": "imported",
+          "/accelerators/0/deviceMemoryBytes": "confirmed"
+        }
+      },
+      "selectedCandidate": {
+        "candidateId": "candidate-fixture",
+        "modelFamily": {
+          "modelFamilyId": "qwen3-4b",
+          "displayName": "Qwen3 4B"
+        },
+        "artifact": {
+          "artifactId": "artifact-fixture",
+          "repository": "example/fixture",
+          "revision": "0123456789abcdef",
+          "filename": "fixture-Q4_K_M.gguf",
+          "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 2491323904,
+          "format": "GGUF",
+          "quantization": "Q4_K_M",
+          "license": "apache-2.0",
+          "status": "promoted"
+        },
+        "runtime": {
+          "runtimeConfigurationId": "runtime-fixture",
+          "product": "llama-cpp",
+          "engine": "llama.cpp",
+          "engineBuild": "b10061 (5d5306bf3)",
+          "backend": "cuda",
+          "chatTemplate": "chatml",
+          "contextTokens": 16384,
+          "kvCache": { "key": "f16", "value": "f16" },
+          "gpuLayers": "all",
+          "batchSize": 2048,
+          "microBatchSize": 512,
+          "parallelism": 1,
+          "threads": 14,
+          "flashAttention": true,
+          "mmap": true,
+          "sampler": {
+            "temperature": null,
+            "topP": null,
+            "topK": null,
+            "minP": null,
+            "seed": null
+          },
+          "additionalFlags": []
+        },
+        "provenance": [
+          {
+            "source": {
+              "id": "fixture-source",
+              "version": "1",
+              "revision": "fixture-revision",
+              "url": "https://example.invalid/source"
+            },
+            "retrievedAt": "2026-07-22T12:00:00Z",
+            "observedAt": "2026-07-22T11:00:00Z",
+            "method": "imported",
+            "hardwareMatch": "exact",
+            "configurationMatch": "exact",
+            "scope": {
+              "taskFamily": null,
+              "taskPackId": null,
+              "promptId": null,
+              "harnessId": "fixture-harness-v1"
+            },
+            "sampleCount": null,
+            "measurement": null,
+            "rawSourceRecordRef": "fixture://source-record"
+          }
+        ]
+      },
+      "evidenceSummary": {
+        "assessmentId": "assessment-fixture",
+        "candidateId": "candidate-fixture",
+        "hardwareTargetId": "hw-fixture",
+        "fit": "good",
+        "runPath": "gpu",
+        "memoryPools": {
+          "device": {
+            "modelBytes": 2491323904,
+            "contextBytes": 805306368,
+            "computeBytes": 536870912,
+            "reserveBytes": 1073741824,
+            "marginBytes": 536870912,
+            "requiredBytes": 5442105344,
+            "availableBytes": 12884901888
+          },
+          "host": {
+            "modelBytes": 0,
+            "contextBytes": 268435456,
+            "computeBytes": 1073741824,
+            "reserveBytes": 4294967296,
+            "marginBytes": 1073741824,
+            "requiredBytes": 6710886400,
+            "availableBytes": 25769803776
+          }
+        },
+        "performance": {
+          "promptTokensPerSecond": { "low": 160, "high": 190 },
+          "generationTokensPerSecond": { "low": 55, "high": 80 },
+          "timeToFirstTokenMs": { "low": 120, "high": 240 }
+        },
+        "evidence": {
+          "fit": [
+            {
+              "source": {
+                "id": "fixture-source",
+                "version": "1",
+                "revision": "fixture-revision",
+                "url": "https://example.invalid/source"
+              },
+              "retrievedAt": "2026-07-22T12:00:00Z",
+              "observedAt": "2026-07-22T11:00:00Z",
+              "method": "imported",
+              "hardwareMatch": "exact",
+              "configurationMatch": "exact",
+              "scope": {
+                "taskFamily": null,
+                "taskPackId": null,
+                "promptId": null,
+                "harnessId": "fixture-harness-v1"
+              },
+              "sampleCount": null,
+              "measurement": null,
+              "rawSourceRecordRef": "fixture://source-record"
+            }
+          ],
+          "promptSpeed": [
+            {
+              "source": {
+                "id": "fixture-source",
+                "version": "1",
+                "revision": "fixture-revision",
+                "url": "https://example.invalid/source"
+              },
+              "retrievedAt": "2026-07-22T12:00:00Z",
+              "observedAt": "2026-07-22T11:00:00Z",
+              "method": "imported",
+              "hardwareMatch": "exact",
+              "configurationMatch": "exact",
+              "scope": {
+                "taskFamily": null,
+                "taskPackId": null,
+                "promptId": null,
+                "harnessId": "fixture-harness-v1"
+              },
+              "sampleCount": null,
+              "measurement": null,
+              "rawSourceRecordRef": "fixture://source-record"
+            }
+          ],
+          "generationSpeed": [
+            {
+              "source": {
+                "id": "fixture-source",
+                "version": "1",
+                "revision": "fixture-revision",
+                "url": "https://example.invalid/source"
+              },
+              "retrievedAt": "2026-07-22T12:00:00Z",
+              "observedAt": "2026-07-22T11:00:00Z",
+              "method": "imported",
+              "hardwareMatch": "exact",
+              "configurationMatch": "exact",
+              "scope": {
+                "taskFamily": null,
+                "taskPackId": null,
+                "promptId": null,
+                "harnessId": "fixture-harness-v1"
+              },
+              "sampleCount": null,
+              "measurement": null,
+              "rawSourceRecordRef": "fixture://source-record"
+            }
+          ],
+          "timeToFirstToken": [
+            {
+              "source": {
+                "id": "fixture-source",
+                "version": "1",
+                "revision": "fixture-revision",
+                "url": "https://example.invalid/source"
+              },
+              "retrievedAt": "2026-07-22T12:00:00Z",
+              "observedAt": "2026-07-22T11:00:00Z",
+              "method": "imported",
+              "hardwareMatch": "exact",
+              "configurationMatch": "exact",
+              "scope": {
+                "taskFamily": null,
+                "taskPackId": null,
+                "promptId": null,
+                "harnessId": "fixture-harness-v1"
+              },
+              "sampleCount": null,
+              "measurement": null,
+              "rawSourceRecordRef": "fixture://source-record"
+            }
+          ],
+          "taskQuality": []
+        },
+        "blockingReasons": []
+      },
+      "containsModelData": false,
+      "sideEffectAuthorization": false
+    },
+    "compatibilityAdmission": {
+      "compatibilityAdmissionId": "compatibility-admission-fixture",
+      "receiptVersion": 1,
+      "policy": { "id": "m-e.compatibility", "version": "1" },
+      "candidateId": "candidate-fixture",
+      "artifactId": "artifact-fixture",
+      "artifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "runtimeConfigurationId": "runtime-fixture",
+      "decision": "admitted",
+      "target": {
+        "product": "llama-cpp",
+        "engine": "llama.cpp",
+        "engineBuild": "b10061 (5d5306bf3)",
+        "runtimeVersion": null,
+        "exactBuild": "b10061 (5d5306bf3)",
+        "operatingSystem": "windows",
+        "cpuArchitecture": "x86_64",
+        "backend": "cuda",
+        "featureFlags": ["cuda"],
+        "packageLayout": "gguf-single",
+        "declaredPackageFiles": ["fixture-Q4_K_M.gguf"],
+        "modelArchitecture": "qwen3",
+        "quantizationScheme": "Q4_K_M"
+      },
+      "assertion": {
+        "artifactId": "artifact-fixture",
+        "productId": "llama-cpp",
+        "engineId": "llama.cpp",
+        "status": "verified",
+        "runtimeConstraint": {
+          "minVersion": null,
+          "maxVersion": null,
+          "exactBuild": "b10061 (5d5306bf3)"
+        },
+        "conditions": {
+          "operatingSystems": ["windows"],
+          "cpuArchitectures": ["x86_64"],
+          "backends": ["cuda"],
+          "modelArchitectures": ["qwen3"],
+          "packageLayouts": ["gguf-single"],
+          "quantizationSchemes": ["Q4_K_M"],
+          "requiredFiles": ["fixture-Q4_K_M.gguf"],
+          "limitations": []
+        },
+        "evidence": [
+          {
+            "url": "https://example.invalid/runtime-compatibility",
+            "checkedAt": "2026-07-22T12:00:00Z",
+            "sourceRevision": "fixture-revision"
+          }
+        ]
+      }
+    }
+  },
+  "provenance": [],
+  "completeness": {
+    "complete": true,
+    "missing": [],
+    "warnings": [],
+    "recoverableActions": []
+  }
+}

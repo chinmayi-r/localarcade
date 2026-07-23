@@ -6,7 +6,9 @@ import {
   canonicalJson,
   handoffContentHash,
   parseContract,
+  runnerImportBundleContentHash,
   validateContract,
+  withRunnerImportBundleContentHash,
 } from "../lib/contracts";
 import {
   fromHardwareTarget,
@@ -14,7 +16,7 @@ import {
   toHardwareTarget,
   toRecommendationRequest,
 } from "../lib/contracts/adapters/recommendation";
-import type { HardwareTarget, RecommendationRequest, RunnerHandoff } from "../lib/contracts";
+import type { HardwareTarget, RecommendationRequest, RunnerHandoff, RunnerImportBundle } from "../lib/contracts";
 
 const fixtureRoot = join(process.cwd(), "docs", "contracts", "fixtures");
 
@@ -24,7 +26,7 @@ async function jsonFiles(directory: string): Promise<string[]> {
 
 test("TypeScript accepts every shared positive contract fixture", async () => {
   const files = await jsonFiles(fixtureRoot);
-  assert.equal(files.length, 19);
+  assert.equal(files.length, 20);
   for (const file of files) {
     const result = parseContract(await readFile(join(fixtureRoot, file), "utf8"));
     assert.equal(result.ok, true, `${file}: ${result.ok ? "" : result.errors.join("; ")}`);
@@ -149,4 +151,39 @@ test("compatibility admission receipts fail closed on altered evaluation facts",
   const forwardReceipt = structuredClone(fixture);
   forwardReceipt.data.receiptVersion = 2;
   assert.equal(validateContract(forwardReceipt).ok, false, "unknown receipt versions fail closed");
+});
+
+test("runner import bundle preserves handoff v1 and binds the admission receipt", async () => {
+  const fixture = JSON.parse(await readFile(join(fixtureRoot, "runner-import-bundle.ok.json"), "utf8")) as {
+    data: RunnerImportBundle;
+  };
+  const handoffFixture = JSON.parse(await readFile(join(fixtureRoot, "runner-handoff.ok.json"), "utf8")) as {
+    data: RunnerHandoff;
+  };
+  assert.equal(validateContract(fixture).ok, true);
+  assert.deepEqual(fixture.data.handoff, handoffFixture.data, "the nested handoff remains exactly v1");
+  assert.equal(runnerImportBundleContentHash(fixture.data), fixture.data.contentHash);
+  assert.deepEqual(
+    withRunnerImportBundleContentHash({
+      importBundleVersion: 1,
+      handoff: fixture.data.handoff,
+      compatibilityAdmission: fixture.data.compatibilityAdmission,
+    }),
+    fixture.data,
+  );
+
+  for (const [label, mutate] of [
+    ["forward bundle version", (value: typeof fixture) => { (value.data as { importBundleVersion: number }).importBundleVersion = 2; }],
+    ["candidate", (value: typeof fixture) => { value.data.compatibilityAdmission.candidateId = "different-candidate"; }],
+    ["artifact hash", (value: typeof fixture) => { value.data.compatibilityAdmission.artifactSha256 = "b".repeat(64); }],
+    ["runtime", (value: typeof fixture) => { value.data.compatibilityAdmission.runtimeConfigurationId = "different-runtime"; }],
+    ["operating system", (value: typeof fixture) => { value.data.compatibilityAdmission.target.operatingSystem = "linux"; }],
+    ["receipt evidence drift", (value: typeof fixture) => {
+      value.data.compatibilityAdmission.assertion.evidence[0].url = "https://example.invalid/changed-source";
+    }],
+  ] as const) {
+    const changed = structuredClone(fixture);
+    mutate(changed);
+    assert.equal(validateContract(changed).ok, false, label);
+  }
 });

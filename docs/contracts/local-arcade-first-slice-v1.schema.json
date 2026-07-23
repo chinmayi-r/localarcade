@@ -12,7 +12,8 @@
         "hardware-target", "recommendation-request", "exact-configuration-candidate",
         "fit-evidence-assessment", "recommendation-portfolio", "runner-handoff",
         "benchmark-plan", "benchmark-result", "quick-check-plan", "quick-check-result",
-        "verification-plan", "verification-result", "compatibility-admission-receipt"
+        "verification-plan", "verification-result", "compatibility-admission-receipt",
+        "runner-import-bundle"
       ]
     },
     "origin": { "enum": ["detected", "self-reported", "imported", "confirmed", "unknown"] },
@@ -451,6 +452,17 @@
       },
       "additionalProperties": false
     },
+    "runnerImportBundle": {
+      "type": "object",
+      "required": ["importBundleVersion", "contentHash", "handoff", "compatibilityAdmission"],
+      "properties": {
+        "importBundleVersion": { "const": 1 },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "handoff": { "$ref": "#/$defs/runnerHandoff" },
+        "compatibilityAdmission": { "$ref": "#/$defs/compatibilityAdmissionReceipt" }
+      },
+      "additionalProperties": false
+    },
     "preflight": {
       "type": "object",
       "required": ["power", "thermal", "concurrentGpu", "requiresConfirmation", "conditions"],
@@ -634,6 +646,7 @@
         { "if": { "properties": { "contract": { "const": "verification-plan" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/verificationPlan" } } } },
         { "if": { "properties": { "contract": { "const": "verification-result" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/verificationResult" } } } },
         { "if": { "properties": { "contract": { "const": "compatibility-admission-receipt" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/compatibilityAdmissionReceipt" } } } },
+        { "if": { "properties": { "contract": { "const": "runner-import-bundle" } } }, "then": { "properties": { "data": { "$ref": "#/$defs/runnerImportBundle" } } } },
         { "if": { "properties": { "status": { "const": "ok" } } }, "then": { "properties": { "completeness": { "type": "object", "properties": { "complete": { "const": true }, "missing": { "type": "array", "maxItems": 0 } } } } } },
         { "if": { "properties": { "status": { "const": "partial" } } }, "then": { "properties": { "completeness": { "type": "object", "properties": { "complete": { "const": false }, "missing": { "type": "array", "minItems": 1 } } } } } }
       ],

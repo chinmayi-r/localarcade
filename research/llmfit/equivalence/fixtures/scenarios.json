@@ -1,0 +1,143 @@
+[
+  {
+    "id": "single-pool-exact-agreement",
+    "description": "A normalized upstream total exactly matches the current explicit Local Arcade components.",
+    "upstream": {
+      "source": {
+        "name": "llmfit",
+        "version": "1.1.6",
+        "commit": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+        "fixtureKind": "normalized-upstream-style"
+      },
+      "topology": "single-pool",
+      "availableBytes": 8589934592,
+      "requiredBytes": 7247757312,
+      "fits": true,
+      "factsNotExposed": []
+    },
+    "local": {
+      "artifact": {
+        "id": "fixture/exact-q4",
+        "weightBytes": 4294967296,
+        "maxContextTokens": 8192,
+        "runtimeComputeBufferBytes": 536870912,
+        "kvCache": {
+          "key": [
+            {
+              "quantization": "f16",
+              "referenceContextTokens": 4096,
+              "bytesAtReferenceContext": 268435456
+            }
+          ],
+          "value": [
+            {
+              "quantization": "f16",
+              "referenceContextTokens": 4096,
+              "bytesAtReferenceContext": 268435456
+            }
+          ]
+        }
+      },
+      "hardware": {
+        "physicalMemoryBytes": 8589934592,
+        "osReserveBytes": 1073741824,
+        "displayReserveBytes": 268435456,
+        "safetyMarginBps": 1000
+      },
+      "contextTokens": 4096,
+      "kvCacheSelection": "f16"
+    },
+    "mappingBlockers": [],
+    "tolerance": {
+      "requiredBytesAbsolute": 0,
+      "requiredBytesRelativeBps": 0
+    },
+    "expectedOutcome": "agreement"
+  },
+  {
+    "id": "single-pool-fit-disagreement",
+    "description": "The upstream-style estimate says the model fits while Local Arcade explicit reserves exceed capacity.",
+    "upstream": {
+      "source": {
+        "name": "llmfit",
+        "version": "1.1.6",
+        "commit": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+        "fixtureKind": "normalized-upstream-style"
+      },
+      "topology": "single-pool",
+      "availableBytes": 6442450944,
+      "requiredBytes": 6081740800,
+      "fits": true,
+      "factsNotExposed": [
+        "separate OS, display, and safety reserves"
+      ]
+    },
+    "local": {
+      "artifact": {
+        "id": "fixture/reserve-sensitive-q4",
+        "weightBytes": 4294967296,
+        "maxContextTokens": 8192,
+        "runtimeComputeBufferBytes": 536870912,
+        "kvCache": {
+          "key": [
+            {
+              "quantization": "f16",
+              "referenceContextTokens": 4096,
+              "bytesAtReferenceContext": 268435456
+            }
+          ],
+          "value": [
+            {
+              "quantization": "f16",
+              "referenceContextTokens": 4096,
+              "bytesAtReferenceContext": 268435456
+            }
+          ]
+        }
+      },
+      "hardware": {
+        "physicalMemoryBytes": 6442450944,
+        "osReserveBytes": 1073741824,
+        "displayReserveBytes": 268435456,
+        "safetyMarginBps": 1000
+      },
+      "contextTokens": 4096,
+      "kvCacheSelection": "f16"
+    },
+    "mappingBlockers": [],
+    "tolerance": {
+      "requiredBytesAbsolute": 67108864,
+      "requiredBytesRelativeBps": 200
+    },
+    "expectedOutcome": "disagreement"
+  },
+  {
+    "id": "heterogeneous-multi-gpu-unrepresentable",
+    "description": "A heterogeneous multi-GPU placement cannot be represented by the current single-pool Local Arcade fit invocation.",
+    "upstream": {
+      "source": {
+        "name": "llmfit",
+        "version": "1.1.6",
+        "commit": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+        "fixtureKind": "normalized-upstream-style"
+      },
+      "topology": "heterogeneous-multi-gpu",
+      "availableBytes": 25769803776,
+      "requiredBytes": null,
+      "fits": null,
+      "factsNotExposed": [
+        "per-device tensor placement",
+        "per-device runtime buffers"
+      ]
+    },
+    "local": null,
+    "mappingBlockers": [
+      "Current Local Arcade fit core has no heterogeneous multi-GPU placement input."
+    ],
+    "tolerance": {
+      "requiredBytesAbsolute": 67108864,
+      "requiredBytesRelativeBps": 200
+    },
+    "expectedOutcome": "unrepresentable"
+  }
+]

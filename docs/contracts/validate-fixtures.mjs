@@ -42,6 +42,30 @@ function semanticErrors(envelope) {
     const actual = crypto.createHash("sha256").update(canonicalJson(payload)).digest("hex");
     if (claimed !== actual) errors.push("handoff contentHash does not match its canonical snapshot");
   }
+  if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "runner-import-bundle") {
+    const { handoff, compatibilityAdmission: receipt } = envelope.data;
+    const candidate = handoff.selectedCandidate;
+    const bundlePayload = structuredClone(envelope.data);
+    const bundleClaimed = bundlePayload.contentHash;
+    delete bundlePayload.contentHash;
+    const bundleActual = crypto.createHash("sha256").update(canonicalJson(bundlePayload)).digest("hex");
+    if (bundleClaimed !== bundleActual) errors.push("runner import contentHash does not match its canonical snapshot");
+    const payload = structuredClone(handoff);
+    const claimed = payload.contentHash;
+    delete payload.contentHash;
+    const actual = crypto.createHash("sha256").update(canonicalJson(payload)).digest("hex");
+    if (claimed !== actual) errors.push("runner import handoff contentHash does not match its canonical snapshot");
+    if (receipt.candidateId !== candidate.candidateId) errors.push("runner import candidateId mismatch");
+    if (receipt.artifactId !== candidate.artifact.artifactId) errors.push("runner import artifactId mismatch");
+    if (receipt.artifactSha256 !== candidate.artifact.sha256) errors.push("runner import artifactSha256 mismatch");
+    if (receipt.runtimeConfigurationId !== candidate.runtime.runtimeConfigurationId) errors.push("runner import runtimeConfigurationId mismatch");
+    if (receipt.target.product !== candidate.runtime.product) errors.push("runner import product mismatch");
+    if (receipt.target.engine !== candidate.runtime.engine) errors.push("runner import engine mismatch");
+    if (receipt.target.engineBuild !== candidate.runtime.engineBuild) errors.push("runner import engineBuild mismatch");
+    if (receipt.target.operatingSystem !== handoff.hardwareTarget.os.family) errors.push("runner import operatingSystem mismatch");
+    if (receipt.target.backend !== candidate.runtime.backend) errors.push("runner import backend mismatch");
+    if (receipt.target.quantizationScheme !== candidate.artifact.quantization) errors.push("runner import quantization mismatch");
+  }
   if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "compatibility-admission-receipt") {
     const { assertion, target } = envelope.data;
     if (assertion.artifactId !== envelope.data.artifactId) errors.push("compatibility assertion artifactId must match receipt artifactId");
@@ -127,6 +151,7 @@ for (const file of validFiles) {
 const planFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "verification-plan.ok.json"), "utf8"));
 const resultFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "verification-result.ok.json"), "utf8"));
 const compatibilityFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "compatibility-admission-receipt.ok.json"), "utf8"));
+const runnerImportFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "runner-import-bundle.ok.json"), "utf8"));
 for (const [name, base, mutate] of [
   ["runtime-id-conflict", planFixture, (value) => {
     value.data.quickCheckPlan.runtime.runtimeConfigurationId = value.data.benchmarkPlan.runtime.runtimeConfigurationId;
@@ -143,6 +168,21 @@ for (const [name, base, mutate] of [
   }],
   ["compatibility-required-file-missing", compatibilityFixture, (value) => {
     value.data.target.declaredPackageFiles = ["different.gguf"];
+  }],
+  ["runner-import-forward-version", runnerImportFixture, (value) => {
+    value.data.importBundleVersion = 2;
+  }],
+  ["runner-import-candidate-mismatch", runnerImportFixture, (value) => {
+    value.data.compatibilityAdmission.candidateId = "different-candidate";
+  }],
+  ["runner-import-artifact-hash-mismatch", runnerImportFixture, (value) => {
+    value.data.compatibilityAdmission.artifactSha256 = "b".repeat(64);
+  }],
+  ["runner-import-runtime-mismatch", runnerImportFixture, (value) => {
+    value.data.compatibilityAdmission.runtimeConfigurationId = "different-runtime";
+  }],
+  ["runner-import-receipt-content-drift", runnerImportFixture, (value) => {
+    value.data.compatibilityAdmission.assertion.evidence[0].url = "https://example.invalid/changed-source";
   }],
 ]) {
   const value = structuredClone(base);
@@ -169,6 +209,7 @@ for (const file of validFiles) {
   const data = envelope.data;
   recordRuntime(data?.runtime, path.basename(file));
   recordRuntime(data?.selectedCandidate?.runtime, path.basename(file));
+  recordRuntime(data?.handoff?.selectedCandidate?.runtime, path.basename(file));
   recordRuntime(data?.benchmarkPlan?.runtime, path.basename(file));
   recordRuntime(data?.quickCheckPlan?.runtime, path.basename(file));
 }

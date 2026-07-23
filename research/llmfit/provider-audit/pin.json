@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/AlexsJones/llmfit.git",
+  "release": "v1.1.6",
+  "releaseCommit": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+  "observedMainCommit": "3c8c611bad8222430ae6e302ee04ca9501b9d5c9",
+  "observedAt": "2026-07-22",
+  "license": "MIT",
+  "licenseCopyright": "Copyright (c) 2026 Alex Jones"
+}

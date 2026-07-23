@@ -1,0 +1,25 @@
+{
+  "system": {
+    "available_ram_gb": 28.8,
+    "backend": "CUDA",
+    "cpu_cores": 16,
+    "cpu_name": "12th Gen Intel(R) Core(TM) i7-12700H",
+    "gpu_available_gb": null,
+    "gpu_count": 1,
+    "gpu_name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "gpu_vram_gb": 12.0,
+    "gpus": [
+      {
+        "backend": "CUDA",
+        "count": 1,
+        "memory_bandwidth_gbps": 360.0,
+        "name": "NVIDIA GeForce RTX 3060 Laptop GPU",
+        "unified_memory": false,
+        "vram_gb": 12.0
+      }
+    ],
+    "has_gpu": true,
+    "total_ram_gb": 32.0,
+    "unified_memory": false
+  }
+}

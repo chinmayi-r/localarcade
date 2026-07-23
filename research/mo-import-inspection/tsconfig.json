@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "../../lib/orchestrator/runner-import.ts",
+    "../../lib/orchestrator/runner-import-types.ts",
+    "../../lib/contracts/**/*.ts",
+    "inspection.test.ts"
+  ]
+}

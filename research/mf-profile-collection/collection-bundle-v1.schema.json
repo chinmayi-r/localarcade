@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localarcade.dev/research/mf-profile-collection/collection-bundle-v1.schema.json",
+  "title": "M-F non-production raw profile collection bundle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "contract",
+    "collectionId",
+    "collectionVersion",
+    "evidenceClassification",
+    "candidate",
+    "compatibilityReceipt",
+    "hardwareTarget",
+    "bindings",
+    "tool",
+    "command",
+    "runPath",
+    "contexts"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "contract": { "const": "mf-profile-collection-bundle" },
+    "collectionId": { "$ref": "#/$defs/nonEmptyString" },
+    "collectionVersion": { "$ref": "#/$defs/nonEmptyString" },
+    "evidenceClassification": {
+      "enum": ["synthetic-machinery-only", "local-measurement"]
+    },
+    "candidate": { "type": "object" },
+    "compatibilityReceipt": { "type": "object" },
+    "hardwareTarget": { "type": "object" },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidateContentSha256",
+        "compatibilityReceiptContentSha256",
+        "hardwareTargetContentSha256",
+        "artifactSha256"
+      ],
+      "properties": {
+        "candidateContentSha256": { "$ref": "#/$defs/sha256" },
+        "compatibilityReceiptContentSha256": { "$ref": "#/$defs/sha256" },
+        "hardwareTargetContentSha256": { "$ref": "#/$defs/sha256" },
+        "artifactSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "executableSha256"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "version": { "$ref": "#/$defs/nonEmptyString" },
+        "executableSha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv"],
+      "properties": {
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "runPath": { "const": "gpu" },
+    "contexts": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/context" }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modelBytes", "contextBytes", "computeBytes"],
+      "properties": {
+        "modelBytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "contextBytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "computeBytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "attemptBase": {
+      "type": "object",
+      "required": [
+        "attemptId",
+        "observedAt",
+        "rawSourceRecordRef",
+        "status",
+        "device",
+        "host"
+      ],
+      "properties": {
+        "attemptId": { "$ref": "#/$defs/nonEmptyString" },
+        "observedAt": { "type": "string", "format": "date-time" },
+        "rawSourceRecordRef": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "completedAttempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptId",
+        "observedAt",
+        "rawSourceRecordRef",
+        "status",
+        "device",
+        "host"
+      ],
+      "properties": {
+        "attemptId": { "$ref": "#/$defs/nonEmptyString" },
+        "observedAt": { "type": "string", "format": "date-time" },
+        "rawSourceRecordRef": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "const": "completed" },
+        "device": { "$ref": "#/$defs/pool" },
+        "host": { "$ref": "#/$defs/pool" }
+      }
+    },
+    "incompleteAttempt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptId",
+        "observedAt",
+        "rawSourceRecordRef",
+        "status",
+        "reasonCode",
+        "device",
+        "host"
+      ],
+      "properties": {
+        "attemptId": { "$ref": "#/$defs/nonEmptyString" },
+        "observedAt": { "type": "string", "format": "date-time" },
+        "rawSourceRecordRef": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["failed", "unavailable"] },
+        "reasonCode": { "$ref": "#/$defs/nonEmptyString" },
+        "device": { "type": "null" },
+        "host": { "type": "null" }
+      }
+    },
+    "attempt": {
+      "oneOf": [
+        { "$ref": "#/$defs/completedAttempt" },
+        { "$ref": "#/$defs/incompleteAttempt" }
+      ]
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contextTokens", "attempts"],
+      "properties": {
+        "contextTokens": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "attempts": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/attempt" }
+        }
+      }
+    }
+  }
+}

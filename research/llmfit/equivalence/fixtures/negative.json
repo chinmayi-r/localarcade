@@ -1,0 +1,65 @@
+[
+  {
+    "name": "negative tolerance",
+    "scenario": {
+      "id": "bad-tolerance",
+      "description": "Must be rejected.",
+      "upstream": {
+        "topology": "single-pool",
+        "availableBytes": 1024,
+        "requiredBytes": 512,
+        "fits": true
+      },
+      "local": {},
+      "mappingBlockers": [],
+      "tolerance": {
+        "requiredBytesAbsolute": -1,
+        "requiredBytesRelativeBps": 0
+      },
+      "expectedOutcome": "agreement"
+    },
+    "expectedIssue": "requiredBytesAbsolute"
+  },
+  {
+    "name": "contradictory upstream fit",
+    "scenario": {
+      "id": "bad-fit",
+      "description": "Must be rejected.",
+      "upstream": {
+        "topology": "single-pool",
+        "availableBytes": 1024,
+        "requiredBytes": 2048,
+        "fits": true
+      },
+      "local": {},
+      "mappingBlockers": [],
+      "tolerance": {
+        "requiredBytesAbsolute": 0,
+        "requiredBytesRelativeBps": 0
+      },
+      "expectedOutcome": "disagreement"
+    },
+    "expectedIssue": "contradicts"
+  },
+  {
+    "name": "unknown topology",
+    "scenario": {
+      "id": "bad-topology",
+      "description": "Must be rejected.",
+      "upstream": {
+        "topology": "magic-shared-vram",
+        "availableBytes": 1024,
+        "requiredBytes": null,
+        "fits": null
+      },
+      "local": null,
+      "mappingBlockers": [],
+      "tolerance": {
+        "requiredBytesAbsolute": 0,
+        "requiredBytesRelativeBps": 0
+      },
+      "expectedOutcome": "unrepresentable"
+    },
+    "expectedIssue": "topology"
+  }
+]

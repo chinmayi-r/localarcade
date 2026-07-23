@@ -9,6 +9,13 @@ same positive and negative fixture corpus.
 fail closed; version negotiation belongs to a future explicitly approved
 contract revision.
 
+The additive `runner-import-bundle` has an independent
+`importBundleVersion: 1`. It contains the unchanged `runner-handoff` v1 plus
+the M-E compatibility-admission receipt and binds their candidate, artifact,
+runtime, operating-system, backend and quantization identities. It carries no
+model data or side-effect authorization. Its own canonical `contentHash`
+protects the complete two-payload snapshot and excludes only itself.
+
 Core DTOs, canonical serialization and envelope validation do not import
 product modules. Legacy mappings live only under `adapters/`. An adapter must
 return a typed `blocked` result when translation would discard information or

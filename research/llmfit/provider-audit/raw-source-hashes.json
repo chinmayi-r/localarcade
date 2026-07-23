@@ -1,0 +1,22 @@
+[
+  {
+    "path": "LICENSE",
+    "sha256": "b52696dc0457bf58616f5017e5146b2932611b9357bb9824c7c91183fc36471f"
+  },
+  {
+    "path": "Cargo.lock",
+    "sha256": "d8c5f3e0b9c52d5500f66f90001445a0c74efedc91c197a888f13a6cd11739ab"
+  },
+  {
+    "path": "llmfit-core/src/analysis.rs",
+    "sha256": "c3cfff06dd4aebcf8bc0fdd5c6173981acfbccdd0c794ca2564aeb84e01b2754"
+  },
+  {
+    "path": "llmfit-tui/src/main.rs",
+    "sha256": "94297087e882c2354b1f6c416c0b0e3cef6f16d55496d74d97d2d6d6b4a65baf"
+  },
+  {
+    "path": "llmfit-tui/src/display.rs",
+    "sha256": "b18b58e85512dd7dfa85478064c5c7db4c46f5da0b8b035ff4feb5d31ca54dc1"
+  }
+]

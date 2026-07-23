@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "id": "qwen3-4b-instruct-2507-q4km-llamacpp-b10061-rtx3060laptop",
+      "artifactSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+      "acceleratorId": "nvidia-geforce-rtx-3060-laptop-gpu",
+      "runtime": {
+        "engine": "llama.cpp",
+        "build": "b10061 (5d5306bf3)",
+        "backend": "cuda",
+        "gpuLayers": "all",
+        "kvCache": "f16",
+        "batchSize": 2048
+      },
+      "methodSourceUrl": "https://github.com/ggml-org/llama.cpp/blob/5d5306bf3/tools/fit-params/README.md",
+      "observedOn": "2026-07-20",
+      "command": "llama-fit-params -m <verified-artifact> -c <context> -fitp on --offline --log-disable",
+      "observationsMiB": [
+        {
+          "contextTokens": 4096,
+          "device": { "model": 2375, "context": 576, "compute": 301 },
+          "host": { "model": 304, "context": 0, "compute": 14 }
+        },
+        {
+          "contextTokens": 16384,
+          "device": { "model": 2375, "context": 2304, "compute": 301 },
+          "host": { "model": 304, "context": 0, "compute": 26 }
+        }
+      ],
+      "normalized": {
+        "referenceContextTokens": 4096,
+        "device": { "modelMiB": 2375, "computeFixedMiB": 301, "contextMiB": 576, "computeContextMiB": 0 },
+        "host": { "modelMiB": 304, "computeFixedMiB": 10, "contextMiB": 0, "computeContextMiB": 4 }
+      }
+    }
+  ]
+}

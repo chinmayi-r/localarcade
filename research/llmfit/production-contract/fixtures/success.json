@@ -1,0 +1,283 @@
+{
+  "input": {
+    "schemaVersion": 1,
+    "capability": "llmfit-advisory-request",
+    "requestId": "rec_mb_contract_01",
+    "hardwareTarget": {
+      "hardwareTargetId": "hw_mb_contract_01",
+      "os": {
+        "family": "windows",
+        "version": "11"
+      },
+      "cpu": {
+        "displayName": "Fixture 16-core CPU",
+        "logicalCores": 16
+      },
+      "memory": {
+        "totalRamBytes": 34359738368,
+        "availableRamBytes": 25769803776,
+        "unified": false
+      },
+      "accelerators": [
+        {
+          "acceleratorId": "fixture:cuda:12g",
+          "displayName": "Fixture CUDA GPU",
+          "kind": "nvidia",
+          "vendor": "nvidia",
+          "backend": "cuda",
+          "deviceMemoryBytes": 12884901888,
+          "count": 1
+        }
+      ],
+      "fieldOrigins": {
+        "os.family": "self-reported",
+        "cpu.displayName": "self-reported",
+        "cpu.logicalCores": "self-reported",
+        "memory.totalRamBytes": "self-reported",
+        "memory.availableRamBytes": "self-reported",
+        "memory.unified": "self-reported",
+        "accelerators[0].displayName": "self-reported",
+        "accelerators[0].backend": "self-reported",
+        "accelerators[0].deviceMemoryBytes": "self-reported",
+        "accelerators[0].count": "self-reported"
+      }
+    },
+    "query": {
+      "taskFamily": "coding",
+      "interactionStyle": "interactive",
+      "desiredContextTokens": 16384,
+      "forcedRuntime": null
+    }
+  },
+  "providerOutput": {
+    "schemaVersion": 1,
+    "capability": "llmfit-advisory",
+    "status": "ok",
+    "requestId": "rec_mb_contract_01",
+    "hardwareTargetId": "hw_mb_contract_01",
+    "source": {
+      "id": "llmfit-core",
+      "version": "1.1.6",
+      "revision": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+      "url": "https://github.com/AlexsJones/llmfit"
+    },
+    "requestScope": {
+      "taskFamily": "coding",
+      "interactionStyle": "interactive",
+      "desiredContextTokens": 16384,
+      "forcedRuntime": null
+    },
+    "candidates": [
+      {
+        "advisoryId": "llmfit:fixture-org/example-7b",
+        "upstreamModel": {
+          "id": "fixture-org/example-7b",
+          "displayName": "Example 7B",
+          "provider": "Fixture Org",
+          "parameters": 7000000000,
+          "upstreamReportedCapabilities": [
+            "text",
+            "tool-use"
+          ]
+        },
+        "advisory": {
+          "fit": "good",
+          "runPath": "gpu",
+          "memoryRequiredBytes": 8053063680,
+          "memoryAvailableBytes": 12884901888,
+          "context": {
+            "requestedTokens": 16384,
+            "effectiveTokens": 16384,
+            "usableTokens": 16384
+          },
+          "performance": {
+            "estimatedGenerationTokensPerSecond": {
+              "low": 28,
+              "high": 36
+            },
+            "upstreamReportedGenerationTokensPerSecond": null
+          },
+          "suggestedRuntime": "llama.cpp",
+          "suggestedQuantization": "Q4_K_M"
+        },
+        "mappingIssues": [],
+        "provenance": [
+          {
+            "source": {
+              "id": "llmfit-core",
+              "version": "1.1.6",
+              "revision": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+              "url": "https://github.com/AlexsJones/llmfit"
+            },
+            "retrievedAt": "2026-07-22T20:00:00.000Z",
+            "observedAt": null,
+            "method": "estimate",
+            "hardwareMatch": "exact",
+            "configurationMatch": "family-proxy",
+            "scope": {
+              "taskFamily": "coding",
+              "taskPackId": null,
+              "promptId": null,
+              "harnessId": "llmfit-core-v1.1.6"
+            },
+            "sampleCount": null,
+            "measurement": {
+              "unit": "bytes",
+              "interval": {
+                "lower": 8053063680,
+                "upper": 8053063680
+              },
+              "confidence": null,
+              "eligible": null,
+              "eligibilityReasons": [
+                "upstream-family-advisory-only"
+              ]
+            },
+            "rawSourceRecordRef": "llmfit-core:v1.1.6:fixture-org/example-7b"
+          }
+        ],
+        "rawSourceRecordRef": "llmfit-core:v1.1.6:fixture-org/example-7b"
+      },
+      {
+        "advisoryId": "llmfit:fixture-org/example-3b",
+        "upstreamModel": {
+          "id": "fixture-org/example-3b",
+          "displayName": "Example 3B",
+          "provider": "Fixture Org",
+          "parameters": 3000000000,
+          "upstreamReportedCapabilities": [
+            "text"
+          ]
+        },
+        "advisory": {
+          "fit": "good",
+          "runPath": "gpu",
+          "memoryRequiredBytes": 4294967296,
+          "memoryAvailableBytes": 12884901888,
+          "context": {
+            "requestedTokens": 16384,
+            "effectiveTokens": 16384,
+            "usableTokens": 16384
+          },
+          "performance": {
+            "estimatedGenerationTokensPerSecond": null,
+            "upstreamReportedGenerationTokensPerSecond": null
+          },
+          "suggestedRuntime": null,
+          "suggestedQuantization": null
+        },
+        "mappingIssues": [],
+        "provenance": [
+          {
+            "source": {
+              "id": "llmfit-core",
+              "version": "1.1.6",
+              "revision": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+              "url": "https://github.com/AlexsJones/llmfit"
+            },
+            "retrievedAt": "2026-07-22T20:00:00.000Z",
+            "observedAt": null,
+            "method": "estimate",
+            "hardwareMatch": "exact",
+            "configurationMatch": "family-proxy",
+            "scope": {
+              "taskFamily": "coding",
+              "taskPackId": null,
+              "promptId": null,
+              "harnessId": "llmfit-core-v1.1.6"
+            },
+            "sampleCount": null,
+            "measurement": null,
+            "rawSourceRecordRef": "llmfit-core:v1.1.6:fixture-org/example-3b"
+          }
+        ],
+        "rawSourceRecordRef": "llmfit-core:v1.1.6:fixture-org/example-3b"
+      }
+    ],
+    "warnings": [
+      "Candidate order is upstream replay order, not Local Arcade ranking.",
+      "Suggested runtime and quantization are advisory and do not identify an exact configuration.",
+      "Pinned llmfit v1.1.6 cannot safely combine an explicit SystemSpecs input with a forced-runtime recommendation override."
+    ]
+  },
+  "familyBinding": {
+    "advisoryId": "llmfit:fixture-org/example-7b",
+    "candidateId": "candidate_exact_01",
+    "modelFamilyId": "example-7b",
+    "upstreamModelId": "fixture-org/example-7b",
+    "method": "explicit-registry-crosswalk",
+    "sourceRevision": "registry-fixture-revision"
+  },
+  "proposedMFFitInputBlockedPendingCrosswalk": {
+    "schemaVersion": 1,
+    "capability": "m-f-upstream-advisory-input",
+    "candidateId": "candidate_exact_01",
+    "hardwareTargetId": "hw_mb_contract_01",
+    "desiredContextTokens": 16384,
+    "advisoryId": "llmfit:fixture-org/example-7b",
+    "modelFamilyId": "example-7b",
+    "binding": {
+      "upstreamModelId": "fixture-org/example-7b",
+      "method": "explicit-registry-crosswalk",
+      "sourceRevision": "registry-fixture-revision"
+    },
+    "upstreamAssessment": {
+      "fit": "good",
+      "runPath": "gpu",
+      "memoryRequiredBytes": 8053063680,
+      "memoryAvailableBytes": 12884901888,
+      "context": {
+        "requestedTokens": 16384,
+        "effectiveTokens": 16384,
+        "usableTokens": 16384
+      },
+      "performance": {
+        "estimatedGenerationTokensPerSecond": {
+          "low": 28,
+          "high": 36
+        },
+        "upstreamReportedGenerationTokensPerSecond": null
+      }
+    },
+    "upstreamSuggestions": {
+      "runtime": "llama.cpp",
+      "quantization": "Q4_K_M"
+    },
+    "mappingIssues": [],
+    "provenance": [
+      {
+        "source": {
+          "id": "llmfit-core",
+          "version": "1.1.6",
+          "revision": "aaa2bc179cec214ccdc44501c853b98fba0b343b",
+          "url": "https://github.com/AlexsJones/llmfit"
+        },
+        "retrievedAt": "2026-07-22T20:00:00.000Z",
+        "observedAt": null,
+        "method": "estimate",
+        "hardwareMatch": "exact",
+        "configurationMatch": "family-proxy",
+        "scope": {
+          "taskFamily": "coding",
+          "taskPackId": null,
+          "promptId": null,
+          "harnessId": "llmfit-core-v1.1.6"
+        },
+        "sampleCount": null,
+        "measurement": {
+          "unit": "bytes",
+          "interval": {
+            "lower": 8053063680,
+            "upper": 8053063680
+          },
+          "confidence": null,
+          "eligible": null,
+          "eligibilityReasons": [
+            "upstream-family-advisory-only"
+          ]
+        },
+        "rawSourceRecordRef": "llmfit-core:v1.1.6:fixture-org/example-7b"
+      }
+    ]
+  }
+}

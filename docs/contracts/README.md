@@ -4,7 +4,7 @@ Status: **Product-owner-approved first-slice contract v1**, 2026-07-22. These fi
 
 ## Files
 
-- [`local-arcade-first-slice-v1.schema.json`](local-arcade-first-slice-v1.schema.json): JSON Schema 2020-12 envelope and thirteen contract IDs, including the additive U25 admission receipt.
+- [`local-arcade-first-slice-v1.schema.json`](local-arcade-first-slice-v1.schema.json): JSON Schema 2020-12 envelope and fourteen contract IDs, including the additive U25 admission receipt and U28 runner import bundle.
 - [`fixtures/`](fixtures/): valid golden envelopes referenced by the screen contract.
 - [`current-type-mapping.md`](current-type-mapping.md): compatibility map and required adapters for existing TypeScript and Rust types.
 - [`compatibility-report.md`](compatibility-report.md): exact field/enum comparison and owner decisions.
@@ -24,6 +24,7 @@ Status: **Product-owner-approved first-slice contract v1**, 2026-07-22. These fi
 | `quick-check-plan` / `quick-check-result` | Separate mechanical-task protocol and per-check evidence | M-J/M-O → D3/D5/C5 |
 | `verification-plan` / `verification-result` | Higher-level references to the independently typed plans/results | M-J/M-O → D3/D5/C5 |
 | `compatibility-admission-receipt` | Versioned M-E admission decision bound to exact candidate, runtime, OS/architecture, package facts and source assertion | M-E → M-J/M-O |
+| `runner-import-bundle` | Separately versioned, canonically hashed import object containing the unchanged v1 handoff and its exact M-E admission receipt | M-O → desktop import/M-J |
 
 All contracts use the approved `ok`, `unavailable`, `blocked`, `partial`, or `error` use-case envelope. `partial` retains contract-typed data plus explicit completeness, missing portions, warnings, and recovery actions. Domain run outcomes remain inside typed data. Public contribution, battle/vote/rating, upload, and public-service contracts are excluded.
 
@@ -52,6 +53,9 @@ unknown result fields, duplicate portfolio families, invalid handoff expiry,
 untyped partial data, an empty verification plan, and the rejected legacy
 combined-sample shape, and a non-admitted compatibility decision. Receipt
 semantic negatives additionally prove assertion/target and required-package
-bindings fail closed. Existing
+bindings fail closed. Runner-import semantic negatives prove forward bundle
+versions and candidate/artifact/runtime mismatches fail closed while the nested
+`runner-handoff` v1 remains unchanged. Receipt-only content drift also
+invalidates the bundle-level canonical hash. Existing
 root/runner tests remain separate acceptance evidence; these fixtures become
 implementation tests only in a future approved M-A checkpoint.

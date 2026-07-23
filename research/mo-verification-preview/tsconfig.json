@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "../../lib/orchestrator/verification-preview.ts",
+    "../../lib/orchestrator/verification-preview-types.ts",
+    "../../lib/contracts/**/*.ts",
+    "verification-preview.test.ts"
+  ]
+}

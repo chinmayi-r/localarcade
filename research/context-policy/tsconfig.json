@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "../../lib/context-policy/**/*.ts",
+    "../../lib/contracts/types.ts",
+    "context-policy.test.ts",
+    "composition.test.ts",
+    "../../lib/orchestrator/context.ts"
+  ]
+}

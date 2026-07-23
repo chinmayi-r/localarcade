@@ -1,8 +1,8 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import schema from "../../docs/contracts/local-arcade-first-slice-v1.schema.json";
-import { canonicalJson, handoffContentHash } from "./canonical";
-import type { BenchmarkResult, CompatibilityAdmissionReceipt, ContractEnvelope, MeasurementSeries, RecommendationPortfolio, RunnerHandoff, VerificationPlan, VerificationResult } from "./types";
+import { canonicalJson, handoffContentHash, runnerImportBundleContentHash } from "./canonical";
+import type { BenchmarkResult, CompatibilityAdmissionReceipt, ContractEnvelope, MeasurementSeries, RecommendationPortfolio, RunnerHandoff, RunnerImportBundle, VerificationPlan, VerificationResult } from "./types";
 
 const validateSchema = addFormats(new Ajv2020({ allErrors: true, strict: true })).compile(schema);
 export type ContractValidation = { ok: true; value: ContractEnvelope } | { ok: false; errors: string[] };
@@ -16,12 +16,16 @@ function semanticErrors(value: ContractEnvelope): string[] {
     if (new Set(families).size !== families.length) errors.push("portfolio model families must be distinct");
   }
   if (value.contract === "runner-handoff") {
-    const handoff = value.data as RunnerHandoff;
-    if (Date.parse(handoff.expiresAt) - Date.parse(handoff.createdAt) !== 86_400_000) errors.push("handoff expiry must be exactly 24 hours");
-    if (handoff.contentHash !== handoffContentHash(handoff)) errors.push("handoff contentHash does not match its canonical snapshot");
+    errors.push(...runnerHandoffErrors(value.data as RunnerHandoff));
   }
   if (value.contract === "compatibility-admission-receipt") {
     errors.push(...compatibilityReceiptErrors(value.data as CompatibilityAdmissionReceipt));
+  }
+  if (value.contract === "runner-import-bundle") {
+    const bundle = value.data as RunnerImportBundle;
+    errors.push(...runnerHandoffErrors(bundle.handoff));
+    errors.push(...compatibilityReceiptErrors(bundle.compatibilityAdmission));
+    errors.push(...runnerImportBundleErrors(bundle));
   }
   if (value.contract === "verification-plan") {
     const plan = value.data as VerificationPlan;
@@ -56,6 +60,31 @@ function semanticErrors(value: ContractEnvelope): string[] {
       errors.push("completed verification result cannot contain an incomplete nested result");
     }
   }
+  return errors;
+}
+
+function runnerHandoffErrors(handoff: RunnerHandoff): string[] {
+  const errors: string[] = [];
+  if (Date.parse(handoff.expiresAt) - Date.parse(handoff.createdAt) !== 86_400_000) errors.push("handoff expiry must be exactly 24 hours");
+  if (handoff.contentHash !== handoffContentHash(handoff)) errors.push("handoff contentHash does not match its canonical snapshot");
+  return errors;
+}
+
+function runnerImportBundleErrors(bundle: RunnerImportBundle): string[] {
+  const errors: string[] = [];
+  const candidate = bundle.handoff.selectedCandidate;
+  const receipt = bundle.compatibilityAdmission;
+  if (bundle.contentHash !== runnerImportBundleContentHash(bundle)) errors.push("runner import contentHash does not match its canonical snapshot");
+  if (receipt.candidateId !== candidate.candidateId) errors.push("runner import receipt candidateId must match handoff candidateId");
+  if (receipt.artifactId !== candidate.artifact.artifactId) errors.push("runner import receipt artifactId must match handoff artifactId");
+  if (receipt.artifactSha256 !== candidate.artifact.sha256) errors.push("runner import receipt artifactSha256 must match handoff artifactSha256");
+  if (receipt.runtimeConfigurationId !== candidate.runtime.runtimeConfigurationId) errors.push("runner import receipt runtimeConfigurationId must match handoff runtimeConfigurationId");
+  if (receipt.target.product !== candidate.runtime.product) errors.push("runner import receipt product must match handoff runtime product");
+  if (receipt.target.engine !== candidate.runtime.engine) errors.push("runner import receipt engine must match handoff runtime engine");
+  if (receipt.target.engineBuild !== candidate.runtime.engineBuild) errors.push("runner import receipt engineBuild must match handoff runtime engineBuild");
+  if (receipt.target.operatingSystem !== bundle.handoff.hardwareTarget.os.family) errors.push("runner import receipt operatingSystem must match handoff hardware target");
+  if (receipt.target.backend !== candidate.runtime.backend) errors.push("runner import receipt backend must match handoff runtime backend");
+  if (receipt.target.quantizationScheme !== candidate.artifact.quantization) errors.push("runner import receipt quantization must match handoff artifact quantization");
   return errors;
 }
 

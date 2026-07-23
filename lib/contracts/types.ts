@@ -5,6 +5,7 @@ export const contractIds = [
   "fit-evidence-assessment", "recommendation-portfolio", "runner-handoff",
   "benchmark-plan", "benchmark-result", "quick-check-plan", "quick-check-result",
   "verification-plan", "verification-result", "compatibility-admission-receipt",
+  "runner-import-bundle",
 ] as const;
 export type ContractId = (typeof contractIds)[number];
 export type Origin = "detected" | "self-reported" | "imported" | "confirmed" | "unknown";
@@ -153,6 +154,13 @@ export type RunnerHandoff = {
   containsModelData: false; sideEffectAuthorization: false;
 };
 
+export type RunnerImportBundle = {
+  importBundleVersion: 1;
+  contentHash: string;
+  handoff: RunnerHandoff;
+  compatibilityAdmission: CompatibilityAdmissionReceipt;
+};
+
 export type Preflight = {
   power: "ac" | "battery" | "unknown"; thermal: "acceptable" | "adverse" | "unknown";
   concurrentGpu: "idle" | "active" | "unknown"; requiresConfirmation: boolean; conditions: string[];
@@ -203,6 +211,7 @@ export type ContractDataMap = {
   "quick-check-plan": QuickCheckPlan; "quick-check-result": QuickCheckResult;
   "verification-plan": VerificationPlan; "verification-result": VerificationResult;
   "compatibility-admission-receipt": CompatibilityAdmissionReceipt;
+  "runner-import-bundle": RunnerImportBundle;
 };
 export type Completeness = { complete: boolean; missing: string[]; warnings: string[]; recoverableActions: string[] };
 export type TypedEnvelope<K extends ContractId = ContractId> = K extends ContractId ? {
