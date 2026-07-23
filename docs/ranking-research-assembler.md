@@ -55,7 +55,7 @@ flowchart TB
     RC["✅ consensus scenario corpus"]
     RA["✅ Apple/Metal external validation"]
     RH["✅ comparison harness / actual matched scorecards blocked"]
-    RPOL["🟡 owner review: no M-H winner demonstrated"]
+    RPOL["✅ owner selected compatibility-only M-H\nno ranking winner demonstrated"]
     RU --> RH
     RR --> RH
     RC --> RH
@@ -72,15 +72,15 @@ flowchart TB
   MA --> RESEARCH
 
   subgraph DOMAIN["Local Arcade preserved cores and target adapters"]
-    MC["✅ core / ⬜ adapter — M-C exact artifact registry"]
-    MD["✅ core / ⬜ adapter — M-D hardware reconciliation"]
-    ME["✅ core / ⬜ adapter — M-E runtime compatibility"]
-    MG["✅ core / ⬜ adapter — M-G evidence scope"]
-    MB["⬜ M-B pinned llmfit adapter decision"]
-    MF["✅ core / ⬜ adapter — M-F fit + performance"]
-    MH["✅ legacy core / ⬜ target — M-H portfolio"]
-    MI["✅ core / ⬜ adapter — M-I inventory"]
-    MJ["✅ existing-engine core / ⬜ adapter — M-J verification"]
+    MC["[DONE] M-C exact artifact registry adapter"]
+    MD["[DONE] M-D hardware reconciliation adapter"]
+    ME["[DONE] M-E runtime compatibility adapter"]
+    MG["[DONE] M-G evidence scope adapter"]
+    MB["[PARTIAL] M-B isolated direct-core + TS boundary\n[MISSING] Rust-to-TS transport + M-C crosswalk"]
+    MF["[DONE] M-F pure assessment adapter\n[PARTIAL] real admitted profile producer"]
+    MH["[DONE] compatibility-only portfolio boundary\n[PARTIAL] real data + M-O handoff"]
+    MI["[DONE] M-I inventory adapter"]
+    MJ["[DONE] M-J verification preparation adapter"]
     MC --> ME --> MF
     MD --> MF
     MG --> MF
@@ -184,7 +184,23 @@ not automatically eligible for exact Local Arcade ranking or publication.
 - ✅ Research-only comparison interchange v1 created under
   `research/comparison/`; valid smoke fixture passes and forward version fails.
 - ✅ Lane semantics reconciled into the shared interchange and harness.
+- ✅ M-B provider research pinned official llmfit `v1.1.6` at
+  `aaa2bc179cec214ccdc44501c853b98fba0b343b`, retained the MIT notice and
+  real CLI outputs, and recorded the CLI's host-detection and fail-open enum
+  boundaries.
+- ✅ The owner approved a pinned direct-core, formula-only M-B spike with
+  provider discovery, local history, community and localmaxxing evidence
+  disabled. The CLI remains a research oracle.
+- ✅ The isolated Rust provider accepts explicit input, calls only the pinned
+  embedded-catalog formula path and passes 10 tests plus fmt/clippy. The
+  TypeScript request/envelope proposal and research lanes pass 32 tests.
+- 🟡 M-B remains partial: upstream's unconditional HTTP/provider/update
+  dependency surface prevents runner linking; the Rust raw DTO has no transport
+  into the TypeScript envelope; M-C has no verified upstream-family crosswalk;
+  and M-F receives no live advisory. All four gaps are surfaced as blockers.
 - ⛔ Actual comparative scorecards blocked: identical candidate/configuration
   inputs and admissible measured labels are not yet available.
-- 🟡 Owner decides whether to use llmfit as an attributed prior and whether to
-  fund matched evaluation before M-H.
+- ✅ The owner selected the minimal compatibility-only M-H policy: at most five
+  distinct families, one exact configuration per family, no weighted score and
+  no claim of ranking superiority. Matched real evaluation remains required
+  before adopting any future ranker or claiming an improvement over llmfit.

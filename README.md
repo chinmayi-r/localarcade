@@ -35,6 +35,34 @@ Coverage is deliberately sparse. The current production recommendation adapter
 contains only configurations with admitted artifact identity and explicit fit
 profiles; the public UI is not yet the approved end-to-end V1 experience.
 
+## Current build progress
+
+This is the candid product-level view. A green internal module does not imply a
+complete user journey.
+
+```text
+Internal foundations       █████████░  strong
+Typed module boundaries    ███████░░░  substantial, handoffs still partial
+Desktop runner workflow    ███████░░░  fixture-proven, not live-proven
+Website first slice        ███░░░░░░░  blocked by real portfolio data
+Private Arena              ░░░░░░░░░░  not started
+Public systems             deferred
+Complete user product      ████░░░░░░  not nearly as green as the core map looks
+```
+
+“Blocked by real portfolio data” means that the replacement website cannot yet
+produce a production recommendation through M-F/M-H: the repository has no
+trusted hardware/profile capture boundary, reviewed production profile manifest
+and owner-approved concrete capacity policy for the new path. Synthetic
+fixtures prove the machinery only. The existing website and desktop fixture
+workflow remain available, but neither is evidence of a completed
+finder-to-live-verification product.
+
+The executable gate-by-gate view is maintained in the
+[capability handoff board](docs/capability-handoff-board.md), while the
+[system build assembler](docs/system-build-assembler.md) shows dependency and
+parallel-lane progress.
+
 ## Local verification
 
 Requires Node.js 22.13 or newer.

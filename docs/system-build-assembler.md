@@ -68,17 +68,19 @@ flowchart LR
     MA["M-A contracts ✅"]
     MB["M-B pinned llmfit advisory ⏸"]
     MC["M-C exact artifact registry ✅"]
-    MD["M-D hardware resolver ✅"]
+    MD["M-D hardware resolver ✅\nU31 sealed confirmation ✅"]
     ME["M-E exact candidate/runtime builder ✅"]
-    MF["M-F fit/performance adapter ⬜\npreserved core ✅"]
+    MF["M-F assessment + admission ✅\nsynthetic collection machinery ✅\ntrusted capture + policy ⏸"]
     MG["M-G evidence adapter ✅\npreserved core ✅"]
-    MH["M-H portfolio ⏸\nlegacy core ✅"]
-    MI["M-I read-only inventory ✅\npreserved core ✅"]
-    MJ["M-J verification adapter ✅\nadmission boundary ✅"]
+    MH["M-H compatibility portfolio ✅\nsynthetic handoff ✅ / real data + M-O partial"]
+    MI["M-I read-only inventory ✅\nexplicit selected-file hash ✅"]
+    MJ["M-J verification adapter ✅\nbenchmark → fixed checks ✅\nlive external proof ⬜"]
     MK["M-K private Arena ⬜ later"]
     MLN["M-L/M-M/M-N public systems ⛔"]
-    MO["M-O orchestration ⬜"]
-    MP["M-P website / desktop / CLI ⬜"]
+    U28["U28 import bundle ✅\nv1 handoff unchanged + admission receipt"]
+    U30["U30 task→context policy ✅\nversioned planning heuristic"]
+    MO["M-O orchestration partial ✅\nserver-owned plan policy ✅\ntyped execution transport ✅\nrestart recovery ⬜"]
+    MP["M-P surfaces partial\nwebsite legacy ⚠\nD1–D6 desktop + adverse DTO gates ✅\nCLI ⬜"]
   end
 
   L0 -. "versioned translation" .-> MA
@@ -137,6 +139,8 @@ flowchart LR
   MD --> MJ
   ME --> MJ
   MI --> MJ
+  U28 --> MO
+  U30 --> MO
   MH --> MO
   MI --> MO
   MJ --> MO
@@ -163,27 +167,34 @@ flowchart TB
   MA --> MG
   MA --> PROTO
 
-  MB["M-B llmfit adapter ⏸\nowner decision + pin"]
-  MC --> MF["M-F fit/performance ⬜"]
+  MB["M-B llmfit adapter partial\nisolated pin; transport/crosswalk missing"]
+  MC --> MF["M-F assessment + source admission ✅\ncollection/derivation machinery ✅\nproduction trust + policy ⏸"]
   MD --> MF
   ME --> MF
   MG --> MF
   MB --> MF
 
-  MC --> MI["M-I inventory ✅\n8d26720 + 6a9d860 + dc87da1"]
+  MC --> MI["M-I inventory ✅\nselected size candidate → explicit hash ✅"]
   ME --> MI
-  MD --> MJ["M-J adapter ✅\ncea7514 + e797b33 + 86257f2"]
+  MD --> U31["U31 hardware confirmation ✅\n12 focused proofs"]
+  U31 --> MJ["M-J adapter ✅\nsealed hardware receipt"]
   ME --> MJ
   MI --> MJ
 
-  MF --> MH["M-H portfolio policy ⏸"]
+  MF --> MH["M-H compatibility portfolio ✅\n23 behavior + 1 purity proofs"]
   PROTO --> MH
-  MH --> MO["M-O use cases ⬜"]
+  MH --> MO
   MI --> MO
-  MJ --> PROOF["M-E compatibility admission receipt ✅\nU25 resolved"]
-  PROOF --> MO
+  U32["U32 guarded tool identity ✅\n6 integration + 3 adversarial proofs"] --> MJ
+  PROOF["M-E compatibility admission receipt ✅\nU25 resolved"] --> MJ
+  MJ --> MO
+  PROOF --> U28 --> MO
+  U30 --> MO
+  MJ --> EXEC["M-J combined execution ✅\nbenchmark load receipt → fixed checks"]
+  EXEC --> IPC["M-O opaque start/status/stop/result ✅\ntyped desktop consumer ✅"]
+  IPC --> MO
   MO --> WEB["M-P website ⬜"]
-  MO --> DESK["M-P desktop ⬜"]
+  MO --> DESK["M-P desktop D1–D6 ✅ fixtures\nfull DTO + planned-set admission ✅\nnative live run ⬜"]
   MO --> CLI["CLI parity ⬜"]
   DESK --> ARENA["M-K private Arena ⬜ later"]
   PUBLIC["Public Arena / upload / service ⛔"]
@@ -194,22 +205,28 @@ flowchart TB
 | Track | Branch/worktree | Current state | Completion evidence |
 |---|---|---|---|
 | assembler and integration | `codex/wave1-domain-adapters` — `G:/LocalArcade` | ✅ first wave integrated | root and runner full gates green on 2026-07-22 |
+| current M-I/M-O/M-P native-handoff batch | `codex/wave1-domain-adapters` — `G:/LocalArcade` | 🟡 uncommitted shared-worktree integration | Explicit selected-file hash promotion, server-owned fixed-plan policy, full result/planned-set admission and synthetic-only U27 collection research; 80 Rust library, 19 surface and 11 boundary tests; no native live-model claim |
 | M-C registry | `codex/m-c-registry` — `G:/LocalArcade-worktrees/m-c-registry` | ✅ integrated as `547d015` | adapter/equivalence tests and unchanged snapshot semantics |
-| M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ integrated as `b788396` | manual/detected/unknown/mismatch boundary tests; Rust parity |
+| M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ base integrated as `b788396`; U31 uncommitted in assembler | manual/detected/unknown/mismatch boundary tests; 12 U31 material-fact/acknowledgement proofs |
 | M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |
 | M-G evidence | reused M-E review lane | ✅ integrated as `e3689eb` | exact/lossy/unsupported mappings and boundary tests |
 | M-I inventory | `codex/m-i-inventory` — `G:/LocalArcade-worktrees/m-i-inventory` | ✅ integrated as `8d26720`, `6a9d860`, `dc87da1` | 11 inventory tests, 2 boundary tests, TypeScript equivalence, and independent mutation audit |
-| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | ✅ adapter and admission boundary integrated | Original adapter commits `cea7514`, `e797b33`, `86257f2`; additive M-A receipt binds successful M-E evaluation to exact M-J preparation; M-O execution use case remains queued |
+| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | ✅ base adapter integrated; execution producer uncommitted in assembler | Original commits plus U32 identity, fixed benchmark/quick protocols, suspended/job-owned process boundary, official JSON admission and genuine M-J preparation reachability; live external proof and surfaces remain queued |
 
-## Gate snapshot — 2026-07-22
+## Gate snapshot — 2026-07-23
 
-- Root `npm.cmd run check`: ✅ typecheck, lint, 135 TypeScript tests, 33 boundary tests,
+- Root gates: ✅ typecheck, lint, 155 TypeScript/UI tests, 36 boundary tests,
   registry freshness and production build.
 - Runner `npm.cmd run check`: ✅ TypeScript, Rust formatting, Clippy with
-  warnings denied, 71 Rust tests across all targets, and production build.
-- Parallel worktrees had polluted the shared Cargo target with incompatible
-  `serde_json` artifacts. The authoritative runner gate passed from a fresh
-  external `CARGO_TARGET_DIR` in 310.6 seconds without changing repository files.
+  warnings denied, 164 Rust tests across all targets, and production build.
+- U33–U37 execution subset: ✅ 15 fake-runner service tests, 5 transport tests
+  and 80/80 combined Rust library tests. Combined plans run the benchmark
+  before fixed quick checks; quick-only plans fail closed without structured
+  load evidence. Typed Tauri commands are registered and consumed by the M-P
+  desktop facade; no native live-model run is claimed.
+- Contracts: ✅ 20 positive, 12 schema-negative and 12 semantic-negative
+  fixtures. Documentation: ✅ UTF-8, mojibake and relative links across all
+  80 Markdown files. The M-O/M-P capability and interface proofs pass.
 
 ## Mapping rule
 

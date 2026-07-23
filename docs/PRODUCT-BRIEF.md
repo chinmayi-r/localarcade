@@ -137,21 +137,39 @@ proof.
 
 The audited implementation contains tested registry, hardware, runtime, fit,
 throughput, evidence, recommendation, local inventory, benchmark, quick-check,
-and dark rating cores. The shared contract package, llmfit adapter, private
-Arena use case, public contribution/service layers, orchestrator, approved replacement UI,
-and complete cross-platform runner do not yet exist as the target architecture
-defines them.
+and dark rating cores. The shared first-slice contract package exists. An
+isolated pinned llmfit formula-adapter spike exists, but it is not linked into
+a product surface and has no live M-F handoff. A partial non-production M-O
+boundary now covers finder/detail/handoff, import validation, context
+composition, permission/inventory, verification preview and an opaque typed
+process-local execution transport for benchmark-then-fixed-check verification.
+The desktop D1–D6 surface now consumes that M-O boundary through a typed
+application facade; deterministic surface tests and browser inspection prove
+the adapter and inspectable states, not a native external-model run. It remains
+unproven against a live external model and is not persistent across runner
+restart. The private Arena use case,
+public contribution/service layers, approved replacement UI and complete
+cross-platform runner do not yet exist as the target architecture defines
+them.
+
+The current desktop boundary can explicitly hash one user-selected local
+artifact candidate and can validate a server-owned fixed verification plan and
+result. This remains non-authorizing until the separate consent gate and is
+proven with fixtures, not a live external-model run. The U27 profile-collection
+work is synthetic research machinery only; no production fit policy or trusted
+measurement source is approved.
 
 See the [documentation authority map](README.md) and approved Wave 0 reports
 before reusing or replacing code. The first-slice production contract package
-does not exist yet; the approved documentation schema and fixtures live under
-[`contracts/`](contracts/README.md) for the authorized M-A checkpoint.
+and its approved documentation schema and fixtures live under
+[`lib/contracts/`](../lib/contracts/) and
+[`contracts/`](contracts/README.md).
 
 ## Decisions still required at consuming checkpoints
 
 U1–U7 are resolved. The remaining decisions include:
 
-- llmfit integration and distribution method;
+- website execution/distribution for the pinned llmfit-backed advisory;
 - initial platform support and manual fallbacks;
 - benchmark trust/release boundary;
 - any public contribution, storage, or Arena service.

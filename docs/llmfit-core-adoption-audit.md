@@ -9,8 +9,11 @@ baseline and means this pinned v1.1.6 audit must be refreshed before an M-B
 integration decision. See `ranking-and-audition-research-plan.md`; no current
 production conclusion changed from this source check.
 
-Audited upstream: `AlexsJones/llmfit` v1.1.6 at commit
-`7ba90ce0f14756040db658933bfd5c6ad46ed4ea` on 2026-07-21.
+Audited upstream release: `AlexsJones/llmfit` v1.1.6. The Wave 1 provider
+probe resolved the official `v1.1.6` tag to commit
+`aaa2bc179cec214ccdc44501c853b98fba0b343b`. The earlier audit recorded
+`7ba90ce0f14756040db658933bfd5c6ad46ed4ea`; pinned replay now rejects that
+incorrect identity rather than selecting a document by recency.
 
 Upstream repository: https://github.com/AlexsJones/llmfit
 

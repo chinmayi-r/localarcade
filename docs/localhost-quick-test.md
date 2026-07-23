@@ -1,5 +1,9 @@
 # Localhost quick test
 
+> **Retired product experiment (2026-07-20).** This interface is no longer
+> exposed on the public website. The implementation and security boundary are
+> retained for diagnostics and possible reuse by the runner.
+
 M7 adds a browser-only middle tier for people who already have an
 OpenAI-compatible local server. It neither installs nor runs a model. The user
 must start the suite explicitly, and every request goes directly from the

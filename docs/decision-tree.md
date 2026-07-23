@@ -86,9 +86,9 @@ This is a *first-class page*, not an error: show the least-demanding viable arti
 ### What the estimator page shows per card (and what it refuses to show)
 Shown: model family + recommended quant, fits ✓/✗ with the math expandable, estimated tok/s **range** with source link, max feasible context, download size, license, and a setup route for the selected supported product when compatibility evidence exists. Refused: TTFT point-estimates, stability, thermal behavior, any `measured` badge — those belong to Tree B, because the website only knows about hardware *like* yours.
 
-**Optional middle tier — "point us at your llama-server":** a user already running `llama-server` (OpenAI-compatible, localhost) can let the web page run the quick-task suite against it directly from *their own browser* — no install, deterministic scoring client-side, results earn a `measured` badge for speed/task numbers (hardware still self-reported, so no `verified`). Pattern proven by browser-run benchmarks (DuckDB-WASM style); localhost CORS constraints apply and the page must degrade gracefully when the endpoint is unreachable.
+**Retired middle-tier experiment — "point us at your llama-server":** M7 proved that a browser can run the quick-task suite against an exact loopback OpenAI-compatible endpoint without proxying or persistence. The public surface was retired on 2026-07-20 because it required expert configuration while producing weaker identity and measurement evidence than the runner. Its suite and loopback policy remain reusable diagnostic code; the website no longer presents this route.
 
-### A8/A9 — Localhost quick test
+### A8/A9 — Localhost quick test (retired from the public journey)
 
 ```mermaid
 flowchart TD
@@ -103,7 +103,8 @@ Product, engine, runtime build and model ID remain part of the result identity.
 Hardware is user-entered and labeled `self-reported`. Generation throughput is
 shown only when the endpoint reports it; wall-clock request duration is not
 relabeled as generation throughput. Tests pin every leaf and prove that no
-non-loopback destination reaches `fetch`.
+non-loopback destination reaches `fetch`. These branches now describe the
+retained diagnostic module, not a website feature.
 
 ---
 

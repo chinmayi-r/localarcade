@@ -102,6 +102,7 @@ Execute in order unless the human says otherwise. Each is independently shippabl
 **Accept:** simulated stale timestamp fails the build in a test; triage exclusion covered by a golden file.
 
 ### M7 — Localhost middle tier
+**Lifecycle note (2026-07-20):** completed as an experiment, then retired from the public website by product-owner direction. Preserve its tested loopback boundary and reusable task definitions, but do not resume product investment without a new explicit decision.
 **Goal:** measured quick-tasks with zero install for llama-server users.
 **Steps:** browser page that, with explicit user action, calls a user-entered localhost OpenAI-compatible endpoint, runs the deterministic quick-task suite (JSON-schema validity, format constraints, small fact-preservation checks — all mechanically scored client-side), reports speed + task results badged `measured` (hardware stays self-reported → never `verified`). The selected product and engine/build remain part of the configuration identity. Degrade gracefully when unreachable; document product-specific CORS requirements from official sources only.
 **Accept:** suite runs against a mocked OpenAI-compatible endpoint in tests; unreachable-endpoint state has a designed UI; no request leaves the browser except to user-entered localhost (test asserts no external calls).

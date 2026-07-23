@@ -9,19 +9,19 @@ Audit date: 2026-07-22. “Module” means the proposed target in `docs/modular-
 | M-A | Shared first-slice v1 contracts | Approved DTOs, envelopes, canonical handoff serialization and validation now exist in isolated TypeScript and Rust packages; legacy hardware/recommendation mappings are explicit and fail closed | complete for the approved first slice; preserve legacy types behind adapters until their owning module checkpoints | [S1][S2][S18] |
 | M-B | llmfit core adapter | No code imports llmfit | missing; decide integration and licensing first | [S3] |
 | M-C | Model/artifact registry | Strong registry discovery/import/snapshot/freshness implementation | reuse behind an M-C interface; generated data remains generated | [S4] |
-| M-D | Hardware inventory/reconciliation | Sourced accelerator catalog plus Windows runner detection | reuse behind adapters; add non-Windows implementations and remove UI coupling | [S5] |
+| M-D | Hardware inventory/reconciliation | Sourced accelerator catalog, Windows runner detection, M-A target adapter and sealed U31 material-fact confirmation | preserve fail-closed adapters; add non-Windows implementations and remove UI coupling | [S5] |
 | M-E | Runtime/build compatibility | Runtime catalog plus recommendation-owned real candidate assembly | revise boundaries; preserve validation/compatibility | [S6] |
 | M-F | Fit and performance estimation | Pure memory fit, two-pool fit, scoped priors | reuse behind adapter; compare/replace internals with llmfit only after equivalence tests | [S7] |
 | M-G | Evidence normalization/provenance | Strong scoped evidence types/validation; fit profile is separately shaped JSON | reuse core; proposed shared evidence shape remains in review | [S8] |
-| M-H | Safe recommendation/ranking | Tested fail-closed engine/ranking/policy/presentation | preserve behavior; split catalog/fit/evidence/presentation dependencies | [S9] |
-| M-I | Local model inventory | Read-only runner model-store scan | reuse behind M-I interface; add explicit hash-upgrade flow later | [S10] |
-| M-J | Benchmarking/verification | Existing-engine benchmark, preflight, repeatability and mechanical quick tasks | partial; reuse behind adapter; bundled engine, sandbox, telemetry and artifact binding missing | [S11] |
+| M-H | Compatibility-only recommendation portfolio | New isolated exhaustive-universe boundary plus tested legacy ranker | use `lib/portfolio/` for the approved first slice; preserve legacy behavior until M-O/surfaces replace it | [S9][S19] |
+| M-I | Local model inventory | Read-only runner model-store scan plus exact registry/inventory adapter, process-local verified selection and explicit one-file hash promotion for a retained size candidate | preserve behind M-O; keep broad/implicit hashing prohibited | [S10] |
+| M-J | Benchmarking/verification | Existing-engine preparation plus fixed benchmark and quick-check protocols, guarded process boundary, official load admission and exact mechanical observations | combined producer proven with fixtures; quick-only remains blocked; pinned live tool/model evidence, T7 sandbox and trustworthy telemetry remain missing | [S11][S21] |
 | M-K | Solo Arena execution/results | No general execution plan/result or private Arena history | missing; quick-task scorers are reusable mechanics only | [S11][S12] |
 | M-L | Public pair/contribution intake | No pair-generation, consent payload, revocation, or service | missing; battle validation is only a possible downstream core | [S12] |
 | M-M | Aggregation/rating | Dark validated pairs/votes and bucketed Bradley–Terry | reuse behind adapter; no surface until M-L and approval | [S12] |
 | M-N | Public evidence service | No public service/API/storage | missing | [S1][S13] |
-| M-O | Application orchestrator | No orchestrator; website imports domains and runner invokes commands directly | missing and blocking later surface integration | [S13] |
-| M-P | Surface adapters | Current single-page website and thin Tauri UI | revise/replace shells after screen approval; retain accessible/tested behaviors meanwhile | [S13][S14] |
+| M-O | Application orchestrator | Prior pure/preview boundaries plus one-use execution transport, explicit inventory hash promotion and server-owned fixed-plan construction; typed desktop facade consumes it while the website remains legacy | preserve service/transport; migrate other surfaces only through separately reviewed checkpoints | [S13][S20][S21][S22] |
+| M-P | Surface adapters | Legacy website plus typed D1–D6 Tauri desktop workflow with fail-closed producer DTO/lifecycle/result admission; CLI absent | preserve desktop facade; migrate website only after real M-O portfolio and add CLI in a separate checkpoint | [S13][S14][S22] |
 
 ## Production source files
 
@@ -46,7 +46,7 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `lib/accelerators/validation.ts` | M-D | Fail-closed catalog validation | accelerator registry | reuse unchanged | [S5] |
 | `lib/contracts/types.ts` | M-A | Approved first-slice v1 DTOs and envelopes | shared corpus/typecheck | reuse unchanged as the v1 TypeScript wire authority | [S18] |
 | `lib/contracts/canonical.ts` | M-A | Deterministic canonical JSON and handoff SHA-256 | contract corpus | reuse unchanged | [S18] |
-| `lib/contracts/validator.ts` | M-A | Draft 2020-12 plus cross-record semantic validation, including compatibility admission | 19 positive/12 schema-negative fixtures plus semantic mutations | reuse unchanged | [S18] |
+| `lib/contracts/validator.ts` | M-A | Draft 2020-12 plus cross-record semantic validation, including compatibility admission and the separately hashed runner import bundle | 20 positive/12 schema-negative fixtures plus 12 semantic negatives | reuse unchanged | [S18] |
 | `lib/contracts/adapters/recommendation.ts` | M-A adapter | Lossless current hardware/request translations and explicit blocked mappings | adapter round-trip/rejection tests | reuse until M-D/M-H adapters supersede it | [S18] |
 | `lib/contracts/index.ts` | M-A | Core-only TypeScript exports | import-boundary test | reuse unchanged | [S18] |
 | `lib/battles/flag.ts` | M-M | Keeps battle feature dark | battle boundary | reuse unchanged until approval | [S12] |
@@ -83,6 +83,15 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `lib/recommendation/safety-policy.mjs` | M-H | Pure consent/safety decision tree | recommendation policy | reuse unchanged | [S9] |
 | `lib/recommendation/strategies.ts` | M-H | Strategy definitions/scoring | recommendation engine | reuse unchanged | [S9] |
 | `lib/recommendation/types.ts` | M-A/M-H | Query/candidate/outcome/display contracts | typecheck/recommendation/UI | revise into C1/C2/C5 | [S2][S9] |
+| `lib/portfolio/types.ts` | M-H | Internal exhaustive-universe, policy, reviewed-familiarity and disposition-ledger types over approved M-A DTOs | isolated M-H typecheck/behavior proof | reuse behind M-O; do not promote the internal ledger or brand to an M-A wire contract without approval | [S19] |
+| `lib/portfolio/index.ts` | M-H | Compatibility-only portfolio selection, process-local M-E/M-F composition integrity, complete ledger and M-A envelope validation | 23 behavior tests and purity/import proof | reuse behind M-O; real use waits for U27 | [S19] |
+| `lib/context-policy/types.ts`, `lib/context-policy/index.ts` | below M-O | Versioned novice task-to-context planning policy and exact expert override; numeric v1 mappings are reviewable heuristics, not measurements | 8 direct behavior/adversarial cases within the 12-test U30 suite plus purity proof | reuse behind M-O; M-P must not invent defaults | [S20] |
+| `lib/orchestrator/context.ts` | M-O | Composes policy output with explicit needs/preferences into a complete validated M-A request | 4 composition/adversarial cases within the 12-test U30 suite | reuse; unsupported inputs remain non-data | [S20] |
+| `lib/orchestrator/types.ts` | M-O | Internal finder port/session, exact-detail aggregate and current handoff use-case types | isolated M-O typecheck/behavior proof | reuse as internal boundary; do not promote aggregates to M-A without approval | [S20] |
+| `lib/orchestrator/index.ts` | M-O | Status-preserving finder composition, branded session/detail/handoff integrity, exact detail, canonical non-authorizing v1 handoff and U28 bundle creation | 16 behavior tests and purity/import proof | preserve; no production wiring yet | [S20] |
+| `lib/orchestrator/runner-import-types.ts`, `lib/orchestrator/runner-import.ts` | M-O | U29 exact bundle inspection; expired bundles remain inspectable and require confirmation before import; no import grants execution | 10 behavior/adversarial tests plus boundary proof | preserve; execution authorization remains impossible | [S20] |
+| `lib/orchestrator/runner-types.ts`, `lib/orchestrator/runner.ts` | M-O over M-I | Non-authorizing permission preview, status-preserving inventory port and branded verified-only selection | 11 behavior/adversarial tests plus boundary proof | preserve behind future runner composition | [S20] |
+| `lib/orchestrator/verification-preview-types.ts`, `lib/orchestrator/verification-preview.ts` | M-O over M-J | Requires explicit structural mirrors of Rust M-J confirmed hardware, observed tool, preflight and plan settings; validates a non-authorizing output against intact import/inventory state | 14 behavior/adversarial tests plus boundary proof | partial seam; producer-authenticated hardware/tool receipts and TypeScript→Rust adapter remain absent | [S20] |
 | `lib/registry/discovery/hugging-face.ts` | M-C | HF metadata discovery with exact-file route | importer/generated | reuse behind source adapter | [S4] |
 | `lib/registry/freshness.ts` | M-C | Pure seven-day fail-closed freshness gate | registry freshness | reuse unchanged | [S4] |
 | `lib/registry/importers/hugging-face.ts` | M-C | Immutable/provenance-aware admission | importer/registry contract | reuse unchanged | [S4] |
@@ -94,17 +103,28 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `lib/runtime/compatibility.ts` | M-E | Build-scoped compatibility evaluation | runtime contract | reuse unchanged | [S6] |
 | `lib/runtime/index.ts` | M-E | Runtime exports | runtime tests | revise as M-E interface | [S6] |
 | `lib/runtime/types.ts` | M-A/M-E | Product/engine/build compatibility types | runtime/typecheck | revise into C2 | [S2][S6] |
-| `runner/src/main.ts` | M-P (direct M-D/M-I/M-J) | Thin consent-triggered detection, scan, benchmark and tasks UI | runner gates/boundary | revise behind M-O | [S11][S13] |
-| `runner/index.html` | M-P | Desktop controls and consent/preflight structure | runner build; no DOM interaction test | revise with approved D-screens | [S11][S15] |
-| `runner/src/styles.css` | M-P | Thin runner styling | build; visual untested | revise with approved D-screens | [S15] |
+| `runner/src/main.ts`, `runner/src/runner-application.ts`, `runner/src/runner-composition.ts`, `runner/src/verification-plan-policy-v1.ts` | M-P over M-O | D1–D6 rendering delegates use cases to one injected facade; M-P sends only opaque handles and a policy ID, validates full producer DTOs/lifecycle/results, and never constructs plan contents | 19 state/use-case tests, 11 boundary tests, typecheck/build and local responsive inspection | preserve; add native live-model proof and recovery only in later checkpoints | [S21][S22] |
+| `runner/index.html`, `runner/src/styles.css` | M-P | Approved compact Forest desktop states, explicit permission previews, expert detail and responsive configuration-field motif | runner build; desktop/390 px local browser inspection | preserve; add native accessibility/visual regression harness later | [S15][S22] |
+| `runner/legacy-index.html`, `runner/src/legacy-runner-surface.ts`, `runner/src/legacy-styles.css` | historical M-P/R1–R4 | Preserved pre-M-P shell and retired raw-command callers, excluded from the active entry point | boundary test proves active facade has no retired routes | retire only after explicit deletion authorization | [S13][S22] |
 | `runner/src-tauri/src/main.rs` | M-P composition | Starts Tauri library | Cargo gates | reuse unchanged | [S15] |
 | `runner/src-tauri/src/contracts.rs` | M-A | Rust mirror DTOs, typed validation, canonical serialization and handoff integrity | shared corpus/Clippy/fmt | reuse unchanged as the v1 Rust wire boundary | [S18] |
-| `runner/src-tauri/src/lib.rs` | composition; missing M-O | Registers direct Tauri commands | Cargo/root boundary | revise into orchestrator composition | [S13] |
+| `runner/src-tauri/src/lib.rs` | M-O composition plus preserved legacy functions | Registers seven non-authorizing preview and four opaque execution commands behind process-local state; legacy raw benchmark/quick functions are preserved but no longer registered | Cargo/root boundary | preserve typed facade; frontend migration and legacy-code retirement need later proof | [S13][S21] |
 | `runner/src-tauri/src/hardware.rs` | M-D | Read-only Windows DXGI/system detection and registry reconciliation | Rust unit/live | reuse behind platform adapter | [S5] |
+| `runner/src-tauri/src/hardware_target.rs` | M-D | Adapts detected hardware into the M-A target with explicit unavailable/confirmation states | Rust adapter tests | reuse unchanged behind M-O | [S5] |
+| `runner/src-tauri/src/hardware_confirmation.rs` | M-D/U31 | Compares complete imported/detected material facts and seals acknowledged receipts process-locally | 12 focused adversarial tests | reuse unchanged; fail closed when material facts are unknown | [S5][S20] |
 | `runner/src-tauri/src/model_store.rs` | M-I | Read-only Ollama/LM Studio/extra GGUF scan | Rust integration/root boundary | reuse behind adapter | [S10] |
+| `runner/src-tauri/src/model_store/inventory.rs` | M-I | Preserves scan status; hashes only an explicitly selected retained size candidate under a system file guard; promotes only one exact registry identity | 13 Rust contract/equivalence/adverse tests | reuse behind M-O; non-Windows strong guard remains unavailable | [S10] |
 | `runner/src-tauri/src/preflight.rs` | M-J | CPU/RAM/AC checks; unknown thermal/GPU telemetry | Rust unit | revise/add platform telemetry adapters | [S11] |
 | `runner/src-tauri/src/benchmark.rs` | M-J | Checked existing llama-bench spawn, exact samples/repeatability/calibration gate | Rust unit/live/root boundary | reuse behind adapter | [S11] |
 | `runner/src-tauri/src/quick_task.rs` | M-J/M-K precursor | Checked llama-cli spawn and mechanical task results | Rust unit/live/root boundary | reuse mechanics; revise into execution plan/result | [S11] |
+| `runner/src-tauri/src/existing_tool_probe.rs` | M-J/U32 | Windows guarded identity probe for fixed allowlisted `--version`; proves path/hash/reported build only | 6 integration + 3 adversarial unit tests | reuse behind M-O; keep non-Windows unavailable until equally strong guard exists | [S11][S20] |
+| `runner/src-tauri/src/verification.rs` | M-J | Binds sealed hardware, exact M-I selection, M-E receipt, guarded tools, runtime and preflight into typed plan/result | 20 focused adapter tests | reuse; keep execution/result orchestration separately gated | [S11] |
+| `runner/src-tauri/src/preview_adapter.rs` | M-O | Validates U28/U29 import and assembles process-local U31/U32/M-I/M-J plan previews without authorization | 5 unit + 3 integration + root boundary tests | reuse as the approved preview facade; no surface wiring yet | [S20] |
+| `runner/src-tauri/src/execution_protocol.rs` | M-J | Fixed `llama-bench-v1` per-repetition argv/caps and fixed quick-check translation with exact sealed sampler and no arbitrary flags | protocol unit tests within 73-test library suite | reuse; benchmark validates but does not exercise sampler settings | [S21] |
+| `runner/src-tauri/src/execution_process.rs` | M-J/security | Guarded hashes, suspended Windows child, pre-resume Job Object assignment, bounded streams/watchdog/cancel and process-tree cleanup | process unit/adversarial tests within 73-test library suite | reuse as lifecycle control; never claim T7/network/filesystem sandbox | [S21] |
+| `runner/src-tauri/src/execution_result_adapter.rs` | M-J | Admits only official benchmark JSON and fixed quick outputs matching sealed identity/runtime facts; preserves valid earlier samples/checks | result-adapter tests within 73-test library suite | reuse; planned facts never substitute for observations | [S21] |
+| `runner/src-tauri/src/execution_lifecycle.rs`, `execution_service.rs` | M-O over M-J | One-use moved-prepared authorization, one active worker, benchmark-before-check sequencing, authentic progress, idempotent stop/terminal reads, malformed-later prefix preservation and M-J normalization | 15 service fixtures; 79 combined library tests | partial internal capability; no frontend/live-model proof; quick-only blocked without load evidence | [S21] |
+| `runner/src-tauri/src/execution_transport.rs` | M-O | Opaque typed start/status/stop/result facade requiring explicit side-effect acknowledgements and rejecting caller-authored execution facts | 5 transport fixtures plus root invoke-boundary tests and M-P consumer tests | preserve; predictable handles are references and restart-lost references fail closed | [S21][S22] |
 | `scripts/check-registry-freshness.ts` | M-C tooling | Build-time freshness gate | registry freshness/build | reuse unchanged | [S4] |
 | `scripts/discover-hugging-face.ts` | M-C tooling | Materializes discovery lock | workflow/boundary/generated | reuse behind tool boundary | [S4] |
 | `scripts/ingest.ts` | M-C tooling | Deterministic registry generation | registry workflow/generated | reuse unchanged | [S4] |
@@ -134,6 +154,7 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `tests/product-contract.test.mjs` | M-A/M-O/M-P | product promises, consent, accessibility | revise after contract freeze; preserve honesty assertions | [S14] |
 | `tests/quick-test.test.ts` | retired M7/M-K precursor | loopback policy, deterministic scorers/errors | reuse scorer cases; retire endpoint cases after replacement | [S16] |
 | `tests/quick-test-ui.test.tsx` | retired M7/M-P | dormant browser quick-test states/badges | retire after runner migration proof | [S16] |
+| `tests/runner-surface.test.ts` | M-P/M-O | Byte-for-byte approved import fixture plus deterministic D1–D6 consumer flow, consent, empty/unavailable/partial/error, stale/replay/stop and immutability | preserve and extend with any new M-P state | [S22] |
 | `tests/recommendation-engine.test.ts` | M-H/M-D/M-F | all outcomes, isolation, exact fit, dedupe | reuse; adapt boundary | [S9][S14] |
 | `tests/recommendation-policy.test.mjs` | M-H | pure safety/consent tree | reuse unchanged | [S9][S14] |
 | `tests/registry-boundary.test.mjs` | M-C | production/workflow import boundaries | reuse; update only for approved interface | [S4][S14] |
@@ -149,9 +170,22 @@ Coverage abbreviations refer to the exact tests in the following section. `Gates
 | `tests/fixtures/recommendation-engine-goldens.json` | M-H | expected decision leaves | reuse; version with contract | [S9] |
 | `tests/fixtures/registry-lifecycle-golden.json` | M-C | lifecycle expected snapshot | reuse unchanged | [S4] |
 | `tests/fixtures/unknown-throughput-golden.json` | M-F/M-G | unknown-evidence fail-closed case | reuse unchanged | [S7] |
+| `research/mh-portfolio/fixtures.ts`, `portfolio.test.ts`, `boundary.test.mjs`, `tsconfig.json` | M-H proof | synthetic M-E/M-F/M-G handoff, all decision leaves, mutation/contradiction/error regressions and import isolation | reuse as checkpoint proof; illustrative data only | [S19] |
+| `research/mo-orchestration/orchestration.test.ts`, `boundary.test.mjs`, `tsconfig.json` | M-O proof | synthetic status propagation, finder/detail/v1-handoff binding and import isolation | reuse as checkpoint proof; not a production handoff | [S20] |
+| `research/context-policy/*` | U30/below M-O proof | novice derivation, expert override, full M-A request composition, hostile-input and purity checks | reuse as checkpoint proof; numeric targets remain implementation-selected heuristics | [S20] |
+| `research/mo-import-inspection/*` | M-O/U29 proof | fresh, expired, confirmed, tampered, invalid-version and hostile bundle inspection | reuse as checkpoint proof | [S20] |
+| `research/mo-runner-orchestration/*` | M-O/M-I proof | permission preview, inventory status propagation and exact verified selection | reuse as checkpoint proof | [S20] |
+| `research/mo-verification-preview/*` | M-O/M-J proof | exact structural prerequisite forwarding, no defaults, plan-output/upstream integrity binding and hostile-result containment without execution capability | preserve as the TypeScript structural proof; Rust producer/transport proof now lives in `preview_adapter.rs` | [S20] |
+| `research/mf-profile-collection/*` | M-F/U27 research proof | versioned synthetic raw collection, repeated-observation derivation, policy sweep, invalid fixtures and executable production-unavailable result | preserve as non-production machinery; trusted capture and concrete policy need owner approval | [S7][S19] |
 | `runner/src-tauri/tests/benchmark_live.rs` | M-J | env-gated real benchmark smoke | reuse; strengthen artifact binding later | [S11][S14] |
 | `runner/src-tauri/tests/contracts_v1.rs` | M-A | Rust shared-corpus parity, canonical ordering and forward-version rejection | reuse unchanged | [S18] |
+| `runner/src-tauri/tests/hardware_target_adapter.rs` | M-D | detected/manual target mapping, origins and ambiguity | reuse unchanged | [S5] |
+| `runner/src-tauri/tests/hardware_confirmation.rs` | M-D/U31 | material-fact binding, unknowns, normalization and exact acknowledgement | reuse unchanged | [S5][S20] |
+| `runner/src-tauri/tests/inventory_contracts.rs` | M-I | registry adaptation, exact selection and partial-state preservation | reuse unchanged | [S10] |
 | `runner/src-tauri/tests/model_store_scan.rs` | M-I | fixture stores, identity, duplicates, errors, live read-only smoke | reuse unchanged | [S10][S14] |
+| `runner/src-tauri/tests/existing_tool_probe.rs` | M-J/U32 | allowlist/path/parser/hash/time/output/identity-drift failures | reuse unchanged | [S11][S20] |
+| `runner/src-tauri/tests/verification_adapter.rs` | M-J | complete preparation/result identity, status and evidence gates | reuse unchanged | [S11] |
+| `runner/src-tauri/tests/preview_adapter.rs` | M-O | import integrity, local preflight mapping and local inventory-path boundary | reuse unchanged | [S20] |
 | `runner/src-tauri/tests/quick_task_live.rs` | M-J/M-K precursor | env-gated configuration-bound task smoke | reuse; strengthen execution/result contract | [S11][S14] |
 
 ## Production-support and generated files
@@ -169,21 +203,32 @@ These are not domain modules, but they participate in production or tests and ar
 | `runner/package.json`, `runner/package-lock.json`, `runner/tsconfig.json`, `runner/vite.config.ts`, `runner/src-tauri/Cargo.toml`, `Cargo.lock`, `build.rs` | runner build infrastructure | reuse; Cargo power feature belongs to M-J adapter | [S11][S14] |
 | `.github/workflows/*`, `.github/dependabot.yml`, `runner/packaging/*` | CI/release infrastructure | reuse security gates; packaging remains draft until release | [S14] |
 
-## 2026-07-22 current-path verification
+## 2026-07-23 current-path verification
 
 The source inventory was regenerated from the current tree rather than relying
-on the earlier count of 70. It contains **144 shipped source/static/test paths**:
-**110 production paths** and **34 test paths** (including four test JSON
-fixtures). Production includes `app`, `lib`, `build`, `worker`, `scripts`,
-`design-system`, `public`, `runner/index.html`, runner source, three runner
-source assets, and 16 runner icon files. Tests include all root tests/fixtures
-and all four Rust integration-test files. Every one of the 144 paths is
+on historical counts of 70, 144 or 194, or the immediately prior 200-path
+baseline. It contains **212 shipped source/static/data/test paths**:
+**159 production paths** and **53 test paths**
+(including test JSON fixtures). Production includes `app`, `lib`, `build`,
+`worker`, `scripts`, `design-system`, `public`, `registry`,
+`runner/index.html`, runner source, and the nine root build-configuration files
+classified above. Tests include all root tests/fixtures and all ten Rust
+integration-test files. The immediately prior 200-path baseline already
+included the three production paths `hardware_confirmation.rs`,
+`existing_tool_probe.rs` and `preview_adapter.rs` plus three corresponding Rust
+integration-test paths. The current execution checkpoints add six production paths:
+`execution_protocol.rs`, `execution_process.rs`, `execution_result_adapter.rs`,
+`execution_lifecycle.rs`, `execution_service.rs` and
+`execution_transport.rs`. The M-P desktop checkpoint adds five production
+paths for the application/composition facade and preserved legacy shell plus
+one root surface test. Every one of the 212 paths is
 represented either by an exact row above or the explicit `public/*`,
 `runner/src/assets/*`, or `runner/src-tauri/icons/*` group; **unrepresented
 count: 0** [S17].
 
-Excluded from the 144 count, but still classified in “Production-support and
-generated files,” are package/build configuration, registry source/generated
+Outside this 212-path shipped inventory, but still classified in
+“Production-support and generated files,” are package/build configuration,
+registry source/generated
 data, Tauri capability/configuration, workflows, and packaging. Also excluded:
 Markdown and recovered HTML prototypes (documentation/design references),
 `docs/contracts/validate-fixtures.mjs` and its candidate fixtures
@@ -205,13 +250,28 @@ exclusions do not hide an unclassified production or test implementation.
 - **[S10]** `runner/src-tauri/src/model_store.rs` and `model_store_scan.rs`.
 - **[S11]** runner preflight/benchmark/quick-task sources, Rust tests, root boundary test, R4 status.
 - **[S12]** `lib/battles/**`, battle tests, dark feature flag; no app imports.
-- **[S13]** import/IPC scan showing direct app→domain and runner UI→command calls; no orchestrator source exists.
+- **[S13]** historical import/IPC scan showing direct app→domain and runner
+  UI→command calls. It remains evidence for legacy surface bypasses, not for
+  current M-O implementation absence.
 - **[S14]** 2026-07-22 root and runner `npm.cmd run check`, both exit 0.
 - **[S15]** full source/config read and build output; no targeted behavioral test found beyond stated gates.
+- **[S19]** `lib/portfolio/**`, `research/mh-portfolio/**` and
+  `npm.cmd run proof:mh` (23 behavior tests plus one purity/import proof).
+- **[S20]** `lib/orchestrator/**`, `lib/context-policy/**`, the focused
+  `research/context-policy/**` and `research/mo-*/**` proofs, and
+  `npm.cmd run proof:mo-checkpoint`.
+- **[S21]** `runner/src-tauri/src/execution_{protocol,process,result_adapter,lifecycle,service,transport}.rs`;
+  15 fake-runner service tests, 5 transport tests and 80 combined Rust library
+  tests on 2026-07-23. No pinned external model/tool run was evidenced.
+- **[S22]** `runner/src/{runner-application,runner-composition,main}.ts`,
+  active and preserved runner HTML/CSS, `tests/runner-surface.test.ts`, the root
+  runner boundary test, 19 surface tests and local desktop/390 px browser
+  inspection.
 - **[S16]** M7 retired status, removed navigation, retained `lib/quick-test` and UI/tests.
-- **[S17]** `rg --files` inventory regenerated 2026-07-22 from the paths named
-  above; exact totals are 110 production and 34 test paths after adding the six
-  M-A source paths and three M-A test paths.
+- **[S17]** current-tree inventory regenerated 2026-07-23 from the path rules
+  named above; exact totals are 212 paths: 159 shipped production/static/data
+  paths and 53 root/Rust test paths, with zero unrepresented.
 - **[S18]** `lib/contracts/**`, `runner/src-tauri/src/contracts.rs`, the shared
-  18-positive/11-negative corpus, M-A boundary/adapter tests, and passing root
+  20-positive/12-negative corpus plus 12 semantic negatives, M-A
+  boundary/adapter tests, and passing root
   and runner gates on 2026-07-22.

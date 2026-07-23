@@ -46,6 +46,19 @@ Recommendations only; no file is deleted or deprecated by this report. The unit 
 | Docs entry chain | Requires three absent docs and references nonexistent prototype directory | repair only after owner approves authority conclusions | link audit [R17] |
 | Runner threat model | Approval header conflicts with unchecked closing checklist; future capabilities blur current scope | reconcile current/future threat surfaces | threat-model read [R18] |
 
+## 2026-07-23 M-H implementation consequence
+
+The approved first-slice M-H path is now `lib/portfolio/`, not a rename of the
+legacy `lib/recommendation/` engine. Preserve the legacy engine and its passing
+surface tests until M-O and replacement surfaces exist, but do not reuse its
+weighted balanced score, midpoint scoring, automatic 8K fallback, role
+allocation, implicit lower-memory family representative, direct catalog/fit
+imports or presentation coupling in the new boundary. The new boundary
+preserves the honest no-fit/coverage distinction, exact hardware isolation,
+distinct-family limit and fail-closed behavior. Retirement remains a future
+recommendation after replacement proof; no legacy file is deleted in M-H
+[R8][R13][R23].
+
 ## Retire after replacement
 
 | Files / surface | Why | Safe retirement gate | Evidence |
@@ -106,3 +119,5 @@ Recommended decision for review: **preserve the green data, fit, evidence, recom
 - **[R20]** 2026-07-22 root and runner full gates pass.
 - **[R21]** recovered session lines 11846–11917 and 11962: proposals, user objection, private/public distinction.
 - **[R22]** `git diff SECURITY.md` and no repository verification of mailbox operation.
+- **[R23]** `lib/portfolio/**`, `research/mh-portfolio/**` and the passing
+  `npm.cmd run proof:mh`.

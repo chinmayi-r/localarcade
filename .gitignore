@@ -42,4 +42,8 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+/.tmp/
 /*.tar.gz
+/Making Codex styles available to Claude/
+/Making Codex styles available to Claude.zip
+/crates/*/target/

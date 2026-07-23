@@ -26,6 +26,13 @@ and a completed old milestone does not authorize a conflicting new interface.
 11. `system-build-assembler.md` — live implementation graph, worktree ledger
     and progress overlay; it reports status but does not override module
     contracts or checkpoint exclusions.
+12. `interface-proof-meetings.md` — executable input/output demonstrations,
+    boundary gaps and the review board for each module team; it is verification
+    evidence, not product or architecture authority.
+13. `capability-handoff-board.md` — real subsystem names and separate proof
+    gates for core logic, boundary, downstream handoff and user operation.
+14. `capability-input-output-examples.md` — concrete dummy/live inputs and
+    observed outputs for every capability, including explicit non-outputs.
 
 If these disagree, stop and record the conflict. Do not silently select the
 document that makes the requested code easiest.
@@ -97,6 +104,18 @@ first-slice matrix. Prototypes remain illustrative design references.
   before M-H/M-O; not production authorization.
 - `ranking-research-assembler.md` — active combined llmfit/Local Arcade Mermaid
   dependency graph and parallel-lane progress dashboard.
+- `interface-proof-meetings.md` — reproducible module-boundary demonstrations
+  and current interface gaps; not production authorization.
+- `capability-handoff-board.md` — current capability proof ledger generated
+  from evidence; it cannot authorize implementation or turn a partial gate green.
+- `capability-input-output-examples.md` — review examples showing what each
+  capability actually emitted under positive and adverse inputs.
+- [`research/llmfit/README.md`](../research/llmfit/README.md) —
+  non-production M-B provider, normalization, replay and equivalence evidence
+  plus its canonical gate.
+- [`research/mf-assessment/README.md`](../research/mf-assessment/README.md) —
+  executable M-F producer/input/output proof and its remaining production
+  profile-admission gap.
 - `research/matched-ranking-hypothesis-protocol.md` — proposed operational
   collection and matched-evaluation contract; thresholds remain owner decisions.
 - `persona-findings.md`
