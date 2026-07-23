@@ -14,7 +14,7 @@ use crate::contracts::{
     QuickCheckPlan, QuickCheckResult, RuntimeConfiguration, SideEffects, Source, Stability,
     Thermal, VerificationPlan, VerificationResult,
 };
-use crate::hardware_target::{HardwareResolution, ResolutionState};
+use crate::hardware_confirmation::HardwareConfirmationReceipt;
 use crate::model_store::inventory::{
     InventoryArtifact, InventoryArtifactResolution, PromotedStatus,
 };
@@ -38,8 +38,9 @@ pub enum ExistingToolKind {
 /// Identity reported by a separately checked local probe. Construction proves
 /// only that the receipt is structurally complete. This adapter later checks
 /// the selected executable bytes and compares the supplied claims to the
-/// candidate; it does not attest build/backend identity or infer it from a
-/// filename.
+/// candidate. The probe binds the tool product, engine, reported build, path
+/// and bytes; it deliberately does not claim which backend a later model load
+/// will actually select.
 pub struct ObservedToolIdentityReceipt {
     kind: ExistingToolKind,
     path: PathBuf,
@@ -47,7 +48,6 @@ pub struct ObservedToolIdentityReceipt {
     observed_product: String,
     observed_engine: String,
     observed_engine_build: String,
-    observed_backend: AcceleratorBackend,
     probe_protocol_id: String,
     observed_at: String,
 }
@@ -61,7 +61,6 @@ impl ObservedToolIdentityReceipt {
         observed_product: String,
         observed_engine: String,
         observed_engine_build: String,
-        observed_backend: AcceleratorBackend,
         probe_protocol_id: String,
         observed_at: String,
     ) -> Result<Self, Vec<String>> {
@@ -72,7 +71,6 @@ impl ObservedToolIdentityReceipt {
             observed_product,
             observed_engine,
             observed_engine_build,
-            observed_backend,
             probe_protocol_id,
             observed_at,
         };
@@ -107,10 +105,6 @@ impl ObservedToolIdentityReceipt {
 
     pub fn observed_engine_build(&self) -> &str {
         &self.observed_engine_build
-    }
-
-    pub fn observed_backend(&self) -> &AcceleratorBackend {
-        &self.observed_backend
     }
 
     pub fn probe_protocol_id(&self) -> &str {
@@ -269,38 +263,28 @@ impl VerifiedInventorySelection {
 /// private prevents callers from bypassing that state transition with text.
 #[derive(Debug, Clone, PartialEq)]
 pub struct ConfirmedHardwareTarget {
-    hardware_target_id: String,
+    effective_target: crate::contracts::HardwareTarget,
 }
 
 impl ConfirmedHardwareTarget {
-    pub fn from_resolution(
-        resolution: &HardwareResolution,
-        explicitly_confirmed: bool,
-    ) -> Result<Self, String> {
-        match resolution.state {
-            ResolutionState::Ready => {}
-            ResolutionState::ConfirmationRequired if explicitly_confirmed => {}
-            ResolutionState::ConfirmationRequired => {
-                return Err("m-j.hardware.confirmation-required".into());
-            }
-            ResolutionState::Unavailable => {
-                return Err("m-j.hardware.unavailable".into());
-            }
-        }
-        let target = resolution
-            .target
-            .as_ref()
-            .ok_or_else(|| "m-j.hardware.target-missing".to_string())?;
+    /// Consume the sealed M-D material-fact receipt. There is intentionally no
+    /// constructor from a caller-supplied target id or raw resolution.
+    pub fn from_confirmation(receipt: &HardwareConfirmationReceipt) -> Result<Self, String> {
+        let target = receipt.effective_target();
         if target.hardware_target_id.trim().is_empty() {
             return Err("m-j.hardware.target-id-missing".into());
         }
         Ok(Self {
-            hardware_target_id: target.hardware_target_id.clone(),
+            effective_target: target.clone(),
         })
     }
 
     pub fn id(&self) -> &str {
-        &self.hardware_target_id
+        &self.effective_target.hardware_target_id
+    }
+
+    pub fn effective_target(&self) -> &crate::contracts::HardwareTarget {
+        &self.effective_target
     }
 }
 
@@ -357,6 +341,22 @@ impl PreparedVerification {
 
     pub fn warnings(&self) -> &[String] {
         &self.warnings
+    }
+
+    #[cfg(test)]
+    pub(crate) fn for_execution_service_test(
+        plan: VerificationPlan,
+        artifact: CheckedFileIdentity,
+        benchmark_tool: Option<CheckedFileIdentity>,
+        quick_check_tool: Option<CheckedFileIdentity>,
+    ) -> Self {
+        Self {
+            plan,
+            artifact,
+            benchmark_tool,
+            quick_check_tool,
+            warnings: Vec::new(),
+        }
     }
 }
 
@@ -521,11 +521,8 @@ pub fn prepare_verification(
 
     let side_effects = local_execution_side_effects();
     let runtime = request.candidate.runtime.clone();
-    let artifact_path = request
-        .inventory_selection
-        .path
-        .to_string_lossy()
-        .into_owned();
+    let artifact = artifact.expect("checked artifact exists after validation");
+    let artifact_path = artifact.path.to_string_lossy().into_owned();
     let benchmark_plan = request.benchmark.as_ref().map(|value| BenchmarkPlan {
         benchmark_plan_id: value.plan_id.clone(),
         candidate_id: request.candidate.candidate_id.clone(),
@@ -552,12 +549,12 @@ pub fn prepare_verification(
     Ok(PreparedVerification {
         plan: VerificationPlan {
             verification_plan_id: request.verification_plan_id.clone(),
-            hardware_target_id: request.hardware_target.hardware_target_id.clone(),
+            hardware_target_id: request.hardware_target.id().to_string(),
             candidate_id: request.candidate.candidate_id.clone(),
             benchmark_plan,
             quick_check_plan,
         },
-        artifact: artifact.expect("checked artifact exists after validation"),
+        artifact,
         benchmark_tool,
         quick_check_tool,
         warnings: vec![CHILD_ISOLATION_WARNING.into()],
@@ -901,10 +898,10 @@ fn validate_tool(
     if value.observed_product != runtime.product
         || value.observed_engine != runtime.engine
         || value.observed_engine_build != runtime.engine_build.as_deref().unwrap_or_default()
-        || value.observed_backend != runtime.backend
     {
         issues.push(
-            "m-j.tool.runtime-mismatch: supplied product/engine/build/backend claims differ from candidate".into(),
+            "m-j.tool.runtime-mismatch: supplied product/engine/build claims differ from candidate"
+                .into(),
         );
     }
 }
@@ -1206,15 +1203,16 @@ fn checked_identity(
     label: &str,
     issues: &mut Vec<String>,
 ) -> Option<CheckedFileIdentity> {
-    if !path.is_file() {
+    let canonical = canonical_checked_file(path, label, issues)?;
+    if !canonical.is_file() {
         issues.push(format!(
             "m-j.{label}.unavailable: selected path is not a file"
         ));
         return None;
     }
-    match sha256_file(path) {
+    match sha256_file(&canonical) {
         Ok(actual) if actual == expected => Some(CheckedFileIdentity {
-            path: path.to_path_buf(),
+            path: canonical,
             sha256: actual,
         }),
         Ok(_) => {
@@ -1226,6 +1224,68 @@ fn checked_identity(
             None
         }
     }
+}
+
+fn canonical_checked_file(path: &Path, label: &str, issues: &mut Vec<String>) -> Option<PathBuf> {
+    if !path.is_absolute() {
+        issues.push(format!("m-j.{label}.path-alias-rejected"));
+        return None;
+    }
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) if metadata.file_type().is_symlink() => {
+            issues.push(format!("m-j.{label}.path-alias-rejected"));
+            return None;
+        }
+        Ok(_) => {}
+        Err(error) => {
+            issues.push(format!("m-j.{label}.unreadable:{error}"));
+            return None;
+        }
+    }
+    let canonical = match std::fs::canonicalize(path) {
+        Ok(value) => value,
+        Err(error) => {
+            issues.push(format!("m-j.{label}.unreadable:{error}"));
+            return None;
+        }
+    };
+    if !same_canonical_spelling(path, &canonical) {
+        issues.push(format!("m-j.{label}.path-alias-rejected"));
+        return None;
+    }
+    Some(canonical)
+}
+
+#[cfg(windows)]
+fn same_canonical_spelling(input: &Path, canonical: &Path) -> bool {
+    fn local_spelling(value: &Path) -> Option<String> {
+        let normalized = value.to_string_lossy().replace('/', "\\");
+        if normalized.starts_with(r"\\?\UNC\")
+            || normalized.starts_with(r"\\.\")
+            || (normalized.starts_with(r"\\") && !normalized.starts_with(r"\\?\"))
+        {
+            return None;
+        }
+        let local = normalized.strip_prefix(r"\\?\").unwrap_or(&normalized);
+        let bytes = local.as_bytes();
+        if bytes.len() < 3
+            || !bytes[0].is_ascii_alphabetic()
+            || bytes[1] != b':'
+            || bytes[2] != b'\\'
+        {
+            return None;
+        }
+        Some(local.to_string())
+    }
+    match (local_spelling(input), local_spelling(canonical)) {
+        (Some(input), Some(canonical)) => input.eq_ignore_ascii_case(&canonical),
+        _ => false,
+    }
+}
+
+#[cfg(not(windows))]
+fn same_canonical_spelling(input: &Path, canonical: &Path) -> bool {
+    input == canonical
 }
 
 fn sha256_file(path: &Path) -> Result<String, std::io::Error> {

@@ -17,10 +17,14 @@ fn live_benchmark_measures_real_throughput() {
         model_path,
         prompt_tokens: Some(256),
         generation_tokens: Some(64),
-        repetitions: Some(1),
+        repetitions: Some(3),
+        accept_adverse_conditions: true,
     })
     .expect("benchmark completes");
-    assert_eq!(report.provenance, "verified-local");
+    assert!(matches!(
+        report.provenance,
+        "verified-local" | "conditioned-local"
+    ));
     assert!(report
         .measurements
         .iter()

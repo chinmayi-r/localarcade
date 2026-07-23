@@ -2,14 +2,23 @@
 //!
 //! This is intentionally module-local rather than a new M-A wire contract.
 //! It preserves local scan findings while re-evaluating registry identity at
-//! the M-C boundary. No file is hashed here and no scan is started here.
+//! the M-C boundary. The ordinary scan stays metadata-only. A separate,
+//! explicitly invoked boundary may hash exactly one retained size candidate;
+//! it never starts a scan or grants execution authority.
 
 use super::{FoundArtifact, ScanReport};
 use crate::contracts::{
     ConfigurationMatch, HardwareMatch, Provenance, ProvenanceMethod, ProvenanceScope, Source,
 };
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
+use std::fs::File;
+#[cfg(windows)]
+use std::fs::OpenOptions;
+use std::io::{Read, Seek, SeekFrom};
+use std::path::Path;
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
 use url::Url;
 
@@ -92,6 +101,221 @@ pub enum InventoryArtifactResolution {
         reason_code: String,
         message: String,
     },
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct SelectedFileSnapshot {
+    pub regular_file: bool,
+    pub size_bytes: u64,
+    pub modified_unix_nanos: u128,
+}
+
+pub trait SelectedFileHashBoundary {
+    type Guard;
+
+    fn open_guard(&self, path: &Path) -> Result<Self::Guard, String>;
+    fn snapshot(&self, guard: &Self::Guard) -> Result<SelectedFileSnapshot, String>;
+    fn sha256(&self, guard: &Self::Guard) -> Result<String, String>;
+}
+
+#[derive(Debug, Default, Clone, Copy)]
+pub struct SystemSelectedFileHashBoundary;
+
+#[derive(Debug)]
+pub struct SystemSelectedFileGuard {
+    file: Mutex<File>,
+}
+
+/// Hash exactly one path the user selected from a retained scan. The ordinary
+/// scan remains metadata-only; this function is never called implicitly.
+pub fn promote_selected_file(
+    inventory: &InventoryResult,
+    selected_path: &str,
+) -> Result<InventoryArtifact, Vec<String>> {
+    promote_selected_file_with_boundary(inventory, selected_path, &SystemSelectedFileHashBoundary)
+}
+
+pub fn promote_selected_file_with_boundary<B: SelectedFileHashBoundary>(
+    inventory: &InventoryResult,
+    selected_path: &str,
+    boundary: &B,
+) -> Result<InventoryArtifact, Vec<String>> {
+    if selected_path.trim().is_empty() {
+        return Err(vec!["m-i.explicit-hash.selected-path-empty".into()]);
+    }
+    let matches: Vec<_> = inventory
+        .data
+        .artifacts
+        .iter()
+        .filter(|artifact| artifact.path == selected_path)
+        .collect();
+    let artifact = match matches.as_slice() {
+        [] => return Err(vec!["m-i.explicit-hash.path-not-in-scan".into()]),
+        [artifact] => *artifact,
+        _ => return Err(vec!["m-i.explicit-hash.path-ambiguous".into()]),
+    };
+    let candidates = match &artifact.resolution {
+        InventoryArtifactResolution::CandidateBySize { candidates } => candidates,
+        InventoryArtifactResolution::Verified { .. } => {
+            return Err(vec!["m-i.explicit-hash.selection-already-verified".into()])
+        }
+        InventoryArtifactResolution::AmbiguousIdentity { .. }
+        | InventoryArtifactResolution::Unavailable { .. } => {
+            return Err(vec!["m-i.explicit-hash.selection-not-size-candidate".into()])
+        }
+    };
+    if candidates.is_empty() {
+        return Err(vec!["m-i.explicit-hash.candidate-set-empty".into()]);
+    }
+
+    let guard = boundary
+        .open_guard(Path::new(selected_path))
+        .map_err(|error| vec![format!("m-i.explicit-hash.open-failed:{error}")])?;
+    let before = boundary
+        .snapshot(&guard)
+        .map_err(|error| vec![format!("m-i.explicit-hash.metadata-failed:{error}")])?;
+    if !before.regular_file {
+        return Err(vec!["m-i.explicit-hash.not-regular-file".into()]);
+    }
+    if before.size_bytes != artifact.file_size_bytes {
+        return Err(vec!["m-i.explicit-hash.byte-size-drift".into()]);
+    }
+    let digest = boundary
+        .sha256(&guard)
+        .map_err(|error| vec![format!("m-i.explicit-hash.read-failed:{error}")])?;
+    if !is_lowercase_sha256(&digest) {
+        return Err(vec!["m-i.explicit-hash.digest-invalid".into()]);
+    }
+    let after = boundary
+        .snapshot(&guard)
+        .map_err(|error| vec![format!("m-i.explicit-hash.metadata-failed:{error}")])?;
+    if before != after {
+        return Err(vec!["m-i.explicit-hash.identity-drift".into()]);
+    }
+
+    let exact: Vec<_> = candidates
+        .iter()
+        .filter(|candidate| {
+            candidate.artifact.sha256 == digest && candidate.artifact.bytes == before.size_bytes
+        })
+        .collect();
+    let identity = match exact.as_slice() {
+        [] => return Err(vec!["m-i.explicit-hash.not-promoted-exact-match".into()]),
+        [identity] => (*identity).clone(),
+        _ => return Err(vec!["m-i.explicit-hash.identity-ambiguous".into()]),
+    };
+    Ok(InventoryArtifact {
+        path: artifact.path.clone(),
+        store: artifact.store.clone(),
+        label: artifact.label.clone(),
+        file_size_bytes: before.size_bytes,
+        sha256: Some(digest),
+        resolution: InventoryArtifactResolution::Verified {
+            identity: Box::new(identity),
+        },
+    })
+}
+
+impl SelectedFileHashBoundary for SystemSelectedFileHashBoundary {
+    type Guard = SystemSelectedFileGuard;
+
+    fn open_guard(&self, path: &Path) -> Result<Self::Guard, String> {
+        #[cfg(not(windows))]
+        {
+            let _ = path;
+            return Err(
+                "strong selected-file identity guard is unavailable on this platform".into(),
+            );
+        }
+        #[cfg(windows)]
+        {
+            let metadata = std::fs::symlink_metadata(path).map_err(|error| error.to_string())?;
+            if metadata.file_type().is_symlink() {
+                return Err("symbolic-link paths are not accepted".into());
+            }
+            let canonical = std::fs::canonicalize(path).map_err(|error| error.to_string())?;
+            if !same_canonical_spelling(path, &canonical) {
+                return Err("path aliases and non-canonical spellings are not accepted".into());
+            }
+            let file = {
+                use std::os::windows::fs::OpenOptionsExt;
+                const FILE_SHARE_READ: u32 = 0x0000_0001;
+                OpenOptions::new()
+                    .read(true)
+                    .share_mode(FILE_SHARE_READ)
+                    .open(&canonical)
+                    .map_err(|error| error.to_string())?
+            };
+            Ok(SystemSelectedFileGuard {
+                file: Mutex::new(file),
+            })
+        }
+    }
+
+    fn snapshot(&self, guard: &Self::Guard) -> Result<SelectedFileSnapshot, String> {
+        let file = guard
+            .file
+            .lock()
+            .map_err(|_| "selected-file guard lock poisoned".to_string())?;
+        let metadata = file.metadata().map_err(|error| error.to_string())?;
+        let modified_unix_nanos = metadata
+            .modified()
+            .map_err(|error| error.to_string())?
+            .duration_since(UNIX_EPOCH)
+            .map_err(|error| error.to_string())?
+            .as_nanos();
+        Ok(SelectedFileSnapshot {
+            regular_file: metadata.is_file(),
+            size_bytes: metadata.len(),
+            modified_unix_nanos,
+        })
+    }
+
+    fn sha256(&self, guard: &Self::Guard) -> Result<String, String> {
+        let mut file = guard
+            .file
+            .lock()
+            .map_err(|_| "selected-file guard lock poisoned".to_string())?;
+        file.seek(SeekFrom::Start(0))
+            .map_err(|error| error.to_string())?;
+        let mut digest = Sha256::new();
+        let mut buffer = [0_u8; 64 * 1024];
+        loop {
+            let count = file.read(&mut buffer).map_err(|error| error.to_string())?;
+            if count == 0 {
+                break;
+            }
+            digest.update(&buffer[..count]);
+        }
+        Ok(format!("{:x}", digest.finalize()))
+    }
+}
+
+#[cfg(windows)]
+fn same_canonical_spelling(input: &Path, canonical: &Path) -> bool {
+    fn local_spelling(value: &Path) -> Option<String> {
+        let normalized = value.to_string_lossy().replace('/', "\\");
+        if normalized.starts_with(r"\\?\UNC\")
+            || normalized.starts_with(r"\\.\")
+            || (normalized.starts_with(r"\\") && !normalized.starts_with(r"\\?\"))
+        {
+            return None;
+        }
+        let local = normalized.strip_prefix(r"\\?\").unwrap_or(&normalized);
+        let bytes = local.as_bytes();
+        if bytes.len() < 3
+            || !bytes[0].is_ascii_alphabetic()
+            || bytes[1] != b':'
+            || bytes[2] != b'\\'
+        {
+            return None;
+        }
+        Some(local.to_string())
+    }
+    match (local_spelling(input), local_spelling(canonical)) {
+        (Some(input), Some(canonical)) => input.eq_ignore_ascii_case(&canonical),
+        _ => false,
+    }
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq)]

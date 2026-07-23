@@ -1,0 +1,66 @@
+<!-- Preserved R1–R4 runner surface. Not used by the M-P entry point. -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local Arcade Runner</title>
+    <script type="module" src="/src/main.ts" defer></script>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Local Arcade Runner</h1>
+      <p id="identity">Loading build identity…</p>
+      <section>
+        <h2>Hardware</h2>
+        <p>
+          Detection runs only when you press the button, reads OS hardware
+          APIs only, and the result never leaves this machine.
+        </p>
+        <button id="detect-button" type="button">Detect my hardware</button>
+        <pre id="detection-output"></pre>
+      </section>
+      <section>
+        <h2>Installed models</h2>
+        <p>
+          The scan reads directory listings and file metadata only — it opens
+          no model files, writes nothing, and the result never leaves this
+          machine. Directories read: <code>~/.ollama/models</code>,
+          <code>~/.lmstudio/models</code>, <code>~/.cache/lm-studio/models</code>,
+          plus any folder you add below.
+        </p>
+        <input id="extra-dir" type="text" placeholder="Optional: extra GGUF folder (full path)" size="48" />
+        <button id="scan-button" type="button">Scan model stores</button>
+        <pre id="scan-output"></pre>
+      </section>
+      <section>
+        <h2>Benchmark</h2>
+        <p>
+          Runs your own <code>llama-bench</code> on a model you already have.
+          This currently requires a llama.cpp installation — LM Studio- or
+          Ollama-only setups aren't supported for benchmarking yet. Loading
+          the model will occupy your GPU/CPU for a few minutes; a watchdog
+          terminates hung runs. Results are measured on this machine and never
+          leave it. Numbers reflect llama-bench defaults, which may differ
+          from your tuned serving flags — the exact configuration used is
+          shown with the result. Each metric runs three repetitions. Only
+          mutually consistent samples receive a verified-local baseline;
+          variable results remain visible as conditioned observations.
+        </p>
+        <input id="bench-engine-dir" type="text" placeholder="Engine folder containing llama-bench (e.g. H:\llama)" size="48" />
+        <input id="bench-model-path" type="text" placeholder="Full path to a .gguf model file" size="48" />
+        <label><input id="bench-confirm-conditions" type="checkbox" /> Run despite the adverse preflight conditions shown below</label>
+        <button id="bench-button" type="button">Run benchmark</button>
+        <button id="quick-task-button" type="button">Run three mechanical task checks</button>
+        <pre id="bench-output"></pre>
+      </section>
+      <p>
+        Source, milestone plan, and threat model:
+        <code>docs/agent-plan.md</code> and <code>docs/runner-threat-model.md</code>
+        in the Local Arcade repository.
+      </p>
+    </main>
+  </body>
+</html>

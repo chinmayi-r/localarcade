@@ -569,6 +569,15 @@ pub struct RunnerHandoff {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct RunnerImportBundle {
+    pub import_bundle_version: u64,
+    pub content_hash: String,
+    pub handoff: RunnerHandoff,
+    pub compatibility_admission: CompatibilityAdmissionReceipt,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Preflight {
     pub power: Power,
     pub thermal: Thermal,
@@ -797,6 +806,7 @@ const CONTRACTS: &[&str] = &[
     "verification-plan",
     "verification-result",
     "compatibility-admission-receipt",
+    "runner-import-bundle",
 ];
 
 fn decode<T: DeserializeOwned>(value: &Value) -> Result<T, String> {
@@ -946,24 +956,19 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
         }
         "runner-handoff" => {
             let item: RunnerHandoff = decode(value)?;
-            hash(&item.content_hash, "contentHash")?;
-            if item.schema_version != 1
-                || item.contains_model_data
-                || item.side_effect_authorization
-            {
-                return Err("handoff safety constants do not match v1".into());
+            validate_runner_handoff(&item, value)?;
+        }
+        "runner-import-bundle" => {
+            let item: RunnerImportBundle = decode(value)?;
+            if item.import_bundle_version != 1 {
+                return Err("runner import bundle version is unsupported".into());
             }
-            if seconds(&item.expires_at)? - seconds(&item.created_at)? != 86_400 {
-                return Err("handoff expiry must be exactly 24 hours".into());
-            }
-            let mut snapshot = value.clone();
-            snapshot
-                .as_object_mut()
-                .expect("handoff object")
-                .remove("contentHash");
-            if sha256_hex(canonical_json(&snapshot).as_bytes()) != item.content_hash {
-                return Err("handoff contentHash mismatch".into());
-            }
+            let handoff_value = value
+                .get("handoff")
+                .ok_or_else(|| "runner import bundle must contain handoff".to_string())?;
+            validate_runner_handoff(&item.handoff, handoff_value)?;
+            validate_compatibility_admission_receipt(&item.compatibility_admission)?;
+            validate_runner_import_bundle(&item, value)?;
         }
         "benchmark-plan" => {
             let item: BenchmarkPlan = decode(value)?;
@@ -1072,6 +1077,55 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
             }
         }
         _ => return Err("unknown contract".into()),
+    }
+    Ok(())
+}
+
+fn validate_runner_handoff(item: &RunnerHandoff, value: &Value) -> Result<(), String> {
+    hash(&item.content_hash, "contentHash")?;
+    if item.schema_version != 1 || item.contains_model_data || item.side_effect_authorization {
+        return Err("handoff safety constants do not match v1".into());
+    }
+    if seconds(&item.expires_at)? - seconds(&item.created_at)? != 86_400 {
+        return Err("handoff expiry must be exactly 24 hours".into());
+    }
+    let mut snapshot = value.clone();
+    snapshot
+        .as_object_mut()
+        .ok_or_else(|| "handoff must be an object".to_string())?
+        .remove("contentHash");
+    if sha256_hex(canonical_json(&snapshot).as_bytes()) != item.content_hash {
+        return Err("handoff contentHash mismatch".into());
+    }
+    Ok(())
+}
+
+fn validate_runner_import_bundle(bundle: &RunnerImportBundle, value: &Value) -> Result<(), String> {
+    hash(&bundle.content_hash, "contentHash")?;
+    let mut snapshot = value.clone();
+    snapshot
+        .as_object_mut()
+        .ok_or_else(|| "runner import bundle must be an object".to_string())?
+        .remove("contentHash");
+    if sha256_hex(canonical_json(&snapshot).as_bytes()) != bundle.content_hash {
+        return Err("runner import bundle contentHash mismatch".into());
+    }
+    let candidate = &bundle.handoff.selected_candidate;
+    let receipt = &bundle.compatibility_admission;
+    if receipt.candidate_id != candidate.candidate_id
+        || receipt.artifact_id != candidate.artifact.artifact_id
+        || receipt.artifact_sha256 != candidate.artifact.sha256
+        || receipt.runtime_configuration_id != candidate.runtime.runtime_configuration_id
+        || receipt.target.product != candidate.runtime.product
+        || receipt.target.engine != candidate.runtime.engine
+        || Some(receipt.target.engine_build.as_str()) != candidate.runtime.engine_build.as_deref()
+        || receipt.target.operating_system != bundle.handoff.hardware_target.os.family
+        || receipt.target.backend != candidate.runtime.backend
+        || receipt.target.quantization_scheme != candidate.artifact.quantization
+    {
+        return Err(
+            "runner import compatibility receipt does not match the handoff snapshot".into(),
+        );
     }
     Ok(())
 }
@@ -1353,6 +1407,10 @@ fn seconds(value: &str) -> Result<i64, String> {
     let doy = (153 * mp + 2) / 5 + day - 1;
     let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
     Ok((era * 146097 + doe - 719468) * 86400 + hour * 3600 + minute * 60 + second)
+}
+
+pub(crate) fn contract_timestamp_seconds(value: &str) -> Result<i64, String> {
+    seconds(value)
 }
 
 fn sha256_hex(input: &[u8]) -> String {

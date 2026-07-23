@@ -2,60 +2,220 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Local Arcade's explicit-permission desktop verification tool."
+    />
+    <link rel="stylesheet" href="/src/styles.css" />
     <title>Local Arcade Runner</title>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
+  <body data-stage="welcome">
+    <div class="configuration-field" aria-hidden="true"></div>
+    <main class="shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Local-only verification</p>
+          <h1>Local Arcade Runner</h1>
+        </div>
+        <span class="local-badge">No network capability</span>
+      </header>
 
-  <body>
-    <main class="container">
-      <h1>Local Arcade Runner</h1>
-      <p id="identity">Loading build identity…</p>
-      <section>
-        <h2>Hardware</h2>
-        <p>
-          Detection runs only when you press the button, reads OS hardware
-          APIs only, and the result never leaves this machine.
+      <div
+        id="state-banner"
+        class="state-banner"
+        role="status"
+        aria-live="polite"
+        tabindex="-1"
+      ></div>
+      <details class="reason-panel">
+        <summary>Reason codes and expert state</summary>
+        <pre id="reason-codes">None.</pre>
+      </details>
+
+      <section data-stage-section="welcome" class="workspace">
+        <div class="section-heading">
+          <span class="step">1</span>
+          <div>
+            <h2>Open a website handoff</h2>
+            <p>
+              Paste a Local Arcade runner-import bundle. Validation reads only
+              this text. It does not detect hardware, scan files, or run a model.
+            </p>
+          </div>
+        </div>
+        <label for="bundle-json">Runner-import bundle JSON</label>
+        <textarea
+          id="bundle-json"
+          rows="10"
+          spellcheck="false"
+          placeholder="Paste the versioned runner-import bundle"
+        ></textarea>
+        <label class="check">
+          <input id="confirm-expired" type="checkbox" />
+          Inspect an expired handoff after showing its warning
+        </label>
+        <p id="expired-warning" class="callout warning" hidden>
+          Expiry is informational only. Importing an expired handoff never
+          grants permission to execute.
         </p>
-        <button id="detect-button" type="button">Detect my hardware</button>
-        <pre id="detection-output"></pre>
+        <button id="import-button" class="primary" type="button">
+          Validate handoff
+        </button>
       </section>
-      <section>
-        <h2>Installed models</h2>
-        <p>
-          The scan reads directory listings and file metadata only — it opens
-          no model files, writes nothing, and the result never leaves this
-          machine. Directories read: <code>~/.ollama/models</code>,
-          <code>~/.lmstudio/models</code>, <code>~/.cache/lm-studio/models</code>,
-          plus any folder you add below.
+
+      <section data-stage-section="hardware" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step">2</span>
+          <div>
+            <h2>Confirm this machine</h2>
+            <p>
+              Detection is a separate, read-only action. Imported and detected
+              material facts remain visible when they disagree.
+            </p>
+          </div>
+        </div>
+        <button id="detect-button" class="primary" type="button">
+          Detect hardware now
+        </button>
+        <dl class="summary-grid">
+          <div><dt>Confirmation state</dt><dd id="hardware-state">Not detected</dd></div>
+        </dl>
+        <pre id="hardware-differences" class="result-block">No detection result.</pre>
+        <label class="check">
+          <input id="ack-hardware" type="checkbox" disabled />
+          I reviewed every listed hardware difference
+        </label>
+        <button id="confirm-hardware-button" type="button">
+          Confirm this hardware target
+        </button>
+      </section>
+
+      <section data-stage-section="inventory" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step">3</span>
+          <div>
+            <h2>Select an owned artifact</h2>
+            <p>
+              The scan is read-only and local. Only an exact verified artifact
+              can continue; size-only candidates remain unavailable.
+            </p>
+          </div>
+        </div>
+        <label for="extra-dir">Optional additional local folder</label>
+        <input id="extra-dir" type="text" placeholder="G:\Models" />
+        <button id="scan-button" class="primary" type="button">
+          Scan named model stores
+        </button>
+        <p id="inventory-empty" class="empty-state">
+          No inventory scan has run.
         </p>
-        <input id="extra-dir" type="text" placeholder="Optional: extra GGUF folder (full path)" size="48" />
-        <button id="scan-button" type="button">Scan model stores</button>
-        <pre id="scan-output"></pre>
-      </section>
-      <section>
-        <h2>Benchmark</h2>
+        <pre id="inventory-results" class="result-block"></pre>
+        <label for="artifact-path">Verified artifact</label>
+        <select id="artifact-path">
+          <option value="">Choose a verified artifact</option>
+        </select>
+        <button id="select-artifact-button" type="button">
+          Verify and bind selected artifact
+        </button>
+
+        <div class="divider"></div>
+        <h3>Existing llama.cpp tools</h3>
         <p>
-          Runs your own <code>llama-bench</code> on a model you already have.
-          This currently requires a llama.cpp installation — LM Studio- or
-          Ollama-only setups aren't supported for benchmarking yet. Loading
-          the model will occupy your GPU/CPU for roughly a minute; a watchdog
-          terminates hung runs. Results are measured on this machine and never
-          leave it. Numbers reflect llama-bench defaults, which may differ
-          from your tuned serving flags — the exact configuration used is
-          shown with the result.
+          Each executable is hashed and its reported build is checked. This
+          inspection is not proof of the backend selected during a later run.
         </p>
-        <input id="bench-engine-dir" type="text" placeholder="Engine folder containing llama-bench (e.g. H:\llama)" size="48" />
-        <input id="bench-model-path" type="text" placeholder="Full path to a .gguf model file" size="48" />
-        <button id="bench-button" type="button">Run benchmark</button>
-        <pre id="bench-output"></pre>
+        <label for="benchmark-path">Full path to llama-bench.exe</label>
+        <input id="benchmark-path" type="text" placeholder="G:\llama\llama-bench.exe" />
+        <label for="quick-check-path">Full path to llama-cli.exe</label>
+        <input id="quick-check-path" type="text" placeholder="G:\llama\llama-cli.exe" />
+        <button id="probe-tools-button" type="button">
+          Inspect both executable identities
+        </button>
+        <button id="prepare-plan-button" class="primary" type="button">
+          Prepare verification preview
+        </button>
       </section>
-      <p>
-        Source, milestone plan, and threat model:
-        <code>docs/agent-plan.md</code> and <code>docs/runner-threat-model.md</code>
-        in the Local Arcade repository.
-      </p>
+
+      <section data-stage-section="plan permission" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step">4</span>
+          <div>
+            <h2>Review the exact verification plan</h2>
+            <p>
+              One warmup and three measured benchmark runs occur first. Three
+              fixed mechanical checks follow only after admitted load evidence.
+            </p>
+          </div>
+        </div>
+        <pre id="plan-summary" class="result-block">No plan prepared.</pre>
+        <details>
+          <summary>Exact plan, hashes, settings, and warnings</summary>
+          <pre id="plan-expert"></pre>
+        </details>
+        <div class="permission-box">
+          <h3>Execution permission</h3>
+          <label class="check">
+            <input id="consent-process" type="checkbox" />
+            Allow these checked local executables to start
+          </label>
+          <label class="check">
+            <input id="consent-load" type="checkbox" />
+            Allow the selected model to load
+          </label>
+          <label class="check">
+            <input id="consent-busy" type="checkbox" />
+            I understand this machine may be busy
+          </label>
+        </div>
+        <button id="start-button" class="primary danger-aware" type="button">
+          Run this verification
+        </button>
+      </section>
+
+      <section data-stage-section="progress" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step active">5</span>
+          <div>
+            <h2>Verification in progress</h2>
+            <p id="progress-label">Waiting for runner progress…</p>
+          </div>
+        </div>
+        <progress id="progress" max="1" value="0"></progress>
+        <pre id="progress-detail" class="result-block"></pre>
+        <div class="button-row">
+          <button id="stop-button" class="stop" type="button" data-allow-while-running="true">
+            Stop safely
+          </button>
+          <button id="refresh-button" type="button" data-allow-while-running="true">
+            Refresh status
+          </button>
+        </div>
+      </section>
+
+      <section data-stage-section="result failure" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step">6</span>
+          <div>
+            <h2 id="result-heading">Verification result</h2>
+            <p>
+              Measurements and mechanical checks remain separate. Missing or
+              failed work is never converted into a score.
+            </p>
+          </div>
+        </div>
+        <pre id="result-summary" class="result-block">No terminal result.</pre>
+        <details>
+          <summary>Exact normalized result and provenance</summary>
+          <pre id="result-expert"></pre>
+        </details>
+      </section>
+
+      <footer>
+        Local Arcade does not download models, upload results, or provide a
+        general prompt runner in this checkpoint.
+      </footer>
     </main>
   </body>
 </html>

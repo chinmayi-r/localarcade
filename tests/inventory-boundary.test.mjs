@@ -2,20 +2,31 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("M-I adapter is read-only, local, and does not change the IPC boundary", async () => {
+test("M-I adapter is local and hashes only one explicit retained selection", async () => {
   const adapter = await readFile(new URL("../runner/src-tauri/src/model_store/inventory.rs", import.meta.url), "utf8");
   const modelStore = await readFile(new URL("../runner/src-tauri/src/model_store.rs", import.meta.url), "utf8");
   const runner = await readFile(new URL("../runner/src-tauri/src/lib.rs", import.meta.url), "utf8");
+  const preview = await readFile(new URL("../runner/src-tauri/src/preview_adapter.rs", import.meta.url), "utf8");
 
   assert.match(modelStore, /pub mod inventory;/);
-  assert.doesNotMatch(runner, /adapt_scan_report|inventory_result|inventory::/);
   for (const forbidden of [
-    "std::fs", "fs::write", "File::create", "OpenOptions", "Command::new",
+    "fs::write", "File::create", ".write_all(", "remove_file", "rename(",
+    "Command::new",
     "reqwest", "TcpStream", "UdpSocket", "fetch(", "download", "upload",
   ]) {
     assert.ok(!adapter.includes(forbidden), `${forbidden} must not enter the M-I adapter`);
   }
-  assert.doesNotMatch(adapter, /use sha2|Sha256::new|std::fs::read|read_to_end/, "M-I must not hash every discovered file");
+  assert.match(adapter, /pub trait SelectedFileHashBoundary/);
+  assert.match(adapter, /promote_selected_file_with_boundary/);
+  assert.match(adapter, /selected_path/);
+  assert.match(adapter, /CandidateBySize/);
+  assert.match(adapter, /before != after/);
+  assert.match(adapter, /FILE_SHARE_READ/);
+  assert.doesNotMatch(adapter, /std::fs::read|read_to_end/);
+  assert.match(runner, /hash_selected_inventory_file_preview/);
+  assert.match(preview, /hash_and_select_inventory_path/);
+  assert.match(preview, /preview_only: true/);
+  assert.match(preview, /grants_execution_authorization: false/);
 });
 
 test("M-I owns lifecycle reconciliation without changing generated registry data", async () => {

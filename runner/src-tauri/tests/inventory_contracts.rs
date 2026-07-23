@@ -1,18 +1,68 @@
 use runner_lib::model_store::inventory::{
-    adapt_scan_report, adapt_scan_report_with_registry_at, InventoryArtifactResolution,
-    InventoryStatus,
+    adapt_scan_report, adapt_scan_report_with_registry_at, promote_selected_file_with_boundary,
+    InventoryArtifactResolution, InventoryStatus, SelectedFileHashBoundary, SelectedFileSnapshot,
 };
 use runner_lib::model_store::{
     admitted_identities, FoundArtifact, RegistryMatch, ScanReport, ScannedStore, UnreadableEntry,
 };
 use serde_json::{json, Map, Value};
+use std::cell::{Cell, RefCell};
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
 const NOW_MS: i64 = 1_784_721_600_000;
 const FRESH_AT: &str = "2026-07-19T12:00:00.000Z";
 const SHA: &str = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const IDENTITY_GOLDEN: &str =
     include_str!("../../../tests/fixtures/inventory-mc-identity-v1.golden.json");
+
+struct FakeSelectedFileBoundary {
+    opened: RefCell<Vec<PathBuf>>,
+    digest: String,
+    before: SelectedFileSnapshot,
+    after: SelectedFileSnapshot,
+    snapshots: Cell<usize>,
+}
+
+impl FakeSelectedFileBoundary {
+    fn stable(digest: &str, bytes: u64) -> Self {
+        let snapshot = SelectedFileSnapshot {
+            regular_file: true,
+            size_bytes: bytes,
+            modified_unix_nanos: 1,
+        };
+        Self {
+            opened: RefCell::new(Vec::new()),
+            digest: digest.into(),
+            before: snapshot.clone(),
+            after: snapshot,
+            snapshots: Cell::new(0),
+        }
+    }
+}
+
+impl SelectedFileHashBoundary for FakeSelectedFileBoundary {
+    type Guard = ();
+
+    fn open_guard(&self, path: &Path) -> Result<Self::Guard, String> {
+        self.opened.borrow_mut().push(path.to_path_buf());
+        Ok(())
+    }
+
+    fn snapshot(&self, _guard: &Self::Guard) -> Result<SelectedFileSnapshot, String> {
+        let calls = self.snapshots.get();
+        self.snapshots.set(calls + 1);
+        Ok(if calls == 0 {
+            self.before.clone()
+        } else {
+            self.after.clone()
+        })
+    }
+
+    fn sha256(&self, _guard: &Self::Guard) -> Result<String, String> {
+        Ok(self.digest.clone())
+    }
+}
 
 fn field_provenance() -> Value {
     let fields = [
@@ -173,6 +223,96 @@ fn size_only_match_is_candidate_and_never_verified() {
     };
     assert_eq!(candidates.len(), 1);
     assert_eq!(candidates[0].artifact.sha256, SHA);
+}
+
+#[test]
+fn explicit_selected_file_hash_promotes_one_exact_candidate_without_mutating_scan() {
+    let registry = snapshot(vec![artifact("promoted", SHA, 4_000)], FRESH_AT, vec![]);
+    let result = adapt_scan_report_with_registry_at(report(None, 4_000), &registry, NOW_MS);
+    let boundary = FakeSelectedFileBoundary::stable(SHA, 4_000);
+
+    let promoted =
+        promote_selected_file_with_boundary(&result, "C:/models/model-Q4_K_M.gguf", &boundary)
+            .unwrap();
+
+    assert_eq!(
+        boundary.opened.into_inner(),
+        vec![PathBuf::from("C:/models/model-Q4_K_M.gguf")]
+    );
+    assert_eq!(boundary.snapshots.get(), 2);
+    assert_eq!(promoted.sha256.as_deref(), Some(SHA));
+    assert_eq!(promoted.file_size_bytes, 4_000);
+    assert!(matches!(
+        promoted.resolution,
+        InventoryArtifactResolution::Verified { .. }
+    ));
+    assert_eq!(result.data.artifacts[0].sha256, None);
+    assert!(matches!(
+        result.data.artifacts[0].resolution,
+        InventoryArtifactResolution::CandidateBySize { .. }
+    ));
+}
+
+#[test]
+fn explicit_hash_blocks_mismatch_mutation_ambiguity_and_non_candidates() {
+    let registry = snapshot(vec![artifact("promoted", SHA, 4_000)], FRESH_AT, vec![]);
+    let candidate = adapt_scan_report_with_registry_at(report(None, 4_000), &registry, NOW_MS);
+
+    let mismatch = FakeSelectedFileBoundary::stable(&"b".repeat(64), 4_000);
+    assert_eq!(
+        promote_selected_file_with_boundary(&candidate, "C:/models/model-Q4_K_M.gguf", &mismatch,)
+            .unwrap_err(),
+        vec!["m-i.explicit-hash.not-promoted-exact-match"]
+    );
+
+    let mut mutation = FakeSelectedFileBoundary::stable(SHA, 4_000);
+    mutation.after.modified_unix_nanos = 2;
+    assert_eq!(
+        promote_selected_file_with_boundary(&candidate, "C:/models/model-Q4_K_M.gguf", &mutation,)
+            .unwrap_err(),
+        vec!["m-i.explicit-hash.identity-drift"]
+    );
+
+    let mut alias = artifact("promoted", SHA, 4_000);
+    alias["id"] =
+        json!("publisher/repository/alias-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    alias["fileName"] = json!("alias-Q4_K_M.gguf");
+    let duplicate_registry = snapshot(
+        vec![artifact("promoted", SHA, 4_000), alias],
+        FRESH_AT,
+        vec![],
+    );
+    let ambiguous =
+        adapt_scan_report_with_registry_at(report(None, 4_000), &duplicate_registry, NOW_MS);
+    assert_eq!(
+        promote_selected_file_with_boundary(
+            &ambiguous,
+            "C:/models/model-Q4_K_M.gguf",
+            &FakeSelectedFileBoundary::stable(SHA, 4_000),
+        )
+        .unwrap_err(),
+        vec!["m-i.explicit-hash.identity-ambiguous"]
+    );
+
+    let verified = adapt_scan_report_with_registry_at(report(Some(SHA), 4_000), &registry, NOW_MS);
+    assert_eq!(
+        promote_selected_file_with_boundary(
+            &verified,
+            "C:/models/model-Q4_K_M.gguf",
+            &FakeSelectedFileBoundary::stable(SHA, 4_000),
+        )
+        .unwrap_err(),
+        vec!["m-i.explicit-hash.selection-already-verified"]
+    );
+    assert_eq!(
+        promote_selected_file_with_boundary(
+            &candidate,
+            "C:/models/not-scanned.gguf",
+            &FakeSelectedFileBoundary::stable(SHA, 4_000),
+        )
+        .unwrap_err(),
+        vec!["m-i.explicit-hash.path-not-in-scan"]
+    );
 }
 
 #[test]

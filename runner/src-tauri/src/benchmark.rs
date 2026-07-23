@@ -14,6 +14,8 @@ use std::time::Duration;
 /// The only executable this module will ever spawn (boundary-tested).
 const BENCH_EXECUTABLE: &str = "llama-bench";
 const BENCH_TIMEOUT: Duration = Duration::from_secs(600);
+const MIN_STABLE_SAMPLES: usize = 3;
+const MAX_STABLE_RELATIVE_RANGE: f64 = 0.20;
 
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct LlamaBenchRow {
@@ -36,6 +38,12 @@ pub struct LlamaBenchRow {
     pub type_v: String,
     #[serde(default)]
     pub n_gpu_layers: i64,
+    pub n_batch: u64,
+    pub n_ubatch: u64,
+    pub n_threads: u64,
+    pub n_depth: u64,
+    pub flash_attn: i64,
+    pub use_mmap: bool,
     pub n_prompt: u64,
     pub n_gen: u64,
     pub avg_ts: f64,
@@ -52,6 +60,9 @@ pub struct BenchmarkMeasurement {
     pub tokens: u64,
     pub tokens_per_second: f64,
     pub samples: Vec<f64>,
+    pub repeatability: String,
+    pub relative_range: Option<f64>,
+    pub quality_reason: String,
 }
 
 #[derive(Serialize, Clone, Debug, PartialEq)]
@@ -65,10 +76,104 @@ pub struct BenchmarkReport {
     pub model_type: String,
     pub kv_cache: String,
     pub gpu_layers: i64,
+    pub batch_size: u64,
+    pub ubatch_size: u64,
+    pub threads: u64,
+    /// llama-bench's reported `n_depth` test setting. This is not a claim
+    /// about the model or engine's maximum supported context.
+    pub context_test_depth_tokens: u64,
+    pub flash_attention: i64,
+    pub mmap: bool,
     pub measurements: Vec<BenchmarkMeasurement>,
-    /// `verified-local`: measured on THIS machine with THIS exact engine
-    /// build and model file. Never conflated with estimates or priors.
+    pub measurement_quality: String,
+    pub quality_reasons: Vec<String>,
+    pub preflight: Option<crate::preflight::PreflightReport>,
+    pub calibration_eligibility: CalibrationEligibility,
+    /// `verified-local` requires repeatable samples on THIS machine with
+    /// THIS exact identity. `conditioned-local` preserves valid observations
+    /// that are not stable enough to act as a baseline.
     pub provenance: &'static str,
+}
+
+#[derive(Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct CalibrationEligibility {
+    pub eligible: bool,
+    pub reasons: Vec<String>,
+}
+
+fn assess_calibration_eligibility(
+    measurement_quality: &str,
+    preflight: Option<&crate::preflight::PreflightReport>,
+    gpu_contention_known_clear: Option<bool>,
+) -> CalibrationEligibility {
+    let mut reasons = Vec::new();
+    if measurement_quality != "stable" {
+        reasons.push("throughput samples were not repeatably stable".into());
+    }
+    match preflight {
+        Some(report) => {
+            reasons.extend(
+                report
+                    .warnings
+                    .iter()
+                    .map(|warning| format!("preflight condition: {warning}")),
+            );
+            if report.ac_power.is_none() {
+                reasons.push("power source was unknown".into());
+            }
+            if report.thermal_celsius.is_none() {
+                reasons.push("temperature/throttling state was unknown".into());
+            }
+        }
+        None => reasons.push("environmental preflight was unavailable".into()),
+    }
+    match gpu_contention_known_clear {
+        Some(true) => {}
+        Some(false) => reasons.push("another workload was using the GPU".into()),
+        None => reasons.push("concurrent GPU workload telemetry was unavailable".into()),
+    }
+    CalibrationEligibility {
+        eligible: reasons.is_empty(),
+        reasons,
+    }
+}
+
+fn classify_repeatability(samples: &[f64]) -> (String, Option<f64>, String) {
+    if samples.len() < MIN_STABLE_SAMPLES {
+        return (
+            "insufficient-samples".into(),
+            None,
+            format!(
+                "needs at least {MIN_STABLE_SAMPLES} repetitions; received {}",
+                samples.len()
+            ),
+        );
+    }
+    let mut sorted = samples.to_vec();
+    sorted.sort_by(f64::total_cmp);
+    let median = sorted[sorted.len() / 2];
+    let relative_range = (sorted[sorted.len() - 1] - sorted[0]) / median;
+    if relative_range <= MAX_STABLE_RELATIVE_RANGE {
+        (
+            "stable".into(),
+            Some(relative_range),
+            format!(
+                "sample range is {:.1}% of the median",
+                relative_range * 100.0
+            ),
+        )
+    } else {
+        (
+            "variable".into(),
+            Some(relative_range),
+            format!(
+                "sample range is {:.1}% of the median; stable requires at most {:.0}%",
+                relative_range * 100.0,
+                MAX_STABLE_RELATIVE_RANGE * 100.0
+            ),
+        )
+    }
 }
 
 /// Parse `llama-bench -o json` output. Fails closed on anything unexpected.
@@ -77,11 +182,50 @@ pub fn parse_bench_output(json: &str) -> Result<BenchmarkReport, String> {
         .map_err(|error| format!("llama-bench output was not the expected JSON: {error}"))?;
     let first = rows.first().ok_or("llama-bench returned no test rows")?;
     if rows.iter().any(|row| {
-        row.build_commit != first.build_commit || row.model_filename != first.model_filename
+        row.build_commit != first.build_commit
+            || row.build_number != first.build_number
+            || row.backends != first.backends
+            || row.gpu_info != first.gpu_info
+            || row.model_filename != first.model_filename
+            || row.model_type != first.model_type
+            || row.model_size != first.model_size
+            || row.type_k != first.type_k
+            || row.type_v != first.type_v
+            || row.n_gpu_layers != first.n_gpu_layers
+            || row.n_batch != first.n_batch
+            || row.n_ubatch != first.n_ubatch
+            || row.n_threads != first.n_threads
+            || row.n_depth != first.n_depth
+            || row.flash_attn != first.flash_attn
+            || row.use_mmap != first.use_mmap
     }) {
-        return Err("llama-bench rows disagree on engine or model identity".into());
+        return Err(
+            "llama-bench rows disagree on engine, model, or benchmark configuration identity"
+                .into(),
+        );
     }
-    let measurements = rows
+    if first.build_commit.trim().is_empty()
+        || first.backends.trim().is_empty()
+        || first.model_filename.trim().is_empty()
+        || first.model_type.trim().is_empty()
+        || first.model_size == 0
+        || first.n_depth == 0
+    {
+        return Err("llama-bench returned incomplete build, backend, or model identity".into());
+    }
+    if rows.iter().any(|row| {
+        !row.avg_ts.is_finite()
+            || row.avg_ts <= 0.0
+            || (row.n_prompt == 0 && row.n_gen == 0)
+            || row.samples_ts.is_empty()
+            || row
+                .samples_ts
+                .iter()
+                .any(|sample| !sample.is_finite() || *sample <= 0.0)
+    }) {
+        return Err("llama-bench returned missing or invalid throughput samples".into());
+    }
+    let measurements: Vec<BenchmarkMeasurement> = rows
         .iter()
         .map(|row| {
             let (kind, tokens) = match (row.n_prompt, row.n_gen) {
@@ -92,14 +236,25 @@ pub fn parse_bench_output(json: &str) -> Result<BenchmarkReport, String> {
                     prompt + generation,
                 ),
             };
+            let (repeatability, relative_range, quality_reason) =
+                classify_repeatability(&row.samples_ts);
             BenchmarkMeasurement {
                 kind,
                 tokens,
                 tokens_per_second: row.avg_ts,
                 samples: row.samples_ts.clone(),
+                repeatability,
+                relative_range,
+                quality_reason,
             }
         })
         .collect();
+    let quality_reasons: Vec<String> = measurements
+        .iter()
+        .filter(|measurement| measurement.repeatability != "stable")
+        .map(|measurement| format!("{}: {}", measurement.kind, measurement.quality_reason))
+        .collect();
+    let stable = quality_reasons.is_empty();
     Ok(BenchmarkReport {
         engine: "llama.cpp".into(),
         engine_build: format!("b{} ({})", first.build_number, first.build_commit),
@@ -109,8 +264,26 @@ pub fn parse_bench_output(json: &str) -> Result<BenchmarkReport, String> {
         model_type: first.model_type.clone(),
         kv_cache: format!("K:{} V:{}", first.type_k, first.type_v),
         gpu_layers: first.n_gpu_layers,
+        batch_size: first.n_batch,
+        ubatch_size: first.n_ubatch,
+        threads: first.n_threads,
+        context_test_depth_tokens: first.n_depth,
+        flash_attention: first.flash_attn,
+        mmap: first.use_mmap,
         measurements,
-        provenance: "verified-local",
+        measurement_quality: if stable { "stable" } else { "conditioned" }.into(),
+        quality_reasons,
+        preflight: None,
+        calibration_eligibility: assess_calibration_eligibility(
+            if stable { "stable" } else { "conditioned" },
+            None,
+            None,
+        ),
+        provenance: if stable {
+            "verified-local"
+        } else {
+            "conditioned-local"
+        },
     })
 }
 
@@ -123,6 +296,8 @@ pub struct BenchmarkRequest {
     pub prompt_tokens: Option<u64>,
     pub generation_tokens: Option<u64>,
     pub repetitions: Option<u64>,
+    #[serde(default)]
+    pub accept_adverse_conditions: bool,
 }
 
 pub fn run_benchmark(request: &BenchmarkRequest) -> Result<BenchmarkReport, String> {
@@ -143,12 +318,19 @@ pub fn run_benchmark(request: &BenchmarkRequest) -> Result<BenchmarkReport, Stri
             engine_dir.display()
         ));
     }
+    let preflight = crate::preflight::inspect();
+    if preflight.requires_confirmation && !request.accept_adverse_conditions {
+        return Err(format!(
+            "preflight requires explicit confirmation: {}",
+            preflight.warnings.join("; ")
+        ));
+    }
     let mut child = std::process::Command::new(&executable)
         .arg("-m")
         .arg(model_path)
         .args(["-p", &request.prompt_tokens.unwrap_or(512).to_string()])
         .args(["-n", &request.generation_tokens.unwrap_or(128).to_string()])
-        .args(["-r", &request.repetitions.unwrap_or(2).to_string()])
+        .args(["-r", &request.repetitions.unwrap_or(3).to_string()])
         .args(["-o", "json"])
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -172,7 +354,14 @@ pub fn run_benchmark(request: &BenchmarkRequest) -> Result<BenchmarkReport, Stri
                         "{BENCH_EXECUTABLE} exited with {status} — recorded as a stability result for this configuration"
                     ));
                 }
-                return parse_bench_output(&stdout);
+                let mut report = parse_bench_output(&stdout)?;
+                report.preflight = Some(preflight);
+                report.calibration_eligibility = assess_calibration_eligibility(
+                    &report.measurement_quality,
+                    report.preflight.as_ref(),
+                    None,
+                );
+                return Ok(report);
             }
             None if started.elapsed() > BENCH_TIMEOUT => {
                 let _ = child.kill();
@@ -191,8 +380,8 @@ mod tests {
     use super::*;
 
     const REAL_OUTPUT_FIXTURE: &str = r#"[
-      {"build_commit":"5d5306bf3","build_number":10061,"cpu_info":"12th Gen Intel(R) Core(TM) i7-12700H","gpu_info":"NVIDIA GeForce RTX 3060 Laptop GPU","backends":"CUDA","model_filename":"H:\\llama\\models\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf","model_type":"qwen3 4B Q4_K - Medium","model_size":2491323904,"model_n_params":4022468096,"type_k":"f16","type_v":"f16","n_gpu_layers":-1,"n_prompt":128,"n_gen":0,"avg_ts":175.775886,"stddev_ts":0.0,"samples_ts":[175.776]},
-      {"build_commit":"5d5306bf3","build_number":10061,"cpu_info":"12th Gen Intel(R) Core(TM) i7-12700H","gpu_info":"NVIDIA GeForce RTX 3060 Laptop GPU","backends":"CUDA","model_filename":"H:\\llama\\models\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf","model_type":"qwen3 4B Q4_K - Medium","model_size":2491323904,"model_n_params":4022468096,"type_k":"f16","type_v":"f16","n_gpu_layers":-1,"n_prompt":0,"n_gen":64,"avg_ts":4.522548,"stddev_ts":0.0,"samples_ts":[4.52255]}
+      {"build_commit":"5d5306bf3","build_number":10061,"cpu_info":"12th Gen Intel(R) Core(TM) i7-12700H","gpu_info":"NVIDIA GeForce RTX 3060 Laptop GPU","backends":"CUDA","model_filename":"H:\\llama\\models\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf","model_type":"qwen3 4B Q4_K - Medium","model_size":2491323904,"model_n_params":4022468096,"n_batch":2048,"n_ubatch":512,"n_threads":14,"n_depth":4096,"flash_attn":-1,"use_mmap":true,"type_k":"f16","type_v":"f16","n_gpu_layers":-1,"n_prompt":128,"n_gen":0,"avg_ts":175.775886,"stddev_ts":0.0,"samples_ts":[175.776]},
+      {"build_commit":"5d5306bf3","build_number":10061,"cpu_info":"12th Gen Intel(R) Core(TM) i7-12700H","gpu_info":"NVIDIA GeForce RTX 3060 Laptop GPU","backends":"CUDA","model_filename":"H:\\llama\\models\\Qwen3-4B-Instruct-2507-Q4_K_M.gguf","model_type":"qwen3 4B Q4_K - Medium","model_size":2491323904,"model_n_params":4022468096,"n_batch":2048,"n_ubatch":512,"n_threads":14,"n_depth":4096,"flash_attn":-1,"use_mmap":true,"type_k":"f16","type_v":"f16","n_gpu_layers":-1,"n_prompt":0,"n_gen":64,"avg_ts":4.522548,"stddev_ts":0.0,"samples_ts":[4.52255]}
     ]"#;
 
     #[test]
@@ -200,7 +389,12 @@ mod tests {
         let report = parse_bench_output(REAL_OUTPUT_FIXTURE).expect("parses");
         assert_eq!(report.engine_build, "b10061 (5d5306bf3)");
         assert_eq!(report.backends, "CUDA");
-        assert_eq!(report.provenance, "verified-local");
+        assert_eq!(report.provenance, "conditioned-local");
+        assert_eq!(report.measurement_quality, "conditioned");
+        assert_eq!(report.batch_size, 2048);
+        assert_eq!(report.ubatch_size, 512);
+        assert_eq!(report.context_test_depth_tokens, 4096);
+        assert_eq!(report.threads, 14);
         assert_eq!(report.measurements.len(), 2);
         assert_eq!(report.measurements[0].kind, "prompt-processing");
         assert!((report.measurements[0].tokens_per_second - 175.775886).abs() < 1e-9);
@@ -213,6 +407,66 @@ mod tests {
         assert!(parse_bench_output("[]").is_err());
         let inconsistent = REAL_OUTPUT_FIXTURE.replacen("5d5306bf3", "deadbeef1", 1);
         assert!(parse_bench_output(&inconsistent).is_err());
+        let backend_drift =
+            REAL_OUTPUT_FIXTURE.replacen(r#""backends":"CUDA""#, r#""backends":"Vulkan""#, 1);
+        assert!(parse_bench_output(&backend_drift).is_err());
+        let build_drift =
+            REAL_OUTPUT_FIXTURE.replacen(r#""build_number":10061"#, r#""build_number":10062"#, 1);
+        assert!(parse_bench_output(&build_drift).is_err());
+        let invalid_sample = REAL_OUTPUT_FIXTURE.replacen("4.52255", "-4.52255", 1);
+        assert!(parse_bench_output(&invalid_sample).is_err());
+        let missing_backend =
+            REAL_OUTPUT_FIXTURE.replace(r#""backends":"CUDA""#, r#""backends":"""#);
+        assert!(parse_bench_output(&missing_backend).is_err());
+        let zero_token = REAL_OUTPUT_FIXTURE.replacen(
+            r#""n_prompt":128,"n_gen":0"#,
+            r#""n_prompt":0,"n_gen":0"#,
+            1,
+        );
+        assert!(parse_bench_output(&zero_token).is_err());
+    }
+
+    #[test]
+    fn repeatability_controls_verified_status() {
+        let stable = REAL_OUTPUT_FIXTURE
+            .replace("[175.776]", "[170.0,175.0,180.0]")
+            .replace("[4.52255]", "[4.4,4.5,4.6]");
+        let report = parse_bench_output(&stable).expect("stable samples parse");
+        assert_eq!(report.provenance, "verified-local");
+        assert_eq!(report.measurement_quality, "stable");
+        assert!(report.quality_reasons.is_empty());
+
+        let variable = stable.replace("[4.4,4.5,4.6]", "[4.0,4.5,8.0]");
+        let report = parse_bench_output(&variable).expect("variable samples parse");
+        assert_eq!(report.provenance, "conditioned-local");
+        assert_eq!(report.measurement_quality, "conditioned");
+        assert_eq!(report.measurements[1].repeatability, "variable");
+        assert_eq!(report.quality_reasons.len(), 1);
+    }
+
+    #[test]
+    fn exact_observation_can_be_ineligible_as_a_calibration_baseline() {
+        let stable_preflight = crate::preflight::evaluate(crate::preflight::PreflightInputs {
+            cpu_load_percent: 5.0,
+            available_memory_gb: 24.0,
+            total_memory_gb: 32.0,
+            ac_power: Some(true),
+            thermal_celsius: Some(55.0),
+            thermal_unavailable_reason: None,
+        });
+        let clean = assess_calibration_eligibility("stable", Some(&stable_preflight), Some(true));
+        assert!(clean.eligible);
+
+        let unknown_gpu = assess_calibration_eligibility("stable", Some(&stable_preflight), None);
+        assert!(!unknown_gpu.eligible);
+        assert!(unknown_gpu
+            .reasons
+            .iter()
+            .any(|reason| reason.contains("GPU workload telemetry")));
+
+        let conditioned =
+            assess_calibration_eligibility("conditioned", Some(&stable_preflight), Some(true));
+        assert!(!conditioned.eligible);
     }
 
     #[test]
@@ -223,6 +477,7 @@ mod tests {
             prompt_tokens: None,
             generation_tokens: None,
             repetitions: None,
+            accept_adverse_conditions: false,
         };
         let error = run_benchmark(&request).unwrap_err();
         assert!(error.contains("not found"));

@@ -1,4 +1,8 @@
 use runner_lib::contracts::*;
+use runner_lib::execution_protocol::{resolve_benchmark_plan, resolve_quick_check_plan};
+use runner_lib::hardware_confirmation::{
+    evaluate_hardware_confirmation, HardwareConfirmationStore,
+};
 use runner_lib::hardware_target::{HardwareResolution, ResolutionState};
 use runner_lib::model_store::inventory::{
     ArtifactIdentityV1, InventoryArtifact, InventoryArtifactResolution, ModelFamilyV1,
@@ -165,11 +169,12 @@ fn hardware_resolution(state: ResolutionState, include_target: bool) -> Hardware
 }
 
 fn confirmed_hardware() -> ConfirmedHardwareTarget {
-    ConfirmedHardwareTarget::from_resolution(
-        &hardware_resolution(ResolutionState::Ready, true),
-        false,
-    )
-    .unwrap()
+    let resolution = hardware_resolution(ResolutionState::Ready, true);
+    let imported = resolution.target.as_ref().unwrap().clone();
+    let evaluation = evaluate_hardware_confirmation(&imported, &resolution);
+    let mut store = HardwareConfirmationStore::default();
+    let handle = store.insert(&evaluation, None).unwrap();
+    ConfirmedHardwareTarget::from_confirmation(store.get(handle).unwrap()).unwrap()
 }
 
 fn inventory_artifact(path: PathBuf, artifact_hash: &str) -> InventoryArtifact {
@@ -225,7 +230,6 @@ fn tool_receipt(
         "llama-cpp".into(),
         "llama.cpp".into(),
         observed_build.into(),
-        AcceleratorBackend::Cuda,
         "llama-tool-version-v1".into(),
         "2026-07-22T20:00:00Z".into(),
     )
@@ -295,37 +299,23 @@ fn request() -> VerificationPreparationRequest {
 }
 
 #[test]
-fn hardware_target_boundary_accepts_ready_or_explicitly_confirmed_only() {
+fn hardware_target_boundary_consumes_a_material_fact_confirmation_receipt() {
     let ready = hardware_resolution(ResolutionState::Ready, true);
+    let imported = ready.target.as_ref().unwrap().clone();
+    let evaluation = evaluate_hardware_confirmation(&imported, &ready);
+    let mut store = HardwareConfirmationStore::default();
+    let handle = store.insert(&evaluation, None).unwrap();
     assert_eq!(
-        ConfirmedHardwareTarget::from_resolution(&ready, false)
+        ConfirmedHardwareTarget::from_confirmation(store.get(handle).unwrap())
             .unwrap()
             .id(),
         "hardware-1"
     );
-
-    let ambiguous = hardware_resolution(ResolutionState::ConfirmationRequired, true);
     assert_eq!(
-        ConfirmedHardwareTarget::from_resolution(&ambiguous, false).unwrap_err(),
-        "m-j.hardware.confirmation-required"
-    );
-    assert_eq!(
-        ConfirmedHardwareTarget::from_resolution(&ambiguous, true)
+        ConfirmedHardwareTarget::from_confirmation(store.get(handle).unwrap())
             .unwrap()
-            .id(),
-        "hardware-1"
-    );
-
-    let unavailable = hardware_resolution(ResolutionState::Unavailable, false);
-    assert_eq!(
-        ConfirmedHardwareTarget::from_resolution(&unavailable, true).unwrap_err(),
-        "m-j.hardware.unavailable"
-    );
-
-    let missing = hardware_resolution(ResolutionState::Ready, false);
-    assert_eq!(
-        ConfirmedHardwareTarget::from_resolution(&missing, false).unwrap_err(),
-        "m-j.hardware.target-missing"
+            .effective_target(),
+        &imported
     );
 }
 
@@ -359,6 +349,128 @@ fn preparation_hashes_only_selected_files_and_binds_exact_identity() {
         .iter()
         .any(|warning| warning.contains("isolation-not-enforced")));
     assert_eq!(prepared.warnings().len(), 1);
+}
+
+#[test]
+fn prepared_complete_runtime_resolves_benchmark_and_fixed_quick_protocols() {
+    let mut value = request();
+    value.quick_check.as_mut().unwrap().checks = vec![
+        QuickCheck {
+            check_id: "json-schema".into(),
+            criterion: "Return the exact required JSON object.".into(),
+        },
+        QuickCheck {
+            check_id: "format-constraints".into(),
+            criterion: "Return exactly the required three lines in order.".into(),
+        },
+        QuickCheck {
+            check_id: "fact-preservation".into(),
+            criterion: "Preserve all three supplied facts in one plain-text sentence.".into(),
+        },
+    ];
+    let prepared = prepare_verification(&value).unwrap();
+    let benchmark = prepared.plan().benchmark_plan.as_ref().unwrap();
+    let quick = prepared.plan().quick_check_plan.as_ref().unwrap();
+    let benchmark_spec = resolve_benchmark_plan(benchmark).unwrap();
+    let quick_spec = resolve_quick_check_plan(quick).unwrap();
+
+    assert_eq!(benchmark_spec.invocations.len(), 4);
+    assert_eq!(quick_spec.invocations.len(), 3);
+    assert!(benchmark_spec.invocations.iter().all(|invocation| {
+        !invocation.argv.iter().any(|value| {
+            matches!(
+                value.as_str(),
+                "--temp" | "--top-p" | "--top-k" | "--min-p" | "--seed"
+            )
+        })
+    }));
+    for (flag, expected) in [
+        ("--temp", "0"),
+        ("--top-p", "0.9"),
+        ("--top-k", "40"),
+        ("--min-p", "0.05"),
+        ("--seed", "1"),
+    ] {
+        assert!(quick_spec.invocations.iter().all(|invocation| invocation
+            .argv
+            .windows(2)
+            .any(|pair| pair == [flag, expected])));
+    }
+}
+
+#[test]
+fn preparation_uses_one_canonical_artifact_path_with_spaces_everywhere() {
+    let bytes = b"artifact";
+    let path = temp_file("fixture model with spaces.gguf", bytes);
+    let canonical = std::fs::canonicalize(&path).unwrap();
+    let mut value = request();
+    value.inventory_selection = VerifiedInventorySelection::from_inventory_artifact(
+        &inventory_artifact(path, &hash(bytes)),
+    )
+    .unwrap();
+
+    let prepared = prepare_verification(&value).unwrap();
+    assert_eq!(prepared.artifact().path, canonical);
+    assert_eq!(
+        prepared
+            .plan()
+            .benchmark_plan
+            .as_ref()
+            .unwrap()
+            .artifact_path,
+        canonical.to_string_lossy()
+    );
+    assert_eq!(
+        prepared
+            .plan()
+            .quick_check_plan
+            .as_ref()
+            .unwrap()
+            .artifact_path,
+        canonical.to_string_lossy()
+    );
+}
+
+#[test]
+fn preparation_rejects_lexical_parent_alias_instead_of_canonicalizing_caller_input() {
+    let bytes = b"artifact";
+    let path = temp_file("canonical-fixture.gguf", bytes);
+    let directory = path.parent().unwrap();
+    let alias = directory
+        .join("..")
+        .join(directory.file_name().unwrap())
+        .join(path.file_name().unwrap());
+    assert!(alias.is_file());
+    let mut value = request();
+    value.inventory_selection = VerifiedInventorySelection::from_inventory_artifact(
+        &inventory_artifact(alias, &hash(bytes)),
+    )
+    .unwrap();
+
+    let errors = prepare_verification(&value).unwrap_err().join("\n");
+    assert!(errors.contains("m-j.artifact.path-alias-rejected"));
+}
+
+#[cfg(windows)]
+#[test]
+fn preparation_rejects_file_symlink_alias_when_windows_allows_fixture_creation() {
+    use std::os::windows::fs::symlink_file;
+
+    let bytes = b"artifact";
+    let target = temp_file("symlink-target.gguf", bytes);
+    let alias = target.with_file_name("symlink-alias.gguf");
+    if let Err(error) = symlink_file(&target, &alias) {
+        eprintln!("symlink alias fixture unavailable: {error}");
+        return;
+    }
+    let mut value = request();
+    value.inventory_selection = VerifiedInventorySelection::from_inventory_artifact(
+        &inventory_artifact(alias, &hash(bytes)),
+    )
+    .unwrap();
+
+    let errors = prepare_verification(&value).unwrap_err().join("\n");
+    assert!(errors.contains("m-j.artifact.path-alias-rejected"));
 }
 
 #[test]
@@ -506,6 +618,28 @@ fn preparation_rejects_admission_for_other_platform_or_package_route() {
 }
 
 #[test]
+fn planned_backend_comes_from_candidate_and_compatibility_admission_not_tool_probe() {
+    let mut value = request();
+    value.candidate.runtime.backend = AcceleratorBackend::Vulkan;
+    let mut receipt = value.compatibility_admission.receipt().clone();
+    receipt.target.backend = AcceleratorBackend::Vulkan;
+    receipt.assertion.conditions.backends = Some(vec!["vulkan".into()]);
+    value.compatibility_admission = ValidatedCompatibilityAdmissionReceipt::new(receipt).unwrap();
+
+    let prepared = prepare_verification(&value).unwrap();
+    assert_eq!(
+        prepared
+            .plan()
+            .benchmark_plan
+            .as_ref()
+            .unwrap()
+            .runtime
+            .backend,
+        AcceleratorBackend::Vulkan
+    );
+}
+
+#[test]
 fn invalid_compatibility_receipt_never_reaches_preparation() {
     let mut receipt = compatibility_admission().receipt().clone();
     receipt.assertion.artifact_id = "different".into();
@@ -537,6 +671,34 @@ fn preparation_fails_closed_on_artifact_tool_and_runtime_mismatch() {
 }
 
 #[test]
+fn tool_probe_still_binds_product_engine_and_reported_build() {
+    let cases = [
+        ("other-product", "llama.cpp", "b10061-5d5306bf3"),
+        ("llama-cpp", "other-engine", "b10061-5d5306bf3"),
+        ("llama-cpp", "llama.cpp", "other-build"),
+    ];
+    for (product, engine, build) in cases {
+        let mut value = request();
+        let original = &value.benchmark.as_ref().unwrap().tool;
+        value.benchmark.as_mut().unwrap().tool = ObservedToolIdentityReceipt::new(
+            original.kind(),
+            original.path().to_path_buf(),
+            original.expected_sha256().into(),
+            product.into(),
+            engine.into(),
+            build.into(),
+            "llama-tool-version-v1".into(),
+            "2026-07-22T20:00:00Z".into(),
+        )
+        .unwrap();
+        assert!(prepare_verification(&value)
+            .unwrap_err()
+            .join(" ")
+            .contains("runtime-mismatch"));
+    }
+}
+
+#[test]
 fn tool_receipts_are_structurally_validated_and_runtime_is_complete() {
     let invalid_tool = ObservedToolIdentityReceipt::new(
         ExistingToolKind::Benchmark,
@@ -545,7 +707,6 @@ fn tool_receipts_are_structurally_validated_and_runtime_is_complete() {
         "llama-cpp".into(),
         "llama.cpp".into(),
         "build".into(),
-        AcceleratorBackend::Cuda,
         "probe-v1".into(),
         "2026-07-22T20:00:00Z".into(),
     )

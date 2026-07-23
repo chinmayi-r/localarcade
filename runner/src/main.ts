@@ -1,182 +1,236 @@
-import { invoke } from "@tauri-apps/api/core";
+import {
+  type InventoryArtifact,
+  type RunnerSurfaceState,
+} from "./runner-application";
+import { createRunnerApplication } from "./runner-composition";
 
-type RunnerIdentity = {
-  name: string;
-  version: string;
-  milestone: string;
-  capabilities: string[];
-};
+const application = createRunnerApplication();
+let pollTimer: number | undefined;
+let renderedStatus: RunnerSurfaceState["status"] | undefined;
 
-type GpuReconciliation =
-  | {
-      status: "known";
-      detectedName: string;
-      detectedMemoryGb: number;
-      acceleratorId: string;
-      family: string;
-      kind: string;
-      memoryMatchesVendorVariant: boolean;
-      vendorVariantsGb: number[];
-      provenance: string;
-    }
-  | {
-      status: "unknown";
-      detectedName: string;
-      detectedMemoryGb: number;
-      reason: string;
-      provenance: string;
-    };
-
-type HardwareReport = {
-  os: string;
-  arch: string;
-  cpuName: string;
-  totalMemoryGb: number;
-  gpus: GpuReconciliation[];
-  gpuDetectionUnavailableReason: string | null;
-  provenance: string;
-};
-
-function el(id: string): HTMLElement | null {
-  return document.querySelector(id);
+function element<T extends HTMLElement>(selector: string): T {
+  const value = document.querySelector<T>(selector);
+  if (!value) throw new Error(`Missing required runner element: ${selector}`);
+  return value;
 }
 
-function renderGpu(gpu: GpuReconciliation): string {
-  if (gpu.status === "unknown") {
-    return `${gpu.detectedName} — ${gpu.detectedMemoryGb} GB detected. Not in the vendor registry: ${gpu.reason}`;
+function value(selector: string): string {
+  return element<HTMLInputElement | HTMLTextAreaElement>(selector).value;
+}
+
+function checked(selector: string): boolean {
+  return element<HTMLInputElement>(selector).checked;
+}
+
+function setBusy(busy: boolean): void {
+  for (const control of document.querySelectorAll<
+    HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+  >("button, input, select, textarea")) {
+    control.disabled = busy && control.dataset.allowWhileRunning !== "true";
   }
-  const memory = gpu.memoryMatchesVendorVariant
-    ? `${gpu.detectedMemoryGb} GB (matches a vendor variant: ${gpu.vendorVariantsGb.join("/")} GB)`
-    : `${gpu.detectedMemoryGb} GB detected — does NOT match vendor variants (${gpu.vendorVariantsGb.join("/")} GB); please confirm manually`;
-  return `${gpu.detectedName} — ${memory} · registry: ${gpu.acceleratorId}`;
 }
 
-type RegistryMatch =
-  | { status: "verified"; artifactId: string }
-  | { status: "candidateBySize"; artifactIds: string[] }
-  | { status: "none" };
-
-type FoundArtifact = {
-  path: string;
-  store: string;
-  label: string;
-  fileSizeBytes: number;
-  sha256: string | null;
-  registryMatch: RegistryMatch;
-};
-
-type ScanReport = {
-  stores: { kind: string; path: string; exists: boolean; truncated: boolean }[];
-  artifacts: FoundArtifact[];
-  duplicateGroups: string[][];
-  unreadable: { path: string; reason: string }[];
-  provenance: string;
-};
-
-function gb(bytes: number): string {
-  return (bytes / 2 ** 30).toFixed(1) + " GB";
+function textList(values: string[]): string {
+  return values.length ? values.join("\n") : "None.";
 }
 
-function renderMatch(match: RegistryMatch): string {
-  if (match.status === "verified") return `identity verified: ${match.artifactId}`;
-  if (match.status === "candidateBySize") return `size matches ${match.artifactIds.length} registry artifact(s) — identity unverified until hashed`;
-  return "not in the artifact registry";
+function expertJson(value: unknown): string {
+  return JSON.stringify(value, null, 2);
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  const identityEl = el("#identity");
-  if (identityEl) {
-    const id = await invoke<RunnerIdentity>("runner_identity");
-    identityEl.textContent = `${id.name} v${id.version} — milestone ${id.milestone}. Capabilities: ${
-      id.capabilities.length ? id.capabilities.join(", ") : "none"
-    }. No scanning, no downloads, no execution, no network calls.`;
+function renderInventory(state: RunnerSurfaceState): void {
+  const select = element<HTMLSelectElement>("#artifact-path");
+  select.replaceChildren(new Option("Choose a verified artifact", ""));
+  const artifacts = state.inventory?.result.data.artifacts ?? [];
+  for (const artifact of artifacts) {
+    const selectable =
+      artifact.resolution.status === "verified" ||
+      artifact.resolution.status === "candidateBySize";
+    const option = new Option(
+      `${artifact.label} — ${artifact.resolution.status}${
+        artifact.resolution.status === "candidateBySize"
+          ? " (explicit hash required)"
+          : ""
+      }`,
+      artifact.path,
+    );
+    option.disabled = !selectable;
+    select.add(option);
+  }
+  element("#inventory-empty").hidden = artifacts.length > 0;
+  element("#inventory-results").textContent = artifacts.length
+    ? artifacts.map(renderArtifact).join("\n")
+    : "No artifacts were returned. No model was substituted.";
+}
+
+function renderArtifact(artifact: InventoryArtifact): string {
+  const size = (artifact.fileSizeBytes / 2 ** 30).toFixed(2);
+  return `${artifact.resolution.status.toUpperCase()} · ${artifact.label} · ${size} GiB\n${artifact.path}`;
+}
+
+function render(state: RunnerSurfaceState): void {
+  document.body.dataset.stage = state.stage;
+  const banner = element("#state-banner");
+  banner.dataset.status = state.status;
+  banner.textContent = state.message;
+  banner.setAttribute(
+    "aria-live",
+    state.status === "blocked" || state.status === "error"
+      ? "assertive"
+      : "polite",
+  );
+  if (
+    renderedStatus !== state.status &&
+    (state.status === "blocked" || state.status === "error")
+  ) {
+    banner.focus();
+  }
+  renderedStatus = state.status;
+  element("#reason-codes").textContent = textList(state.reasonCodes);
+
+  for (const section of document.querySelectorAll<HTMLElement>("[data-stage-section]")) {
+    const stages = section.dataset.stageSection?.split(" ") ?? [];
+    section.hidden = !stages.includes(state.stage);
   }
 
-  el("#detect-button")?.addEventListener("click", async () => {
-    const output = el("#detection-output");
-    if (!output) return;
-    output.textContent = "Reading OS hardware APIs…";
-    const report = await invoke<HardwareReport>("detect_hardware");
-    const lines = [
-      `Everything below was detected on this machine just now and stays on this machine.`,
-      `OS: ${report.os} (${report.arch})`,
-      `CPU: ${report.cpuName}`,
-      `RAM: ${report.totalMemoryGb} GB`,
-    ];
-    if (report.gpuDetectionUnavailableReason) {
-      lines.push(`GPU: ${report.gpuDetectionUnavailableReason}`);
-    } else if (!report.gpus.length) {
-      lines.push("GPU: no dedicated adapters detected.");
-    } else {
-      for (const gpu of report.gpus) lines.push(`GPU: ${renderGpu(gpu)}`);
-    }
-    output.textContent = lines.join("\n");
-  });
+  const expired = element("#expired-warning");
+  expired.hidden = !state.expired;
 
-  el("#scan-button")?.addEventListener("click", async () => {
-    const output = el("#scan-output");
-    if (!output) return;
-    const extraDir = (document.querySelector("#extra-dir") as HTMLInputElement | null)?.value ?? "";
-    output.textContent = "Reading store directories…";
-    const report = await invoke<ScanReport>("scan_model_stores", {
-      extraDirectories: extraDir ? [extraDir] : [],
-    });
-    const lines = ["Everything below was read locally just now and stays on this machine."];
-    for (const store of report.stores) {
-      lines.push(`Store ${store.kind}: ${store.path} — ${store.exists ? "scanned" : "not present"}${store.truncated ? " (TRUNCATED at listing cap)" : ""}`);
-    }
-    if (!report.artifacts.length) {
-      lines.push(
-        "No model artifacts found. That's normal on a machine without local models yet — the Local Arcade website can recommend a first configuration for this hardware; guided setup arrives in a later runner milestone.",
-      );
-    }
-    for (const artifact of report.artifacts) {
-      lines.push(`• [${artifact.store}] ${artifact.label} — ${gb(artifact.fileSizeBytes)} — ${renderMatch(artifact.registryMatch)}`);
-    }
-    if (report.duplicateGroups.length) {
-      lines.push(`Possible duplicates (${report.duplicateGroups.length} group(s)):`);
-      for (const group of report.duplicateGroups) lines.push("  = " + group.join("  |  "));
-    }
-    if (report.unreadable.length) {
-      lines.push("Unreadable entries (listed, never silently skipped):");
-      for (const entry of report.unreadable) lines.push(`  ! ${entry.path} — ${entry.reason}`);
-    }
-    output.textContent = lines.join("\n");
-  });
+  if (state.hardwareEvaluation) {
+    const evaluation = state.hardwareEvaluation;
+    element("#hardware-state").textContent = evaluation.state;
+    element("#hardware-differences").textContent = evaluation.differences.length
+      ? evaluation.differences
+          .map(
+            (difference) =>
+              `${difference.kind.toUpperCase()} · ${difference.field}\nimported: ${difference.imported ?? "unknown"}\nresolved: ${difference.resolved ?? "unknown"}\n${difference.reasonCode}`,
+          )
+          .join("\n\n")
+      : "No material differences.";
+    element<HTMLInputElement>("#ack-hardware").disabled =
+      evaluation.state !== "confirmation-required";
+    element<HTMLInputElement>("#ack-hardware").checked =
+      evaluation.state === "ready";
+  }
 
-  el("#bench-button")?.addEventListener("click", async () => {
-    const output = el("#bench-output");
-    if (!output) return;
-    const engineDir = (document.querySelector("#bench-engine-dir") as HTMLInputElement | null)?.value ?? "";
-    const modelPath = (document.querySelector("#bench-model-path") as HTMLInputElement | null)?.value ?? "";
-    if (!engineDir || !modelPath) {
-      output.textContent = "Both the engine folder and the model path are required.";
+  if (state.inventory) renderInventory(state);
+
+  if (state.plan) {
+    element("#plan-summary").textContent =
+      `Artifact: ${state.plan.artifact.path}\n` +
+      `SHA-256: ${state.plan.artifact.sha256}\n` +
+      `Benchmark tool: ${state.plan.benchmarkTool?.path ?? "unavailable"}\n` +
+      `Quick-check tool: ${state.plan.quickCheckTool?.path ?? "unavailable"}\n` +
+      "Order: benchmark first, then three fixed mechanical checks.";
+    element("#plan-expert").textContent = expertJson(state.plan);
+  }
+
+  if (state.lifecycle) {
+    const lifecycle = state.lifecycle;
+    element("#progress-label").textContent =
+      `${lifecycle.phase} · ${lifecycle.phaseCurrent} of ${lifecycle.phaseTotal}`;
+    element<HTMLProgressElement>("#progress").max = Math.max(
+      lifecycle.phaseTotal,
+      1,
+    );
+    element<HTMLProgressElement>("#progress").value = lifecycle.phaseCurrent;
+    element("#progress-detail").textContent =
+      `Elapsed: ${(lifecycle.elapsedMs / 1000).toFixed(1)} s\n` +
+      `Retained measurement series: ${lifecycle.retainedSeries}\n` +
+      `Retained checks: ${lifecycle.retainedChecks}\n` +
+      `State: ${lifecycle.state}\n` +
+      `Sequence: ${lifecycle.sequence}`;
+  }
+
+  if (state.result) {
+    const result = state.result;
+    element("#result-heading").textContent =
+      result.domainStatus === "completed"
+        ? "Verification result"
+        : "Verification ended with retained evidence";
+    element("#result-summary").textContent =
+      `Status: ${result.domainStatus}\n` +
+      `Candidate: ${result.candidateId}\n` +
+      `Benchmark: ${result.benchmarkResult ? "present" : "not available"}\n` +
+      `Mechanical checks: ${result.quickCheckResult ? "present" : "not available"}`;
+    element("#result-expert").textContent = expertJson(result);
+  }
+
+  setBusy(state.status === "loading" && state.stage !== "progress");
+}
+
+async function run(operation: () => Promise<RunnerSurfaceState>): Promise<void> {
+  const pending = operation();
+  render(application.snapshot());
+  render(await pending);
+}
+
+function startPolling(): void {
+  if (pollTimer !== undefined) window.clearTimeout(pollTimer);
+  const poll = async (): Promise<void> => {
+    const state = await application.refreshExecution();
+    render(state);
+    if (
+      state.stage === "result" ||
+      state.stage === "failure" ||
+      state.status === "blocked" ||
+      state.status === "unavailable" ||
+      state.status === "error"
+    ) {
+      pollTimer = undefined;
       return;
     }
-    output.textContent = "Running llama-bench — the model is loading and your machine will be busy…";
-    try {
-      const report = await invoke<{
-        engine: string;
-        engineBuild: string;
-        backends: string;
-        gpuInfo: string;
-        modelType: string;
-        kvCache: string;
-        gpuLayers: number;
-        measurements: { kind: string; tokens: number; tokensPerSecond: number }[];
-        provenance: string;
-      }>("run_benchmark", { request: { engineDir, modelPath } });
-      const lines = [
-        `Measured on this machine (${report.provenance}) — not an estimate.`,
-        `Engine: ${report.engine} ${report.engineBuild} · ${report.backends} · ${report.gpuInfo}`,
-        `Model: ${report.modelType} · KV ${report.kvCache} · GPU layers ${report.gpuLayers}`,
-      ];
-      for (const measurement of report.measurements) {
-        lines.push(`${measurement.kind}: ${measurement.tokensPerSecond.toFixed(1)} tokens/s (${measurement.tokens} tokens)`);
-      }
-      output.textContent = lines.join("\n");
-    } catch (error) {
-      output.textContent = `Benchmark did not complete: ${String(error)}`;
-    }
+    pollTimer = window.setTimeout(poll, 500);
+  };
+  pollTimer = window.setTimeout(poll, 500);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  render(application.snapshot());
+
+  element("#import-button").addEventListener("click", () =>
+    run(() =>
+      application.importBundle(value("#bundle-json"), checked("#confirm-expired")),
+    ),
+  );
+  element("#detect-button").addEventListener("click", () =>
+    run(() => application.evaluateHardware()),
+  );
+  element("#confirm-hardware-button").addEventListener("click", () =>
+    run(() => application.confirmHardware(checked("#ack-hardware"))),
+  );
+  element("#scan-button").addEventListener("click", () =>
+    run(() => application.scanInventory([value("#extra-dir")])),
+  );
+  element("#select-artifact-button").addEventListener("click", () =>
+    run(() => application.selectArtifact(value("#artifact-path"))),
+  );
+  element("#probe-tools-button").addEventListener("click", () =>
+    run(() =>
+      application.probeTools(
+        value("#benchmark-path"),
+        value("#quick-check-path"),
+      ),
+    ),
+  );
+  element("#prepare-plan-button").addEventListener("click", () =>
+    run(() => application.prepareVerification()),
+  );
+  element("#start-button").addEventListener("click", async () => {
+    const pending = application.startExecution({
+      localProcess: checked("#consent-process"),
+      modelLoad: checked("#consent-load"),
+      machineBusy: checked("#consent-busy"),
+    });
+    render(application.snapshot());
+    const state = await pending;
+    render(state);
+    if (state.stage === "progress") startPolling();
   });
+  element("#stop-button").addEventListener("click", () =>
+    run(() => application.stopExecution()),
+  );
+  element("#refresh-button").addEventListener("click", () =>
+    run(() => application.refreshExecution()),
+  );
 });

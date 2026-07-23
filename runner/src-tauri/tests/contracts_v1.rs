@@ -3,6 +3,10 @@ use serde_json::json;
 
 const POSITIVE: &[(&str, &str)] = &[
     (
+        "runner-import-bundle.ok.json",
+        include_str!("../../../docs/contracts/fixtures/runner-import-bundle.ok.json"),
+    ),
+    (
         "compatibility-admission-receipt.ok.json",
         include_str!("../../../docs/contracts/fixtures/compatibility-admission-receipt.ok.json"),
     ),
@@ -135,7 +139,7 @@ const NEGATIVE: &[(&str, &str)] = &[
 
 #[test]
 fn rust_accepts_every_shared_positive_fixture() {
-    assert_eq!(POSITIVE.len(), 19);
+    assert_eq!(POSITIVE.len(), 20);
     for (name, fixture) in POSITIVE {
         assert!(
             validate_contract_json(fixture).is_ok(),
@@ -232,4 +236,55 @@ fn compatibility_receipt_source_formats_fail_closed() {
     let mut bad_time = baseline;
     bad_time["data"]["assertion"]["evidence"][0]["checkedAt"] = json!("not a timestamp");
     assert!(validate_contract_json(&bad_time.to_string()).is_err());
+}
+
+#[test]
+fn runner_import_bundle_binds_handoff_and_admission_receipt() {
+    let baseline: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/runner-import-bundle.ok.json"
+    ))
+    .expect("runner import fixture");
+    assert!(validate_contract_json(&baseline.to_string()).is_ok());
+
+    for (path, replacement) in [
+        (
+            &["data", "compatibilityAdmission", "candidateId"][..],
+            json!("different-candidate"),
+        ),
+        (
+            &["data", "compatibilityAdmission", "artifactSha256"][..],
+            json!("b".repeat(64)),
+        ),
+        (
+            &["data", "compatibilityAdmission", "runtimeConfigurationId"][..],
+            json!("different-runtime"),
+        ),
+        (
+            &["data", "compatibilityAdmission", "target", "backend"][..],
+            json!("cpu"),
+        ),
+    ] {
+        let mut changed = baseline.clone();
+        let mut cursor = &mut changed;
+        for segment in &path[..path.len() - 1] {
+            cursor = &mut cursor[*segment];
+        }
+        cursor[path[path.len() - 1]] = replacement;
+        assert!(validate_contract_json(&changed.to_string()).is_err());
+    }
+
+    let mut forward = baseline;
+    forward["data"]["importBundleVersion"] = json!(2);
+    assert!(validate_contract_json(&forward.to_string()).is_err());
+
+    let mut receipt_drift: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/runner-import-bundle.ok.json"
+    ))
+    .expect("runner import fixture");
+    receipt_drift["data"]["compatibilityAdmission"]["assertion"]["evidence"][0]["url"] =
+        json!("https://example.invalid/changed-source");
+    assert!(
+        validate_contract_json(&receipt_drift.to_string()).is_err(),
+        "receipt-only drift must invalidate the bundle snapshot hash"
+    );
 }
