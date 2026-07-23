@@ -1096,6 +1096,9 @@ mod tests {
         fs::write(&artifact_path, artifact_bytes).unwrap();
         fs::write(&benchmark_path, bench_bytes).unwrap();
         fs::write(&quick_path, quick_bytes).unwrap();
+        let artifact_path = fs::canonicalize(artifact_path).unwrap();
+        let benchmark_path = fs::canonicalize(benchmark_path).unwrap();
+        let quick_path = fs::canonicalize(quick_path).unwrap();
         let hash = |bytes: &[u8]| format!("{:x}", Sha256::digest(bytes));
         let artifact_hash = hash(artifact_bytes);
 
