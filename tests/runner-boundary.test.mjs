@@ -39,6 +39,19 @@ test("R4 benchmark module spawns exactly llama-bench and nothing else", async ()
   }
 });
 
+test("M-J verification adapter has no IPC, network, download, update, upload, or child-isolation claim", async () => {
+  const source = await readFile(new URL("../runner/src-tauri/src/verification.rs", import.meta.url), "utf8");
+  for (const forbidden of [
+    /#\[tauri::command\]/,
+    /Command::new/,
+    /TcpStream|UdpSocket|reqwest|hyper|ureq|fetch\s*\(/,
+    /tauri_plugin_(?:http|updater)|download_file|upload_file/i,
+    /AppContainer|CreateRestrictedToken|JobObject/i,
+    /File::create|OpenOptions|fs::write|remove_file|remove_dir/,
+  ]) assert.doesNotMatch(source, forbidden);
+  assert.match(source, /SideEffects\s*\{[\s\S]*?executes_local_process:\s*true,[\s\S]*?loads_model:\s*true,[\s\S]*?writes_model_store:\s*false,[\s\S]*?network:\s*false,[\s\S]*?upload:\s*false,[\s\S]*?\}/);
+});
+
 test("R1 frontend makes no external requests", async () => {
   const main = await readFile(new URL("../runner/src/main.ts", import.meta.url), "utf8");
   const html = await readFile(new URL("../runner/index.html", import.meta.url), "utf8");
