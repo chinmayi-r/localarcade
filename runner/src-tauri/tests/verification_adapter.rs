@@ -30,7 +30,7 @@ fn temp_file(name: &str, bytes: &[u8]) -> PathBuf {
     fs::create_dir_all(&dir).unwrap();
     let path = dir.join(name);
     fs::write(&path, bytes).unwrap();
-    path
+    fs::canonicalize(path).unwrap()
 }
 
 fn runtime() -> RuntimeConfiguration {
@@ -435,11 +435,18 @@ fn preparation_uses_one_canonical_artifact_path_with_spaces_everywhere() {
 fn preparation_rejects_lexical_parent_alias_instead_of_canonicalizing_caller_input() {
     let bytes = b"artifact";
     let path = temp_file("canonical-fixture.gguf", bytes);
-    let directory = path.parent().unwrap();
+    #[cfg(windows)]
+    let path_for_alias = {
+        let text = path.to_string_lossy();
+        PathBuf::from(text.strip_prefix(r"\\?\").unwrap_or(text.as_ref()))
+    };
+    #[cfg(not(windows))]
+    let path_for_alias = path;
+    let directory = path_for_alias.parent().unwrap();
     let alias = directory
         .join("..")
         .join(directory.file_name().unwrap())
-        .join(path.file_name().unwrap());
+        .join(path_for_alias.file_name().unwrap());
     assert!(alias.is_file());
     let mut value = request();
     value.inventory_selection = VerifiedInventorySelection::from_inventory_artifact(
