@@ -14,6 +14,7 @@ use crate::contracts::{
     VerificationPlan, VerificationResult,
 };
 use crate::hardware_target::{HardwareResolution, ResolutionState};
+use crate::model_store::inventory::{InventoryArtifact, InventoryArtifactResolution};
 use sha2::{Digest, Sha256};
 use std::fs::File;
 use std::io::Read;
@@ -21,6 +22,8 @@ use std::path::{Path, PathBuf};
 
 const SHA256_HEX_LENGTH: usize = 64;
 const MAX_STABLE_RELATIVE_RANGE: f64 = 0.20;
+const CHILD_ISOLATION_WARNING: &str =
+    "m-j.child-isolation-not-enforced: the selected executable is user supplied; network isolation is not enforced by this adapter";
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ExistingToolKind {
@@ -29,19 +32,91 @@ pub enum ExistingToolKind {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-/// Identity reported by a separately checked local probe. This adapter checks
-/// the selected executable bytes and compares the receipt to the candidate;
-/// it does not infer build/backend identity from a filename.
+/// Identity reported by a separately checked local probe. Construction proves
+/// only that the receipt is structurally complete. This adapter later checks
+/// the selected executable bytes and compares the supplied claims to the
+/// candidate; it does not attest build/backend identity or infer it from a
+/// filename.
 pub struct ObservedToolIdentityReceipt {
-    pub kind: ExistingToolKind,
-    pub path: PathBuf,
-    pub expected_sha256: String,
-    pub observed_product: String,
-    pub observed_engine: String,
-    pub observed_engine_build: String,
-    pub observed_backend: AcceleratorBackend,
-    pub probe_protocol_id: String,
-    pub observed_at: String,
+    kind: ExistingToolKind,
+    path: PathBuf,
+    expected_sha256: String,
+    observed_product: String,
+    observed_engine: String,
+    observed_engine_build: String,
+    observed_backend: AcceleratorBackend,
+    probe_protocol_id: String,
+    observed_at: String,
+}
+
+impl ObservedToolIdentityReceipt {
+    #[allow(clippy::too_many_arguments)]
+    pub fn new(
+        kind: ExistingToolKind,
+        path: PathBuf,
+        expected_sha256: String,
+        observed_product: String,
+        observed_engine: String,
+        observed_engine_build: String,
+        observed_backend: AcceleratorBackend,
+        probe_protocol_id: String,
+        observed_at: String,
+    ) -> Result<Self, Vec<String>> {
+        let value = Self {
+            kind,
+            path,
+            expected_sha256,
+            observed_product,
+            observed_engine,
+            observed_engine_build,
+            observed_backend,
+            probe_protocol_id,
+            observed_at,
+        };
+        let mut issues = Vec::new();
+        validate_tool_receipt_shape(&value, &mut issues);
+        if issues.is_empty() {
+            Ok(value)
+        } else {
+            Err(issues)
+        }
+    }
+
+    pub fn kind(&self) -> ExistingToolKind {
+        self.kind
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn expected_sha256(&self) -> &str {
+        &self.expected_sha256
+    }
+
+    pub fn observed_product(&self) -> &str {
+        &self.observed_product
+    }
+
+    pub fn observed_engine(&self) -> &str {
+        &self.observed_engine
+    }
+
+    pub fn observed_engine_build(&self) -> &str {
+        &self.observed_engine_build
+    }
+
+    pub fn observed_backend(&self) -> &AcceleratorBackend {
+        &self.observed_backend
+    }
+
+    pub fn probe_protocol_id(&self) -> &str {
+        &self.probe_protocol_id
+    }
+
+    pub fn observed_at(&self) -> &str {
+        &self.observed_at
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -49,10 +124,70 @@ pub struct VerificationPreparationRequest {
     pub verification_plan_id: String,
     pub hardware_target: ConfirmedHardwareTarget,
     pub candidate: ExactConfigurationCandidate,
-    pub artifact_path: PathBuf,
-    pub expected_artifact_sha256: String,
+    pub inventory_selection: VerifiedInventorySelection,
     pub benchmark: Option<BenchmarkPreparation>,
     pub quick_check: Option<QuickCheckPreparation>,
+}
+
+/// A local artifact selection which M-I resolved against immutable registry
+/// identity. M-J still rehashes the selected bytes before preparing a plan.
+#[derive(Debug, Clone, PartialEq)]
+pub struct VerifiedInventorySelection {
+    path: PathBuf,
+    artifact_id: String,
+    sha256: String,
+    bytes: u64,
+}
+
+impl VerifiedInventorySelection {
+    pub fn from_inventory_artifact(value: &InventoryArtifact) -> Result<Self, Vec<String>> {
+        let mut issues = Vec::new();
+        let identity = match &value.resolution {
+            InventoryArtifactResolution::Verified { identity } => identity,
+            _ => {
+                issues.push("m-j.inventory.selection-not-verified".into());
+                return Err(issues);
+            }
+        };
+        let artifact = &identity.artifact;
+        require_text(&value.path, "inventory.path", &mut issues);
+        require_text(&artifact.artifact_id, "inventory.artifactId", &mut issues);
+        validate_sha256(&artifact.sha256, "inventory", &mut issues);
+        if value.sha256.as_deref() != Some(artifact.sha256.as_str()) {
+            issues.push("m-j.inventory.outer-hash-mismatch".into());
+        }
+        if value.file_size_bytes != artifact.bytes {
+            issues.push("m-j.inventory.outer-byte-size-mismatch".into());
+        }
+        if artifact.bytes == 0 {
+            issues.push("m-j.inventory.byte-size-invalid".into());
+        }
+        if !issues.is_empty() {
+            return Err(issues);
+        }
+        Ok(Self {
+            path: PathBuf::from(&value.path),
+            artifact_id: artifact.artifact_id.clone(),
+            sha256: artifact.sha256.clone(),
+            bytes: artifact.bytes,
+        })
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path
+    }
+
+    pub fn artifact_id(&self) -> &str {
+        &self.artifact_id
+    }
+
+    pub fn sha256(&self) -> &str {
+        &self.sha256
+    }
+
+    pub fn bytes(&self) -> u64 {
+        self.bytes
+    }
 }
 
 /// M-J may only consume an M-D target which is ready, or one whose reported
@@ -126,6 +261,7 @@ pub struct PreparedVerification {
     artifact: CheckedFileIdentity,
     benchmark_tool: Option<CheckedFileIdentity>,
     quick_check_tool: Option<CheckedFileIdentity>,
+    warnings: Vec<String>,
 }
 
 impl PreparedVerification {
@@ -143,6 +279,10 @@ impl PreparedVerification {
 
     pub fn quick_check_tool(&self) -> Option<&CheckedFileIdentity> {
         self.quick_check_tool.as_ref()
+    }
+
+    pub fn warnings(&self) -> &[String] {
+        &self.warnings
     }
 }
 
@@ -183,6 +323,7 @@ pub struct QuickCheckObservation {
 #[derive(Debug, Clone, PartialEq)]
 pub struct VerificationObservation {
     pub result_id: String,
+    pub domain_status: DomainStatus,
     pub benchmark: Option<BenchmarkObservation>,
     pub quick_check: Option<QuickCheckObservation>,
 }
@@ -205,6 +346,16 @@ pub fn prepare_verification(
         &mut issues,
     );
     require_text(
+        &request.candidate.model_family.model_family_id,
+        "candidate.modelFamily.modelFamilyId",
+        &mut issues,
+    );
+    require_text(
+        &request.candidate.model_family.display_name,
+        "candidate.modelFamily.displayName",
+        &mut issues,
+    );
+    require_text(
         &request.candidate.artifact.artifact_id,
         "candidate.artifact.artifactId",
         &mut issues,
@@ -224,15 +375,41 @@ pub fn prepare_verification(
         "candidate.artifact.filename",
         &mut issues,
     );
+    require_text(
+        &request.candidate.artifact.format,
+        "candidate.artifact.format",
+        &mut issues,
+    );
+    require_text(
+        &request.candidate.artifact.quantization,
+        "candidate.artifact.quantization",
+        &mut issues,
+    );
+    require_text(
+        &request.candidate.artifact.license,
+        "candidate.artifact.license",
+        &mut issues,
+    );
+    if !request
+        .candidate
+        .artifact
+        .format
+        .eq_ignore_ascii_case("gguf")
+    {
+        issues.push("m-j.candidate.unsupported-artifact-format".into());
+    }
     if request.benchmark.is_none() && request.quick_check.is_none() {
         issues.push("m-j.plan.empty: at least one typed verification plan is required".into());
     }
-    if request.expected_artifact_sha256 != request.candidate.artifact.sha256 {
-        issues.push(
-            "m-j.artifact.expected-hash-mismatch: request and candidate hashes differ".into(),
-        );
+    if request.inventory_selection.artifact_id != request.candidate.artifact.artifact_id {
+        issues.push("m-j.inventory.candidate-artifact-id-mismatch".into());
     }
-    validate_sha256(&request.expected_artifact_sha256, "artifact", &mut issues);
+    if request.inventory_selection.sha256 != request.candidate.artifact.sha256 {
+        issues.push("m-j.inventory.candidate-hash-mismatch".into());
+    }
+    if request.inventory_selection.bytes != request.candidate.artifact.bytes {
+        issues.push("m-j.inventory.candidate-byte-size-mismatch".into());
+    }
     if !matches!(
         request.candidate.artifact.status,
         crate::contracts::ArtifactStatus::Promoted
@@ -245,13 +422,13 @@ pub fn prepare_verification(
     validate_runtime(&request.candidate.runtime, &mut issues);
 
     let artifact = checked_identity(
-        &request.artifact_path,
-        &request.expected_artifact_sha256,
+        &request.inventory_selection.path,
+        &request.inventory_selection.sha256,
         "artifact",
         &mut issues,
     );
-    if let Ok(metadata) = std::fs::metadata(&request.artifact_path) {
-        if metadata.len() != request.candidate.artifact.bytes {
+    if let Ok(metadata) = std::fs::metadata(&request.inventory_selection.path) {
+        if metadata.len() != request.inventory_selection.bytes {
             issues.push("m-j.artifact.byte-size-mismatch".into());
         }
     }
@@ -269,12 +446,16 @@ pub fn prepare_verification(
 
     let side_effects = local_execution_side_effects();
     let runtime = request.candidate.runtime.clone();
-    let artifact_path = request.artifact_path.to_string_lossy().into_owned();
+    let artifact_path = request
+        .inventory_selection
+        .path
+        .to_string_lossy()
+        .into_owned();
     let benchmark_plan = request.benchmark.as_ref().map(|value| BenchmarkPlan {
         benchmark_plan_id: value.plan_id.clone(),
         candidate_id: request.candidate.candidate_id.clone(),
         artifact_path: artifact_path.clone(),
-        expected_artifact_sha256: request.expected_artifact_sha256.clone(),
+        expected_artifact_sha256: request.inventory_selection.sha256.clone(),
         runtime: runtime.clone(),
         protocol_id: value.protocol_id.clone(),
         warmup_runs: value.warmup_runs,
@@ -287,7 +468,7 @@ pub fn prepare_verification(
         quick_check_plan_id: value.plan_id.clone(),
         candidate_id: request.candidate.candidate_id.clone(),
         artifact_path,
-        expected_artifact_sha256: request.expected_artifact_sha256.clone(),
+        expected_artifact_sha256: request.inventory_selection.sha256.clone(),
         runtime,
         checks: value.checks.clone(),
         preflight: value.preflight.clone(),
@@ -304,6 +485,7 @@ pub fn prepare_verification(
         artifact: artifact.expect("checked artifact exists after validation"),
         benchmark_tool,
         quick_check_tool,
+        warnings: vec![CHILD_ISOLATION_WARNING.into()],
     })
 }
 
@@ -350,10 +532,19 @@ pub fn benchmark_result(
         return Err(issues);
     }
 
+    let mut exclusions = calibration_exclusions(&plan.preflight);
+    exclusions.push("m-j.calibration.child-isolation-not-enforced".into());
+    if observation.domain_status != DomainStatus::Completed {
+        exclusions.push(format!(
+            "m-j.calibration.run-status:{:?}",
+            observation.domain_status
+        ));
+    }
+    let run_eligible = exclusions.is_empty();
     let mut series: Vec<MeasurementSeries> = observation
         .series
         .iter()
-        .map(|value| normalized_series(plan, value, observation.observed_at.clone()))
+        .map(|value| normalized_series(plan, value, observation.observed_at.clone(), run_eligible))
         .collect();
     for kind in &plan.measurement_kinds {
         if matches!(kind, MeasurementKind::Stability)
@@ -369,13 +560,6 @@ pub fn benchmark_result(
         ));
     }
 
-    let mut exclusions = calibration_exclusions(&plan.preflight);
-    if observation.domain_status != DomainStatus::Completed {
-        exclusions.push(format!(
-            "m-j.calibration.run-status:{:?}",
-            observation.domain_status
-        ));
-    }
     for item in &series {
         if item.completion != DomainStatus::Completed {
             exclusions.push(format!(
@@ -389,6 +573,10 @@ pub fn benchmark_result(
     }
     exclusions.sort();
     exclusions.dedup();
+    let mut diagnostics = observation.diagnostics.clone();
+    diagnostics.push(CHILD_ISOLATION_WARNING.into());
+    diagnostics.sort();
+    diagnostics.dedup();
     Ok(BenchmarkResult {
         benchmark_result_id: observation.result_id.clone(),
         benchmark_plan_id: plan.benchmark_plan_id.clone(),
@@ -397,7 +585,7 @@ pub fn benchmark_result(
         series,
         calibration_eligible: exclusions.is_empty(),
         calibration_exclusions: exclusions,
-        diagnostics: observation.diagnostics.clone(),
+        diagnostics,
     })
 }
 
@@ -493,6 +681,20 @@ pub fn verification_result(
             issues.push("m-j.result.unplanned-benchmark".into());
             None
         }
+        (Some(plan), None) if observation.domain_status != DomainStatus::Completed => {
+            benchmark_result(
+                plan,
+                &BenchmarkObservation {
+                    result_id: format!("{}:benchmark-not-started", observation.result_id),
+                    domain_status: observation.domain_status.clone(),
+                    series: vec![],
+                    diagnostics: vec!["m-j.phase.benchmark-not-started".into()],
+                    observed_at: None,
+                },
+            )
+            .map_err(|errors| issues.extend(errors))
+            .ok()
+        }
         (Some(_), None) => {
             issues.push("m-j.result.missing-benchmark".into());
             None
@@ -506,6 +708,19 @@ pub fn verification_result(
         (None, Some(_)) => {
             issues.push("m-j.result.unplanned-quick-check".into());
             None
+        }
+        (Some(plan), None) if observation.domain_status != DomainStatus::Completed => {
+            quick_check_result(
+                plan,
+                &QuickCheckObservation {
+                    result_id: format!("{}:quick-check-not-started", observation.result_id),
+                    domain_status: observation.domain_status.clone(),
+                    checks: vec![],
+                    observed_at: None,
+                },
+            )
+            .map_err(|errors| issues.extend(errors))
+            .ok()
         }
         (Some(_), None) => {
             issues.push("m-j.result.missing-quick-check".into());
@@ -525,6 +740,12 @@ pub fn verification_result(
         .flatten()
         .cloned()
         .fold(DomainStatus::Completed, worst_status);
+    if observation.domain_status != domain_status {
+        return Err(vec![format!(
+            "m-j.result.top-level-status-mismatch:{:?}:{domain_status:?}",
+            observation.domain_status
+        )]);
+    }
     Ok(VerificationResult {
         verification_result_id: observation.result_id.clone(),
         verification_plan_id: plan.verification_plan_id.clone(),
@@ -598,10 +819,23 @@ fn validate_tool(
     runtime: &RuntimeConfiguration,
     issues: &mut Vec<String>,
 ) {
+    validate_tool_receipt_shape(value, issues);
     if value.kind != expected_kind {
         issues.push("m-j.tool.role-mismatch".into());
     }
-    let expected_name = match expected_kind {
+    if value.observed_product != runtime.product
+        || value.observed_engine != runtime.engine
+        || value.observed_engine_build != runtime.engine_build.as_deref().unwrap_or_default()
+        || value.observed_backend != runtime.backend
+    {
+        issues.push(
+            "m-j.tool.runtime-mismatch: supplied product/engine/build/backend claims differ from candidate".into(),
+        );
+    }
+}
+
+fn validate_tool_receipt_shape(value: &ObservedToolIdentityReceipt, issues: &mut Vec<String>) {
+    let expected_name = match value.kind {
         ExistingToolKind::Benchmark => "llama-bench.exe",
         ExistingToolKind::QuickCheck => "llama-cli.exe",
     };
@@ -617,15 +851,13 @@ fn validate_tool(
     }
     require_text(&value.probe_protocol_id, "tool.probeProtocolId", issues);
     require_text(&value.observed_at, "tool.observedAt", issues);
-    if value.observed_product != runtime.product
-        || value.observed_engine != runtime.engine
-        || value.observed_engine_build != runtime.engine_build.as_deref().unwrap_or_default()
-        || value.observed_backend != runtime.backend
-    {
-        issues.push(
-            "m-j.tool.runtime-mismatch: observed product/engine/build/backend differ from candidate".into(),
-        );
-    }
+    require_text(&value.observed_product, "tool.observedProduct", issues);
+    require_text(&value.observed_engine, "tool.observedEngine", issues);
+    require_text(
+        &value.observed_engine_build,
+        "tool.observedEngineBuild",
+        issues,
+    );
     validate_sha256(&value.expected_sha256, "tool", issues);
 }
 
@@ -637,6 +869,15 @@ fn validate_runtime(runtime: &RuntimeConfiguration, issues: &mut Vec<String>) {
     );
     require_text(&runtime.product, "runtime.product", issues);
     require_text(&runtime.engine, "runtime.engine", issues);
+    if runtime.product != "llama-cpp" || runtime.engine != "llama.cpp" {
+        issues.push("m-j.runtime.unsupported-product-engine".into());
+    }
+    if !matches!(
+        runtime.backend,
+        AcceleratorBackend::Cuda | AcceleratorBackend::Vulkan | AcceleratorBackend::Cpu
+    ) {
+        issues.push("m-j.runtime.unsupported-windows-backend".into());
+    }
     if runtime
         .engine_build
         .as_deref()
@@ -644,8 +885,72 @@ fn validate_runtime(runtime: &RuntimeConfiguration, issues: &mut Vec<String>) {
     {
         issues.push("m-j.runtime.build-unknown".into());
     }
+    if runtime
+        .chat_template
+        .as_deref()
+        .is_none_or(|value| value.trim().is_empty())
+    {
+        issues.push("m-j.runtime.chat-template-unknown".into());
+    }
+    if runtime
+        .kv_cache
+        .key
+        .as_deref()
+        .is_none_or(|value| value.trim().is_empty())
+        || runtime
+            .kv_cache
+            .value
+            .as_deref()
+            .is_none_or(|value| value.trim().is_empty())
+    {
+        issues.push("m-j.runtime.kv-cache-incomplete".into());
+    }
     if runtime.context_tokens == 0 {
         issues.push("m-j.runtime.context-invalid".into());
+    }
+    if runtime.gpu_layers.is_none()
+        || runtime.batch_size.is_none_or(|value| value == 0)
+        || runtime.micro_batch_size.is_none_or(|value| value == 0)
+        || runtime.parallelism.is_none_or(|value| value == 0)
+        || runtime.threads.is_none_or(|value| value == 0)
+        || runtime.flash_attention.is_none()
+        || runtime.mmap.is_none()
+    {
+        issues.push("m-j.runtime.explicit-settings-incomplete".into());
+    }
+    if runtime
+        .sampler
+        .temperature
+        .is_some_and(|value| !value.is_finite() || value < 0.0)
+        || runtime
+            .sampler
+            .top_p
+            .is_some_and(|value| !value.is_finite() || !(0.0..=1.0).contains(&value))
+        || runtime
+            .sampler
+            .min_p
+            .is_some_and(|value| !value.is_finite() || !(0.0..=1.0).contains(&value))
+    {
+        issues.push("m-j.runtime.sampler-invalid".into());
+    }
+    if runtime.sampler.temperature.is_none()
+        || runtime.sampler.top_p.is_none()
+        || runtime.sampler.top_k.is_none()
+        || runtime.sampler.min_p.is_none()
+        || runtime.sampler.seed.is_none()
+    {
+        issues.push("m-j.runtime.sampler-incomplete".into());
+    }
+    let mut flags = std::collections::HashSet::new();
+    if runtime.additional_flags.iter().any(|flag| {
+        flag.name.trim().is_empty()
+            || flag
+                .value
+                .as_deref()
+                .is_some_and(|value| value.trim().is_empty())
+            || !flags.insert(flag.name.as_str())
+    }) {
+        issues.push("m-j.runtime.flags-invalid".into());
     }
 }
 
@@ -713,6 +1018,9 @@ fn validate_sha256(value: &str, label: &str, issues: &mut Vec<String>) {
 }
 
 fn local_execution_side_effects() -> SideEffects {
+    // M-A records intended behavior. `network: false` is not a sandbox or an
+    // enforced guarantee for a user-supplied child; the local adapter warning,
+    // diagnostics and ineligible provenance preserve that distinction.
     SideEffects {
         executes_local_process: true,
         loads_model: true,
@@ -726,6 +1034,7 @@ fn normalized_series(
     plan: &BenchmarkPlan,
     value: &SeriesObservation,
     observed_at: Option<String>,
+    run_eligible: bool,
 ) -> MeasurementSeries {
     let aggregate = aggregate(&value.measured_samples);
     let stability = stability(&value.measured_samples, &value.completion);
@@ -748,7 +1057,7 @@ fn normalized_series(
             observed_at,
             value.measured_samples.len() as u64,
             interval,
-            stability == Stability::Stable,
+            run_eligible && stability == Stability::Stable,
         ),
     }
 }
@@ -851,11 +1160,14 @@ fn quick_evidence(
             unit: MeasurementUnit::Boolean,
             interval: None,
             confidence: None,
-            eligible: Some(ran),
+            eligible: Some(false),
             eligibility_reasons: if ran {
-                vec![]
+                vec!["m-j.child-isolation-not-enforced".into()]
             } else {
-                vec!["m-j.check.not-run".into()]
+                vec![
+                    "m-j.check.not-run".into(),
+                    "m-j.child-isolation-not-enforced".into(),
+                ]
             },
         }),
         raw_source_record_ref: Some(format!(

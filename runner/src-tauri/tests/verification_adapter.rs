@@ -1,5 +1,9 @@
 use runner_lib::contracts::*;
 use runner_lib::hardware_target::{HardwareResolution, ResolutionState};
+use runner_lib::model_store::inventory::{
+    ArtifactIdentityV1, InventoryArtifact, InventoryArtifactResolution, ModelFamilyV1,
+    PromotedStatus, RegistryArtifactIdentityV1, RegistryMetadataV1,
+};
 use runner_lib::verification::*;
 use sha2::{Digest, Sha256};
 use std::collections::BTreeMap;
@@ -47,9 +51,9 @@ fn runtime() -> RuntimeConfiguration {
         mmap: Some(true),
         sampler: Sampler {
             temperature: Some(0.0),
-            top_p: None,
-            top_k: None,
-            min_p: None,
+            top_p: Some(0.9),
+            top_k: Some(40),
+            min_p: Some(0.05),
             seed: Some(1),
         },
         additional_flags: vec![],
@@ -147,6 +151,66 @@ fn confirmed_hardware() -> ConfirmedHardwareTarget {
     .unwrap()
 }
 
+fn inventory_artifact(path: PathBuf, artifact_hash: &str) -> InventoryArtifact {
+    InventoryArtifact {
+        path: path.to_string_lossy().into_owned(),
+        store: "fixture".into(),
+        label: "fixture.gguf".into(),
+        file_size_bytes: 8,
+        sha256: Some(artifact_hash.into()),
+        resolution: InventoryArtifactResolution::Verified {
+            identity: Box::new(RegistryArtifactIdentityV1 {
+                model_family: ModelFamilyV1 {
+                    model_family_id: "family-1".into(),
+                    display_name: "Fixture".into(),
+                },
+                artifact: ArtifactIdentityV1 {
+                    artifact_id: "artifact-1".into(),
+                    repository: "fixture/repo".into(),
+                    revision: "revision".into(),
+                    filename: "fixture.gguf".into(),
+                    sha256: artifact_hash.into(),
+                    bytes: 8,
+                    format: "GGUF".into(),
+                    quantization: "Q4_K_M".into(),
+                    license: "apache-2.0".into(),
+                    status: PromotedStatus::Promoted,
+                },
+                provenance: vec![],
+                registry_metadata: RegistryMetadataV1 {
+                    publisher: "fixture".into(),
+                    base_model: "fixture".into(),
+                    model: "fixture".into(),
+                    max_context_tokens: 4096,
+                    chat_template: "chatml".into(),
+                    license_source_url: "https://example.invalid/license".into(),
+                    field_provenance: BTreeMap::new(),
+                },
+            }),
+        },
+    }
+}
+
+fn tool_receipt(
+    kind: ExistingToolKind,
+    path: PathBuf,
+    expected_sha256: String,
+    observed_build: &str,
+) -> ObservedToolIdentityReceipt {
+    ObservedToolIdentityReceipt::new(
+        kind,
+        path,
+        expected_sha256,
+        "llama-cpp".into(),
+        "llama.cpp".into(),
+        observed_build.into(),
+        AcceleratorBackend::Cuda,
+        "llama-tool-version-v1".into(),
+        "2026-07-22T20:00:00Z".into(),
+    )
+    .unwrap()
+}
+
 fn request() -> VerificationPreparationRequest {
     let artifact_bytes = b"artifact";
     let bench_bytes = b"benchmark executable";
@@ -154,29 +218,22 @@ fn request() -> VerificationPreparationRequest {
     let artifact_path = temp_file("fixture.gguf", artifact_bytes);
     let benchmark_path = temp_file("llama-bench.exe", bench_bytes);
     let quick_path = temp_file("llama-cli.exe", quick_bytes);
-    let tool = |kind, path, expected_sha256| ObservedToolIdentityReceipt {
-        kind,
-        path,
-        expected_sha256,
-        observed_product: "llama-cpp".into(),
-        observed_engine: "llama.cpp".into(),
-        observed_engine_build: "b10061-5d5306bf3".into(),
-        observed_backend: AcceleratorBackend::Cuda,
-        probe_protocol_id: "llama-tool-version-v1".into(),
-        observed_at: "2026-07-22T20:00:00Z".into(),
-    };
+    let inventory_selection = VerifiedInventorySelection::from_inventory_artifact(
+        &inventory_artifact(artifact_path, &hash(artifact_bytes)),
+    )
+    .unwrap();
     VerificationPreparationRequest {
         verification_plan_id: "verification-1".into(),
         hardware_target: confirmed_hardware(),
         candidate: candidate(&hash(artifact_bytes)),
-        artifact_path,
-        expected_artifact_sha256: hash(artifact_bytes),
+        inventory_selection,
         benchmark: Some(BenchmarkPreparation {
             plan_id: "benchmark-1".into(),
-            tool: tool(
+            tool: tool_receipt(
                 ExistingToolKind::Benchmark,
                 benchmark_path,
                 hash(bench_bytes),
+                "b10061-5d5306bf3",
             ),
             protocol_id: "llama-bench-v1".into(),
             warmup_runs: 1,
@@ -190,7 +247,12 @@ fn request() -> VerificationPreparationRequest {
         }),
         quick_check: Some(QuickCheckPreparation {
             plan_id: "quick-1".into(),
-            tool: tool(ExistingToolKind::QuickCheck, quick_path, hash(quick_bytes)),
+            tool: tool_receipt(
+                ExistingToolKind::QuickCheck,
+                quick_path,
+                hash(quick_bytes),
+                "b10061-5d5306bf3",
+            ),
             checks: vec![
                 QuickCheck {
                     check_id: "json-schema".into(),
@@ -266,22 +328,103 @@ fn preparation_hashes_only_selected_files_and_binds_exact_identity() {
     );
     assert!(prepared.benchmark_tool().is_some());
     assert!(prepared.quick_check_tool().is_some());
+    assert!(prepared
+        .warnings()
+        .iter()
+        .any(|warning| warning.contains("isolation-not-enforced")));
 }
 
 #[test]
 fn preparation_fails_closed_on_artifact_tool_and_runtime_mismatch() {
     let mut value = request();
-    value.expected_artifact_sha256 = "0".repeat(64);
+    value.candidate.artifact.sha256 = "0".repeat(64);
     let errors = prepare_verification(&value).unwrap_err().join(" ");
-    assert!(errors.contains("expected-hash-mismatch"));
-    assert!(errors.contains("artifact.hash-mismatch"));
+    assert!(errors.contains("candidate-hash-mismatch"));
 
     let mut value = request();
-    value.benchmark.as_mut().unwrap().tool.observed_engine_build = "unknown".into();
+    let tool = &value.benchmark.as_ref().unwrap().tool;
+    value.benchmark.as_mut().unwrap().tool = tool_receipt(
+        tool.kind(),
+        tool.path().to_path_buf(),
+        tool.expected_sha256().into(),
+        "unknown",
+    );
     assert!(prepare_verification(&value)
         .unwrap_err()
         .join(" ")
         .contains("runtime-mismatch"));
+}
+
+#[test]
+fn tool_receipts_are_structurally_validated_and_runtime_is_complete() {
+    let invalid_tool = ObservedToolIdentityReceipt::new(
+        ExistingToolKind::Benchmark,
+        temp_file("not-llama-bench.exe", b"tool"),
+        hash(b"tool"),
+        "llama-cpp".into(),
+        "llama.cpp".into(),
+        "build".into(),
+        AcceleratorBackend::Cuda,
+        "probe-v1".into(),
+        "2026-07-22T20:00:00Z".into(),
+    )
+    .unwrap_err()
+    .join(" ");
+    assert!(invalid_tool.contains("tool.unsupported"));
+
+    let mut value = request();
+    value.candidate.runtime.product = "other".into();
+    value.candidate.runtime.engine = "other".into();
+    value.candidate.runtime.backend = AcceleratorBackend::Metal;
+    value.candidate.runtime.chat_template = None;
+    value.candidate.runtime.kv_cache.key = None;
+    value.candidate.runtime.gpu_layers = None;
+    value.candidate.runtime.batch_size = None;
+    value.candidate.runtime.sampler.top_p = Some(f64::NAN);
+    value.candidate.runtime.sampler.top_k = None;
+    value.candidate.runtime.additional_flags = vec![RuntimeFlag {
+        name: " ".into(),
+        value: None,
+    }];
+    let errors = prepare_verification(&value).unwrap_err().join(" ");
+    assert!(errors.contains("unsupported-product-engine"));
+    assert!(errors.contains("unsupported-windows-backend"));
+    assert!(errors.contains("chat-template-unknown"));
+    assert!(errors.contains("kv-cache-incomplete"));
+    assert!(errors.contains("explicit-settings-incomplete"));
+    assert!(errors.contains("sampler-invalid"));
+    assert!(errors.contains("sampler-incomplete"));
+    assert!(errors.contains("flags-invalid"));
+}
+
+#[test]
+fn inventory_selection_accepts_only_verified_identity_and_rehashes_bytes() {
+    let bytes = b"artifact";
+    let path = temp_file("fixture.gguf", bytes);
+    let mut artifact = inventory_artifact(path.clone(), &hash(bytes));
+    let selection = VerifiedInventorySelection::from_inventory_artifact(&artifact).unwrap();
+    assert_eq!(selection.artifact_id(), "artifact-1");
+    assert_eq!(selection.sha256(), hash(bytes));
+    assert_eq!(selection.bytes(), 8);
+    assert_eq!(selection.path(), path);
+
+    artifact.resolution = InventoryArtifactResolution::Unavailable {
+        reason_code: "fixture.unavailable".into(),
+        message: "not verified".into(),
+    };
+    assert!(
+        VerifiedInventorySelection::from_inventory_artifact(&artifact)
+            .unwrap_err()
+            .join(" ")
+            .contains("selection-not-verified")
+    );
+
+    let value = request();
+    fs::write(value.inventory_selection.path(), b"tampered").unwrap();
+    assert!(prepare_verification(&value)
+        .unwrap_err()
+        .join(" ")
+        .contains("artifact.hash-mismatch"));
 }
 
 #[test]
@@ -335,6 +478,49 @@ fn benchmark_preserves_partial_samples_and_unknown_telemetry_blocks_calibration(
         .calibration_exclusions
         .iter()
         .any(|reason| reason.contains("thermal")));
+    assert!(result
+        .calibration_exclusions
+        .iter()
+        .any(|reason| reason.contains("isolation-not-enforced")));
+    assert!(result
+        .diagnostics
+        .iter()
+        .any(|reason| reason.contains("isolation-not-enforced")));
+    assert!(result.series.iter().all(|series| {
+        series
+            .evidence
+            .measurement
+            .as_ref()
+            .and_then(|measurement| measurement.eligible)
+            == Some(false)
+    }));
+}
+
+#[test]
+fn stable_completed_samples_remain_ineligible_when_preflight_is_unknown() {
+    let prepared = prepare_verification(&request()).unwrap();
+    let result = benchmark_result(
+        prepared.plan().benchmark_plan.as_ref().unwrap(),
+        &completed_benchmark_observation(),
+    )
+    .unwrap();
+    assert!(result
+        .series
+        .iter()
+        .all(|series| series.stability == Stability::Stable));
+    assert!(!result.calibration_eligible);
+    assert!(result
+        .calibration_exclusions
+        .iter()
+        .any(|reason| reason.contains("thermal:Unknown")));
+    assert!(result.series.iter().all(|series| {
+        series
+            .evidence
+            .measurement
+            .as_ref()
+            .and_then(|measurement| measurement.eligible)
+            == Some(false)
+    }));
 }
 
 #[test]
@@ -359,6 +545,14 @@ fn quick_checks_preserve_completed_and_not_run_outcomes() {
     assert_eq!(result.checks[0].status, CheckStatus::Pass);
     assert_eq!(result.checks[1].status, CheckStatus::NotRun);
     assert_eq!(result.domain_status, DomainStatus::Stopped);
+    assert!(result.checks.iter().all(|check| {
+        check
+            .evidence
+            .measurement
+            .as_ref()
+            .and_then(|measurement| measurement.eligible)
+            == Some(false)
+    }));
 }
 
 #[test]
@@ -414,6 +608,7 @@ fn aggregate_result_requires_every_planned_observation_and_its_id() {
         prepared.plan(),
         &VerificationObservation {
             result_id: " ".into(),
+            domain_status: DomainStatus::Completed,
             benchmark: None,
             quick_check: None,
         },
@@ -432,6 +627,7 @@ fn aggregate_result_preserves_worst_typed_status() {
         prepared.plan(),
         &VerificationObservation {
             result_id: "verification-result".into(),
+            domain_status: DomainStatus::Oom,
             benchmark: Some(BenchmarkObservation {
                 result_id: "benchmark-result".into(),
                 domain_status: DomainStatus::Oom,
@@ -453,4 +649,126 @@ fn aggregate_result_preserves_worst_typed_status() {
         result.benchmark_result.unwrap().domain_status,
         DomainStatus::Oom
     );
+}
+
+fn completed_benchmark_observation() -> BenchmarkObservation {
+    let series = |kind| SeriesObservation {
+        kind,
+        unit: MeasurementUnit::TokensPerSecond,
+        warmup_samples: vec![100.0],
+        measured_samples: vec![110.0, 111.0, 112.0],
+        completion: DomainStatus::Completed,
+    };
+    BenchmarkObservation {
+        result_id: "benchmark-completed".into(),
+        domain_status: DomainStatus::Completed,
+        series: vec![
+            series(MeasurementKind::PromptProcessing),
+            series(MeasurementKind::Generation),
+        ],
+        diagnostics: vec![],
+        observed_at: Some("2026-07-22T20:00:00Z".into()),
+    }
+}
+
+fn completed_quick_observation() -> QuickCheckObservation {
+    QuickCheckObservation {
+        result_id: "quick-completed".into(),
+        domain_status: DomainStatus::Completed,
+        checks: vec![
+            CheckObservation {
+                check_id: "json-schema".into(),
+                passed: true,
+                explanation: "matched".into(),
+                local_diagnostics: None,
+            },
+            CheckObservation {
+                check_id: "format".into(),
+                passed: true,
+                explanation: "matched".into(),
+                local_diagnostics: None,
+            },
+        ],
+        observed_at: Some("2026-07-22T20:00:00Z".into()),
+    }
+}
+
+#[test]
+fn stopped_before_a_phase_preserves_completed_data_and_types_not_started_work() {
+    let prepared = prepare_verification(&request()).unwrap();
+    let after_benchmark = verification_result(
+        prepared.plan(),
+        &VerificationObservation {
+            result_id: "after-benchmark".into(),
+            domain_status: DomainStatus::Failed,
+            benchmark: Some(completed_benchmark_observation()),
+            quick_check: None,
+        },
+    )
+    .unwrap();
+    assert_eq!(after_benchmark.domain_status, DomainStatus::Failed);
+    assert_eq!(
+        after_benchmark.benchmark_result.unwrap().domain_status,
+        DomainStatus::Completed
+    );
+    let quick = after_benchmark.quick_check_result.unwrap();
+    assert_eq!(quick.domain_status, DomainStatus::Failed);
+    assert!(quick
+        .checks
+        .iter()
+        .all(|check| check.status == CheckStatus::NotRun));
+
+    let before_benchmark = verification_result(
+        prepared.plan(),
+        &VerificationObservation {
+            result_id: "before-benchmark".into(),
+            domain_status: DomainStatus::Stopped,
+            benchmark: None,
+            quick_check: Some(completed_quick_observation()),
+        },
+    )
+    .unwrap();
+    assert_eq!(before_benchmark.domain_status, DomainStatus::Stopped);
+    let benchmark = before_benchmark.benchmark_result.unwrap();
+    assert_eq!(benchmark.domain_status, DomainStatus::Stopped);
+    assert!(benchmark
+        .series
+        .iter()
+        .all(|series| series.measured_samples.is_empty()));
+    assert_eq!(
+        before_benchmark.quick_check_result.unwrap().domain_status,
+        DomainStatus::Completed
+    );
+}
+
+#[test]
+fn status_fold_is_order_independent_across_benchmark_and_quick_check() {
+    let prepared = prepare_verification(&request()).unwrap();
+    for (benchmark_status, quick_status) in [
+        (DomainStatus::Oom, DomainStatus::Stopped),
+        (DomainStatus::Stopped, DomainStatus::Oom),
+    ] {
+        let result = verification_result(
+            prepared.plan(),
+            &VerificationObservation {
+                result_id: "ordered-status".into(),
+                domain_status: DomainStatus::Oom,
+                benchmark: Some(BenchmarkObservation {
+                    result_id: "benchmark-status".into(),
+                    domain_status: benchmark_status,
+                    series: vec![],
+                    diagnostics: vec![],
+                    observed_at: None,
+                }),
+                quick_check: Some(QuickCheckObservation {
+                    result_id: "quick-status".into(),
+                    domain_status: quick_status,
+                    checks: vec![],
+                    observed_at: None,
+                }),
+            },
+        )
+        .unwrap();
+        assert_eq!(result.domain_status, DomainStatus::Oom);
+    }
 }
