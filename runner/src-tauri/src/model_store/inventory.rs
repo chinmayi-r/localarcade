@@ -11,6 +11,7 @@ use crate::contracts::{
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::time::{SystemTime, UNIX_EPOCH};
+use url::Url;
 
 const REGISTRY_SCHEMA_VERSION: u64 = 4;
 const REGISTRY_MAX_AGE_MS: i64 = 7 * 24 * 60 * 60 * 1_000;
@@ -82,6 +83,11 @@ pub enum InventoryArtifactResolution {
     CandidateBySize {
         candidates: Vec<RegistryArtifactIdentityV1>,
     },
+    AmbiguousIdentity {
+        candidates: Vec<RegistryArtifactIdentityV1>,
+        reason_code: String,
+        message: String,
+    },
     Unavailable {
         reason_code: String,
         message: String,
@@ -150,10 +156,30 @@ pub struct FieldProvenance {
 struct RegistrySnapshot {
     schema_version: u64,
     snapshot_id: String,
+    generated_at: String,
     last_ingest_succeeded_at: String,
     artifacts: Vec<RegistryArtifact>,
-    #[serde(default)]
     quarantine: Vec<QuarantineRecord>,
+    accelerators: Vec<AcceleratorRecord>,
+    compatibility_assertions: Vec<serde_json::Value>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AcceleratorRecord {
+    id: String,
+    canonical_name: String,
+    variants: Vec<AcceleratorVariant>,
+    supported_backends: Vec<String>,
+    source: FieldProvenance,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct AcceleratorVariant {
+    id: String,
+    memory_bytes: u64,
+    source_url: String,
 }
 
 #[derive(Deserialize, Clone)]
@@ -235,7 +261,9 @@ pub fn adapt_scan_report_with_registry_at(
         }
     };
 
-    if snapshot.schema_version != REGISTRY_SCHEMA_VERSION || snapshot.snapshot_id.trim().is_empty()
+    if snapshot.schema_version != REGISTRY_SCHEMA_VERSION
+        || snapshot.snapshot_id.trim().is_empty()
+        || parse_registry_timestamp_ms(&snapshot.generated_at).is_none()
     {
         return unavailable_report(
             report,
@@ -290,6 +318,29 @@ pub fn adapt_scan_report_with_registry_at(
             },
         }
     }
+    let mut accelerator_ids = std::collections::HashSet::new();
+    for record in &snapshot.accelerators {
+        if !accelerator_ids.insert(&record.id)
+            || record.id.trim().is_empty()
+            || record.canonical_name.trim().is_empty()
+            || record.variants.is_empty()
+            || record.supported_backends.is_empty()
+            || !valid_field_provenance(&record.source)
+        {
+            registry_warnings.push(format!("{}: accelerator admission is invalid", record.id));
+            continue;
+        }
+        let mut variant_ids = std::collections::HashSet::new();
+        if record.variants.iter().any(|variant| {
+            variant.id.trim().is_empty()
+                || !variant_ids.insert(&variant.id)
+                || variant.memory_bytes == 0
+                || !is_http_url(&variant.source_url)
+        }) {
+            registry_warnings.push(format!("{}: accelerator variant is invalid", record.id));
+        }
+    }
+    let _compatibility_assertions = &snapshot.compatibility_assertions;
     for record in &snapshot.quarantine {
         if record.repository.trim().is_empty()
             || !is_immutable_revision(&record.revision)
@@ -371,26 +422,39 @@ fn reconcile_artifact(
                 "The local digest is not a lowercase SHA-256 value.".into(),
             );
         }
+        let hash_matches: Vec<_> = promoted
+            .iter()
+            .filter(|identity| identity.artifact.sha256 == digest)
+            .collect();
+        let exact_matches: Vec<_> = hash_matches
+            .iter()
+            .filter(|identity| identity.artifact.bytes == found.file_size_bytes)
+            .map(|identity| (*identity).clone())
+            .collect();
+        if exact_matches.len() == 1 {
+            return InventoryArtifactResolution::Verified {
+                identity: Box::new(exact_matches[0].clone()),
+            };
+        }
+        if exact_matches.len() > 1 {
+            return InventoryArtifactResolution::AmbiguousIdentity {
+                candidates: exact_matches,
+                reason_code: "inventory.identity-ambiguous".into(),
+                message: "The local hash and byte size match multiple promoted identities; no canonical alias rule is approved.".into(),
+            };
+        }
+        if !hash_matches.is_empty() {
+            return unavailable(
+                "inventory.hash-size-mismatch",
+                "The local digest names a promoted artifact but its byte size does not match."
+                    .into(),
+            );
+        }
         if let Some(identity) = triage.iter().find(|identity| identity.sha256 == digest) {
             return unavailable(
                 "registry.artifact-not-promoted",
                 format!("Artifact {} remains in triage.", identity.artifact_id),
             );
-        }
-        if let Some(identity) = promoted
-            .iter()
-            .find(|identity| identity.artifact.sha256 == digest)
-        {
-            if identity.artifact.bytes != found.file_size_bytes {
-                return unavailable(
-                    "inventory.hash-size-mismatch",
-                    "The local digest names a promoted artifact but its byte size does not match."
-                        .into(),
-                );
-            }
-            return InventoryArtifactResolution::Verified {
-                identity: Box::new(identity.clone()),
-            };
         }
         return unavailable(
             "inventory.hash-not-admitted",
@@ -481,7 +545,7 @@ fn validate_registry_artifact(record: &RegistryArtifact) -> Result<(), String> {
     if record.id.trim().is_empty()
         || record.publisher.trim().is_empty()
         || record.repository.trim().is_empty()
-        || record.file_name.trim().is_empty()
+        || !record.file_name.to_ascii_lowercase().ends_with(".gguf")
         || record.format.trim().is_empty()
         || record.quantization.trim().is_empty()
         || record.base_model.trim().is_empty()
@@ -502,10 +566,7 @@ fn validate_registry_artifact(record: &RegistryArtifact) -> Result<(), String> {
             .provenance
             .get(field)
             .ok_or_else(|| format!("{field} provenance is missing"))?;
-        if !is_http_url(&source.source_url)
-            || parse_registry_timestamp_ms(&source.retrieved_at).is_none()
-            || source.kind.trim().is_empty()
-        {
+        if !valid_field_provenance(source) {
             return Err(format!("{field} provenance is incomplete"));
         }
     }
@@ -559,7 +620,15 @@ fn is_immutable_revision(value: &str) -> bool {
 }
 
 fn is_http_url(value: &str) -> bool {
-    value.starts_with("https://") || value.starts_with("http://")
+    Url::parse(value)
+        .map(|url| matches!(url.scheme(), "http" | "https"))
+        .unwrap_or(false)
+}
+
+fn valid_field_provenance(value: &FieldProvenance) -> bool {
+    is_http_url(&value.source_url)
+        && parse_registry_timestamp_ms(&value.retrieved_at).is_some()
+        && !value.kind.trim().is_empty()
 }
 
 fn is_known_quarantine_code(value: &str) -> bool {

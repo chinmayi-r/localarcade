@@ -6,6 +6,7 @@ use runner_lib::model_store::{
     admitted_identities, FoundArtifact, RegistryMatch, ScanReport, ScannedStore, UnreadableEntry,
 };
 use serde_json::{json, Map, Value};
+use std::collections::HashMap;
 
 const NOW_MS: i64 = 1_784_721_600_000;
 const FRESH_AT: &str = "2026-07-19T12:00:00.000Z";
@@ -181,6 +182,23 @@ fn triage_quarantine_and_hash_mismatches_fail_closed() {
         adapt_scan_report_with_registry_at(report(Some(SHA), 4_000), &triage_registry, NOW_MS);
     assert_unavailable(&triage, "registry.artifact-not-promoted");
 
+    let mut triage_alias = artifact("triage", SHA, 4_000);
+    triage_alias["id"] = json!(
+        "publisher/repository/triage-alias-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    );
+    triage_alias["fileName"] = json!("triage-alias-Q4_K_M.gguf");
+    let promoted_wins = snapshot(
+        vec![artifact("promoted", SHA, 4_000), triage_alias],
+        FRESH_AT,
+        vec![],
+    );
+    let admitted =
+        adapt_scan_report_with_registry_at(report(Some(SHA), 4_000), &promoted_wins, NOW_MS);
+    assert!(matches!(
+        admitted.data.artifacts[0].resolution,
+        InventoryArtifactResolution::Verified { .. }
+    ));
+
     let promoted_registry = snapshot(vec![artifact("promoted", SHA, 4_000)], FRESH_AT, vec![]);
     let size_mismatch =
         adapt_scan_report_with_registry_at(report(Some(SHA), 4_001), &promoted_registry, NOW_MS);
@@ -276,6 +294,114 @@ fn generated_registry_crosses_the_same_promoted_identity_boundary() {
     assert_eq!(identity.artifact.artifact_id, artifact_id);
     assert_eq!(identity.artifact.sha256, sha256);
     assert_eq!(identity.artifact.bytes, bytes);
+}
+
+#[test]
+fn generated_duplicate_identity_groups_never_verify_arbitrarily() {
+    let mut groups: HashMap<(String, u64), Vec<String>> = HashMap::new();
+    for (artifact_id, sha256, bytes) in admitted_identities() {
+        groups.entry((sha256, bytes)).or_default().push(artifact_id);
+    }
+    let ((sha256, bytes), expected_ids) = groups
+        .into_iter()
+        .find(|(_, ids)| ids.len() > 1)
+        .expect("generated registry keeps at least one duplicate content group explicit");
+    let mut scan = report(Some(&sha256), bytes);
+    scan.duplicate_groups = vec![vec![
+        "C:/models/duplicate-a.gguf".into(),
+        "C:/models/duplicate-b.gguf".into(),
+    ]];
+    let result = adapt_scan_report(scan);
+    assert_eq!(result.status, InventoryStatus::Partial);
+    let InventoryArtifactResolution::AmbiguousIdentity {
+        candidates,
+        reason_code,
+        ..
+    } = &result.data.artifacts[0].resolution
+    else {
+        panic!("duplicate promoted identities must remain explicitly ambiguous");
+    };
+    assert_eq!(reason_code, "inventory.identity-ambiguous");
+    let mut actual_ids: Vec<_> = candidates
+        .iter()
+        .map(|candidate| candidate.artifact.artifact_id.clone())
+        .collect();
+    let mut expected_ids = expected_ids;
+    actual_ids.sort();
+    expected_ids.sort();
+    assert_eq!(actual_ids, expected_ids);
+    assert_eq!(result.data.duplicate_groups.len(), 1);
+}
+
+#[test]
+fn snapshot_requires_complete_m_c_shape_and_admitted_accelerators() {
+    let baseline: Value = serde_json::from_str(&snapshot(
+        vec![artifact("promoted", SHA, 4_000)],
+        FRESH_AT,
+        vec![],
+    ))
+    .unwrap();
+    for field in [
+        "generatedAt",
+        "quarantine",
+        "accelerators",
+        "compatibilityAssertions",
+    ] {
+        let mut malformed = baseline.clone();
+        malformed.as_object_mut().unwrap().remove(field);
+        assert_snapshot_invalid(malformed);
+    }
+
+    let mut malformed = baseline.clone();
+    malformed["generatedAt"] = json!("not-a-timestamp");
+    assert_snapshot_invalid(malformed);
+
+    let mut malformed = baseline.clone();
+    malformed["accelerators"] = json!([{
+        "id": "gpu-1",
+        "canonicalName": "GPU",
+        "aliases": [],
+        "variants": [],
+        "supportedBackends": [],
+        "source": {
+            "sourceUrl": "https://example.invalid/gpu",
+            "retrievedAt": FRESH_AT,
+            "kind": "hub-api"
+        }
+    }]);
+    assert_snapshot_invalid(malformed);
+
+    let mut malformed = baseline;
+    malformed["compatibilityAssertions"] = json!({});
+    assert_snapshot_invalid(malformed);
+}
+
+#[test]
+fn malformed_urls_and_non_gguf_filenames_fail_m_c_admission() {
+    let mut bad_filename = artifact("promoted", SHA, 4_000);
+    bad_filename["fileName"] = json!("model-Q4_K_M.bin");
+    assert_snapshot_invalid(
+        serde_json::from_str(&snapshot(vec![bad_filename], FRESH_AT, vec![])).unwrap(),
+    );
+
+    let mut bad_license_url = artifact("promoted", SHA, 4_000);
+    bad_license_url["license"]["sourceUrl"] = json!("https://[::1");
+    assert_snapshot_invalid(
+        serde_json::from_str(&snapshot(vec![bad_license_url], FRESH_AT, vec![])).unwrap(),
+    );
+
+    let mut bad_provenance_url = artifact("promoted", SHA, 4_000);
+    bad_provenance_url["provenance"]["sha256"]["sourceUrl"] = json!("http://[invalid");
+    assert_snapshot_invalid(
+        serde_json::from_str(&snapshot(vec![bad_provenance_url], FRESH_AT, vec![])).unwrap(),
+    );
+}
+
+fn assert_snapshot_invalid(snapshot: Value) {
+    let result =
+        adapt_scan_report_with_registry_at(report(Some(SHA), 4_000), &snapshot.to_string(), NOW_MS);
+    assert_eq!(result.status, InventoryStatus::Unavailable);
+    assert_unavailable(&result, "registry.snapshot-invalid");
 }
 
 fn assert_unavailable(result: &runner_lib::model_store::inventory::InventoryResult, code: &str) {
