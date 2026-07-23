@@ -38,6 +38,7 @@ lack approval or evidence.
 | U19 | Where does battle validation belong? | `lib/battles` validates pairs/votes and rates them, but proposed M-L should own contribution intake [U19]. | Keep combined; split validation; duplicate boundary validation. | M-L validates contribution envelope/consent; M-M defensively validates rating input using shared M-A contracts. | M-L/M-M |
 | U23 | Does Local Arcade materially improve recommendation decisions over llmfit? | Current llmfit already ranks fit/speed/quality/context and incorporates local/community measurements; Local Arcade's claimed advantage has not been evaluated [U8][U23]. | Adopt llmfit ordering; retain current Local Arcade policy; constraint/Pareto/diversity policy; learned ranking later. | Run the non-production comparison checkpoint in `ranking-and-audition-research-plan.md`; do not freeze M-H or M-O audition selection from intuition. | M-H/M-O |
 | U24 | May Anubis leaderboard records be ingested or redistributed? | Anubis code is GPL-3.0 and its live Apple benchmark analysis is public, but repository code licensing does not by itself establish dataset redistribution terms [U24]. | Reference-only external validation; licensed snapshot ingestion; exclude. | Use reference-only matched comparisons until owner/legal review confirms dataset terms and provenance requirements. | External data ingestion; not reference-only research |
+| U25 | How must M-J receive proof that an exact candidate passed M-E compatibility admission? | M-J binds the complete M-I identity and runtime settings, but approved M-A v1 carries neither M-E's compatibility assertion nor package OS/architecture evidence [U25]. Reconstructing that proof from candidate fields would be dishonest. | Add a small versioned compatibility receipt to M-A; explicitly approve narrower runner-local revalidation; defer execution integration. | Add the minimal versioned receipt before M-O connects execution. Keep the pure M-J adapter complete and fail closed until then. | M-J execution integration and M-O run-verification use case |
 
 U8–U10 and U13–U14 remain unresolved at the checkpoint that first consumes
 them. U11/U12/U15 are resolved only for the constrained M-J boundary recorded
@@ -45,7 +46,8 @@ above; their excluded future capabilities remain separately gated. U16 and U18
 belong to the later private-Arena/cleanup sequence. U19 and the
 implementation/security parts of U20 remain outside the approved first slice.
 U23 must be reviewed before M-H/M-O; U24 blocks ingestion, not cited external
-validation.
+validation. U25 does not invalidate the completed M-J adapter, but it blocks
+claiming that M-O can safely execute an M-E-admitted configuration.
 
 ## Evidence index
 
@@ -73,3 +75,4 @@ validation.
 - **[U22]** recovered session lines 12167–12184 exact patch calls.
 - **[U23]** `docs/ranking-and-audition-research-plan.md`, current llmfit primary repository description, and the pinned llmfit audit.
 - **[U24]** Anubis primary repository and live benchmark-analysis pages checked 2026-07-22; no separate dataset license was established in this pass.
+- **[U25]** `runner/src-tauri/src/verification.rs`, `lib/runtime/candidate-adapter.ts`, M-E compatibility tests, and the approved M-A v1 candidate/verification schemas.

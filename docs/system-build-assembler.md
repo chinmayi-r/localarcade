@@ -73,8 +73,8 @@ flowchart LR
     MF["M-F fit/performance adapter ⬜\npreserved core ✅"]
     MG["M-G evidence adapter ✅\npreserved core ✅"]
     MH["M-H portfolio ⏸\nlegacy core ✅"]
-    MI["M-I read-only inventory 🟡\npreserved core ✅"]
-    MJ["M-J verification adapter 🟡\npreserved core under review"]
+    MI["M-I read-only inventory ✅\npreserved core ✅"]
+    MJ["M-J verification adapter ✅\nexecution integration ⏸"]
     MK["M-K private Arena ⬜ later"]
     MLN["M-L/M-M/M-N public systems ⛔"]
     MO["M-O orchestration ⬜"]
@@ -170,9 +170,9 @@ flowchart TB
   MG --> MF
   MB --> MF
 
-  MC --> MI["M-I inventory ⬜"]
+  MC --> MI["M-I inventory ✅\n8d26720 + 6a9d860 + dc87da1"]
   ME --> MI
-  MD --> MJ["M-J verification ⬜"]
+  MD --> MJ["M-J adapter ✅\ncea7514 + e797b33 + 86257f2"]
   ME --> MJ
   MI --> MJ
 
@@ -180,7 +180,8 @@ flowchart TB
   PROTO --> MH
   MH --> MO["M-O use cases ⬜"]
   MI --> MO
-  MJ --> MO
+  MJ --> PROOF["M-E compatibility proof carrier ⏸\nowner decision U25"]
+  PROOF --> MO
   MO --> WEB["M-P website ⬜"]
   MO --> DESK["M-P desktop ⬜"]
   MO --> CLI["CLI parity ⬜"]
@@ -197,17 +198,18 @@ flowchart TB
 | M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ integrated as `b788396` | manual/detected/unknown/mismatch boundary tests; Rust parity |
 | M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |
 | M-G evidence | reused M-E review lane | ✅ integrated as `e3689eb` | exact/lossy/unsupported mappings and boundary tests |
-| M-I inventory | `codex/m-i-inventory` — `G:/LocalArcade-worktrees/m-i-inventory` | 🟡 active | module-local DTO approved; shared orchestration envelope deferred to M-O |
-| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | 🟡 active | Windows-first, user-supplied-engine, runner-no-network boundary approved; T7 remains open |
+| M-I inventory | `codex/m-i-inventory` — `G:/LocalArcade-worktrees/m-i-inventory` | ✅ integrated as `8d26720`, `6a9d860`, `dc87da1` | 11 inventory tests, 2 boundary tests, TypeScript equivalence, and independent mutation audit |
+| M-J verification | `codex/m-j-verification` — `G:/LocalArcade-worktrees/m-j-verification` | ✅ adapter integrated as `cea7514`, `e797b33`, `86257f2`; execution integration ⏸ | 15 adapter tests and 8 boundary checks; M-A v1 lacks an M-E compatibility-proof carrier, recorded as U25 |
 
 ## Gate snapshot — 2026-07-22
 
-- Root `npm.cmd run check`: ✅ typecheck, lint, 129 tests, 30 boundary tests,
+- Root `npm.cmd run check`: ✅ typecheck, lint, 131 TypeScript tests, 33 boundary tests,
   registry freshness and production build.
 - Runner `npm.cmd run check`: ✅ TypeScript, Rust formatting, Clippy with
-  warnings denied, 40 Rust tests across all targets, and production build.
-- The first 120-second runner wrapper expired while Cargo waited for its build
-  lock; the unchanged command passed in 137.9 seconds with a longer wrapper.
+  warnings denied, 67 Rust tests across all targets, and production build.
+- Parallel worktrees had polluted the shared Cargo target with incompatible
+  `serde_json` artifacts. The authoritative runner gate passed from a fresh
+  external `CARGO_TARGET_DIR` in 310.6 seconds without changing repository files.
 
 ## Mapping rule
 

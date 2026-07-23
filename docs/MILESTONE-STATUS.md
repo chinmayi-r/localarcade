@@ -12,6 +12,8 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 | M-D — Hardware target resolver | Complete and committed | `b788396` adds TypeScript and Rust adapters for manual, detected, ambiguous, contradictory, unknown and CPU-only hardware states. It preserves field origins, never invents capacity, and keeps Apple unified memory as one pool. | Non-Windows detection remains explicit manual/unavailable behavior until a platform adapter is approved. |
 | M-E — Exact runtime candidate adapter | Complete and committed | `884dac2`, `1d0ddfb` and integration fix `0f53fb9` build only complete exact candidates from M-C identity, enforce nested KV/sampler and numeric schema constraints, and fail closed on unknown product/build/backend/compatibility. | No serving defaults, fit, ranking, download or process behavior belongs here. |
 | M-G — Evidence adapter | Complete and committed | `e3689eb` maps exact personal measurements, scoped community evidence, sourced throughput priors and compatible fit components without upgrading claims. Identity mismatches, contradictory records and lossy GPU/offload pool splits fail closed. | Evidence collection, public contribution and ranking policy remain outside this adapter. |
+| M-I — Read-only inventory adapter | Complete and committed | `8d26720`, `6a9d860` and `dc87da1` wrap the preserved scanner behind a complete registry/inventory DTO, preserve partial scan evidence, and promote only unambiguous exact SHA-256 plus byte-size identity. Eleven focused tests, two boundary tests, TypeScript equivalence and an independent direct-mutation audit pass. | Shared UI/orchestration envelopes remain M-O work. No automatic broad hashing or IPC was added. |
+| M-J — Existing-engine verification adapter | Adapter complete and committed; execution integration paused | `cea7514`, `e797b33` and `86257f2` bind confirmed hardware, complete M-I identity, selected artifact/tool hashes, explicit runtime settings, typed partial results and evidence eligibility. Fifteen focused tests and eight boundary checks pass; no IPC/network/download/upload/updater or T7 claim was added. | U25: approve a minimal versioned M-E compatibility receipt or explicitly accept narrower local revalidation before M-O connects execution. |
 
 | Milestone | Status | Evidence | Remaining before completion |
 |---|---|---|---|
@@ -37,11 +39,11 @@ This is an audited state ledger, not a roadmap. Update a row only after checking
 
 | R4 (existing-engine slice) — Benchmark | Complete (partial R4) | `runner/src-tauri/src/benchmark.rs`: explicit-consent benchmark spawning exactly the user's own `llama-bench` (single boundary-tested spawn site), watchdog kill-timeout, fail-closed JSON parsing pinned to a real-output fixture, results badged `verified-local` with full engine/config identity. Live end-to-end on the dev machine: Qwen3-4B on RTX 3060 Laptop via CUDA, 228 t/s prompt / 4.3 t/s generation at llama-bench defaults. Persona findings logged in `docs/persona-findings.md`; coverage-gap outcome added to the website engine from pass 1. | Full R4 (bundled pinned engine + T7 sandbox + quick-task suite + calibration transfer) remains gated on the Windows GPU sandbox stop-and-ask. User-flag/llama-swap-config benchmarking is backlog item 1. |
 
-**Current checkpoint:** M-C, M-D, M-E and M-G are integrated on
-`codex/wave1-domain-adapters`. The combined root gate is green (129 TypeScript
-tests, 30 boundary tests and production build); the runner gate is green (40
-Rust tests across all targets and production build). M-I is paused on the
-inventory-result contract boundary. M-J is paused on Windows-first,
-user-supplied-engine and no-network scope decisions. M-B and M-H remain paused
-on their recorded owner/research gates. M-O and all surface implementation
-remain prohibited until their dependencies and checkpoint decisions close.
+**Current checkpoint:** M-I is complete and the pure M-J adapter is complete on
+`codex/wave1-domain-adapters`. The combined root gate is green (131 TypeScript
+tests, 33 boundary tests and production build); the runner gate is green (67
+Rust tests across all targets and production build) from an isolated Cargo
+target. M-J execution integration is paused on U25 because M-A v1 cannot carry
+M-E compatibility proof. M-B and M-H remain paused on their recorded
+owner/research gates. M-O and all surface implementation remain prohibited
+until their dependencies and checkpoint decisions close.
