@@ -10,7 +10,7 @@ import goldens from "./fixtures/recommendation-engine-goldens.json";
 const artifact = (registryJson as RegistrySnapshot).artifacts[0];
 const baseQuery: RecommendationQuery = { hardware: { platform: "cpu", availableMemoryGb: 32 }, task: "coding", desiredContextK: 8, strategy: "long-context" };
 
-function candidate(id: string, family: string, options: { maxContextK?: number; weightGb?: number; runtimeGb?: number; kvMibPer8K?: number; hardwareKinds?: RecommendationCandidate["hardwareKinds"]; quality?: number; sizeBand?: ArtifactSizeBand } = {}): RecommendationCandidate {
+function candidate(id: string, family: string, options: { maxContextK?: number; weightGb?: number; runtimeGb?: number; kvMibPer8K?: number; hardwareKinds?: RecommendationCandidate["hardwareKinds"]; platforms?: RecommendationCandidate["platforms"]; acceleratorIds?: string[]; quality?: number; sizeBand?: ArtifactSizeBand } = {}): RecommendationCandidate {
   const maxContextK = options.maxContextK ?? 32;
   return {
     id,
@@ -27,6 +27,8 @@ function candidate(id: string, family: string, options: { maxContextK?: number; 
     },
     fitProfileSourceUrl: "https://example.com/test-profile",
     hardwareKinds: options.hardwareKinds ?? ["cpu"],
+    platforms: options.platforms ?? (options.hardwareKinds?.includes("gpu") ? ["nvidia"] : ["cpu"]),
+    acceleratorIds: options.acceleratorIds,
     sizeBand: options.sizeBand ?? "tiny-1b",
     runtime: { product: "llama-cpp", engine: "llama.cpp", build: "test-build", backend: options.hardwareKinds?.includes("gpu") ? "cuda" : "cpu", kvCache: "f16", gpuLayers: options.hardwareKinds?.includes("gpu") ? "all" : 0, batchSize: 512 },
     comparativeQuality: options.quality === undefined ? undefined : { coding: { value: options.quality, sourceUrl: "https://example.com/test-quality" } },
@@ -73,6 +75,20 @@ test("a platform with zero catalog coverage yields no-coverage, never nothing-fi
   assert.doesNotMatch(result.message, /fits/);
 });
 
+test("CUDA candidates never cross into AMD and exact-device evidence requires the device id", () => {
+  const cuda = candidate("cuda", "cuda-family", {
+    hardwareKinds: ["gpu"],
+    platforms: ["nvidia"],
+    acceleratorIds: ["nvidia-geforce-rtx-3060-laptop-gpu"],
+  });
+  const amd = recommend({ ...baseQuery, hardware: { platform: "amd", availableMemoryGb: 8 } }, [cuda]);
+  assert.equal(amd.kind, "no-coverage");
+  const unidentifiedNvidia = recommend({ ...baseQuery, hardware: { platform: "nvidia", availableMemoryGb: 6 } }, [cuda]);
+  assert.equal(unidentifiedNvidia.kind, "no-coverage");
+  const exact = recommend({ ...baseQuery, hardware: { platform: "nvidia", availableMemoryGb: 6, acceleratorId: "nvidia-geforce-rtx-3060-laptop-gpu" } }, [cuda]);
+  assert.notEqual(exact.kind, "no-coverage");
+});
+
 test("family variants nest and cannot occupy multiple slots", () => {
   const result = recommend(baseQuery, [
     candidate("family-a-heavy", "family-a", { weightGb: 2, maxContextK: 64 }),
@@ -106,4 +122,35 @@ test("production recommendations retain real registry identity and explicit runt
   assert.equal(item.candidate.runtime.product, "llama-cpp");
   assert.equal(item.candidate.runtime.engine, "llama.cpp");
   assert.equal(item.throughput.kind, "unavailable", "llamafile priors must not cross into direct llama.cpp");
+});
+
+test("exact RTX 3060 Laptop receives only its measured two-pool Qwen configuration", () => {
+  const hardware = {
+    platform: "nvidia" as const,
+    acceleratorId: "nvidia-geforce-rtx-3060-laptop-gpu",
+    acceleratorFamily: "nvidia-ampere-laptop",
+    availableMemoryGb: 6,
+    systemMemoryGb: 16,
+  };
+  const result = recommend({ ...baseQuery, hardware, desiredContextK: 16, strategy: "balanced" });
+  assert.equal(result.kind, "unranked");
+  assert.equal(result.items.length, 1);
+  const item = result.items[0];
+  assert.equal(item.candidate.artifact.sha256, "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597");
+  assert.equal(item.candidate.runtime.build, "b10061 (5d5306bf3)");
+  assert.ok(item.memoryPools?.device.fits);
+  assert.ok(item.memoryPools?.host.fits);
+});
+
+test("exact GPU configuration fails closed when either measured memory pool is insufficient", () => {
+  const baseHardware = {
+    platform: "nvidia" as const,
+    acceleratorId: "nvidia-geforce-rtx-3060-laptop-gpu",
+    availableMemoryGb: 6,
+    systemMemoryGb: 16,
+  };
+  const insufficientVram = recommend({ ...baseQuery, hardware: { ...baseHardware, availableMemoryGb: 4 }, desiredContextK: 16 });
+  assert.equal(insufficientVram.kind, "nothing-fits");
+  const insufficientRam = recommend({ ...baseQuery, hardware: { ...baseHardware, systemMemoryGb: 0.25 }, desiredContextK: 16 });
+  assert.equal(insufficientRam.kind, "nothing-fits");
 });

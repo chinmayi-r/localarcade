@@ -39,7 +39,9 @@ export function presentRecommendation(item: RecommendationItem, outcomeKind: Rec
     rank: outcomeKind === "ranked"
       ? evidenceValue(String(index + 1).padStart(2, "0"), "preference", [], "Position produced by the selected ranking strategy.")
       : unavailableValue("—", "No rank is claimed."),
-    fit: evidenceValue(`${formatGib(item.fit.requiredBytes)} GB`, "estimated", fitSources, `Byte-level estimate with a ${recommendationPolicy.safetyMarginBps / 100}% safety margin.`),
+    fit: evidenceValue(item.memoryPools
+      ? `${formatGib(item.memoryPools.device.requiredBytes)} GB VRAM + ${formatGib(item.memoryPools.host.requiredBytes)} GB RAM`
+      : `${formatGib(item.fit.requiredBytes)} GB`, "estimated", fitSources, `Byte-level estimate with a ${recommendationPolicy.safetyMarginBps / 100}% safety margin.`),
     speed: item.throughput.kind === "range"
       ? evidenceValue(`${item.throughput.ranges.generationTokensPerSecond.min}–${item.throughput.ranges.generationTokensPerSecond.max} tok/s`, "community", item.throughput.sourceUrls, `${item.throughput.sampleCount} observed samples · ${item.throughput.hardwareMatch} hardware match.`)
       : unavailableValue("No matched evidence", item.throughput.reason),
@@ -60,6 +62,10 @@ export function presentRecommendation(item: RecommendationItem, outcomeKind: Rec
       field("KV cache", configurationValue(typeof item.candidate.runtime.kvCache === "string" ? item.candidate.runtime.kvCache : `${item.candidate.runtime.kvCache.key}/${item.candidate.runtime.kvCache.value}`, runtimeSource)),
       field("GPU layers", configurationValue(item.candidate.runtime.gpuLayers.toString(), runtimeSource)),
       field("Batch", configurationValue(item.candidate.runtime.batchSize.toLocaleString("en-US"), runtimeSource)),
+      ...(item.memoryPools ? [
+        field("Device memory required", evidenceValue(`${formatGib(item.memoryPools.device.requiredBytes)} GB`, "estimated", fitSources, "Device pool checked independently.")),
+        field("System RAM required", evidenceValue(`${formatGib(item.memoryPools.host.requiredBytes)} GB`, "estimated", fitSources, "Host pool checked independently.")),
+      ] : []),
     ],
     alternativeCount: sourcedValue(item.alternatives.length.toString(), item.alternatives.flatMap((candidate) => [candidate.artifact.provenance.id.sourceUrl]), "Same-family configurations nested under this card."),
   };

@@ -3,10 +3,19 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { renderToStaticMarkup } from "react-dom/server";
 import { RecommendationList } from "../app/components/finder/recommendation-list";
+import { ConfigurationPanel } from "../app/components/finder/configuration-panel";
 import { catalogAgeValue, recommend, recommendationCatalogMetadata } from "../lib/recommendation";
 import type { RecommendationOutcome, RecommendationQuery } from "../lib/recommendation";
 
 const query: RecommendationQuery = { hardware: { platform: "cpu", availableMemoryGb: 32 }, task: "general", desiredContextK: 16, strategy: "balanced" };
+
+test("finder offers exact sourced accelerator selection while retaining manual entry", () => {
+  const gpuQuery: RecommendationQuery = { ...query, hardware: { platform: "nvidia", availableMemoryGb: 8 } };
+  const html = renderToStaticMarkup(<ConfigurationPanel query={gpuQuery} onChange={() => undefined} onSubmit={() => undefined} hasResults={false} />);
+  assert.match(html, /Exact device \(recommended\)/);
+  assert.match(html, /RTX 3060 Laptop/);
+  assert.match(html, /Other \/ enter memory manually/);
+});
 
 test("M5 cards expose evidence badges, sources, complete settings and a local request action", () => {
   const outcome = recommend(query);
@@ -20,6 +29,22 @@ test("M5 cards expose evidence badges, sources, complete settings and a local re
   assert.match(html, /GPU layers/);
   assert.match(html, /Save evidence request/);
   assert.match(html, /stays in this browser/);
+});
+
+test("exact GPU card exposes independent VRAM and system RAM requirements", () => {
+  const gpuQuery: RecommendationQuery = {
+    hardware: { platform: "nvidia", acceleratorId: "nvidia-geforce-rtx-3060-laptop-gpu", availableMemoryGb: 6, systemMemoryGb: 16 },
+    task: "general",
+    desiredContextK: 16,
+    strategy: "balanced",
+  };
+  const outcome = recommend(gpuQuery);
+  assert.equal(outcome.kind, "unranked");
+  const html = renderToStaticMarkup(<RecommendationList outcome={outcome} query={gpuQuery} selectedId={outcome.items[0].candidate.id} onSelect={() => undefined} />);
+  assert.match(html, /GB VRAM \+ .* GB RAM/);
+  assert.match(html, /Device memory required/);
+  assert.match(html, /System RAM required/);
+  assert.match(html, /b10061 \(5d5306bf3\)/);
 });
 
 test("Tree A outcome states have distinct rendered messages", () => {

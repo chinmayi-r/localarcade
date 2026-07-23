@@ -23,8 +23,9 @@ for (const repository of lock.repositories) {
   const endpoint = `https://huggingface.co/api/models/${repository.repoId}/revision/${repository.revision}?blobs=true`;
   const response = await fetchJsonWithRetry<HuggingFaceModelResponse>(endpoint);
   const admitted = admitHuggingFaceRepository(repository, response, lock.discoveredAt);
-  artifacts.push(...admitted.artifacts);
-  quarantine.push(...admitted.quarantine);
+  const allowed = repository.allowedFiles ? new Set(repository.allowedFiles) : undefined;
+  artifacts.push(...admitted.artifacts.filter((artifact) => !allowed || allowed.has(artifact.fileName)));
+  quarantine.push(...admitted.quarantine.filter((record) => !allowed || (record.fileName !== undefined && allowed.has(record.fileName))));
 }
 
 const families = new Set(artifacts.map((artifact) => artifact.family));

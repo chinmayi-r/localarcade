@@ -1,4 +1,4 @@
-import type { FitArtifact, FitResult, KvCacheSelection } from "../fit";
+import type { FitArtifact, FitResult, KvCacheSelection, TwoPoolFitProfile, TwoPoolFitResult } from "../fit";
 import type { ArtifactSizeBand, ThroughputEstimate } from "../priors";
 import type { ArtifactRegistryRecord } from "../registry";
 import type { AccelerationBackend, EngineId, ProductId } from "../runtime";
@@ -11,6 +11,8 @@ export type AcceleratorKind = "cpu" | "gpu" | "integrated";
 export type HardwareProfile = {
   platform: PlatformId;
   availableMemoryGb: number;
+  /** Manually confirmed available host RAM for multi-pool configurations. */
+  systemMemoryGb?: number;
   acceleratorId?: string;
   acceleratorFamily?: string;
 };
@@ -34,6 +36,11 @@ export type RecommendationCandidate = {
   fitArtifact: FitArtifact;
   fitProfileSourceUrl: string;
   hardwareKinds: AcceleratorKind[];
+  /** Explicit compatibility boundary. A CUDA profile must never reach AMD. */
+  platforms: PlatformId[];
+  /** Present when the fit evidence is valid only for measured devices. */
+  acceleratorIds?: string[];
+  memoryPools?: TwoPoolFitProfile;
   sizeBand: ArtifactSizeBand;
   runtime: {
     product: ProductId;
@@ -52,6 +59,7 @@ export type RecommendationRole = "primary-match" | "quality-option" | "fast-opti
 export type RecommendationItem = {
   candidate: RecommendationCandidate;
   fit: FitResult;
+  memoryPools?: TwoPoolFitResult;
   throughput: ThroughputEstimate;
   role?: RecommendationRole;
   contextTokens: number;

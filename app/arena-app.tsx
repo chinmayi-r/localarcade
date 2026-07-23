@@ -3,12 +3,11 @@
 import { createElement, useMemo, useRef, useState } from "react";
 import { ConfigurationPanel } from "./components/finder/configuration-panel";
 import { RecommendationList } from "./components/finder/recommendation-list";
-import { LocalhostQuickTest } from "./components/quick-test/localhost-quick-test";
 import { catalogAgeValue, recommend, rankingStrategies, recommendationCatalogMetadata } from "@/lib/recommendation";
 import type { RecommendationQuery } from "@/lib/recommendation";
 
 const initialQuery: RecommendationQuery = {
-  hardware: { platform: "cpu", availableMemoryGb: 32 },
+  hardware: { platform: "cpu", availableMemoryGb: 32, systemMemoryGb: 32 },
   task: "general",
   desiredContextK: 16,
   strategy: "balanced",
@@ -35,7 +34,6 @@ export function ArenaApp() {
         <a href="#top" className="site-brand" aria-label="Local Arcade home"><span>LA</span><b>Local Arcade</b></a>
         <nav aria-label="Website navigation">
           <a href="#finder">Find models</a>
-          <a href="#quick-test">Quick test</a>
           <a href="#method">How it works</a>
           <span>Runner · planned</span>
         </nav>
@@ -65,8 +63,6 @@ export function ArenaApp() {
             <RecommendationList outcome={outcome} query={submittedQuery} selectedId={selectedId} onSelect={(id) => setSelectedId(selectedId === id ? null : id)} />
           </section>
         )}
-
-        <LocalhostQuickTest />
 
         <section className="method-section" id="method">
           <div className="method-intro"><span className="eyebrow">WHAT THE RESULT MEANS</span><h2>A recommendation is a complete setup.</h2><p>Quantization, app, engine build, context and memory settings can change whether the same model fits or performs well. Local Arcade keeps them separate and attached to the recommendation.</p></div>

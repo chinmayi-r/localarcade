@@ -19,5 +19,11 @@
     "vision-projector"
   ],
   "minimumArtifacts": 40,
-  "minimumFamilies": 8
+  "minimumFamilies": 8,
+  "requiredArtifacts": [
+    {
+      "repoId": "unsloth/Qwen3-4B-Instruct-2507-GGUF",
+      "fileName": "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+    }
+  ]
 }

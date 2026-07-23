@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "discoveredAt": "2026-07-19T13:47:07.121Z",
-  "policySha256": "3f275eba9d8a2af36c9df2f60211c92b3bad6f07fc73e5eb9a6f02ab670a03b7",
+  "discoveredAt": "2026-07-21T00:20:28.476Z",
+  "policySha256": "aaeeaef26a26e7d61ac7d20b7968cc5231078ad4afa380d5d3223f99dadd3489",
   "repositories": [
     {
       "repoId": "bartowski/DeepSeek-V4-Flash-GGUF",
@@ -221,6 +221,16 @@
       "publisher": "unsloth",
       "publisherKind": "trusted-quantizer",
       "baseModelHint": "Qwen/Qwen3-0.6B"
+    },
+    {
+      "repoId": "unsloth/Qwen3-4B-Instruct-2507-GGUF",
+      "revision": "a06e946bb6b655725eafa393f4a9745d460374c9",
+      "publisher": "unsloth",
+      "publisherKind": "trusted-quantizer",
+      "baseModelHint": "Qwen/Qwen3-4B-Instruct-2507",
+      "allowedFiles": [
+        "Qwen3-4B-Instruct-2507-Q4_K_M.gguf"
+      ]
     },
     {
       "repoId": "unsloth/Qwen3-8B-GGUF",
