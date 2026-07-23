@@ -377,6 +377,222 @@ fn snapshot_requires_complete_m_c_shape_and_admitted_accelerators() {
 }
 
 #[test]
+fn complete_nonempty_accelerator_compatibility_and_quarantine_shapes_are_admitted() {
+    let mut baseline: Value = serde_json::from_str(&snapshot(
+        vec![artifact("promoted", SHA, 4_000)],
+        FRESH_AT,
+        vec![json!({
+            "repository": "publisher/repository",
+            "revision": "b".repeat(40),
+            "fileName": "rejected-Q4_K_M.gguf",
+            "code": "missing-license",
+            "reason": "License missing",
+            "sourceUrl": "https://example.invalid/quarantine",
+            "recordedAt": FRESH_AT
+        })],
+    ))
+    .unwrap();
+    baseline["accelerators"] = json!([{
+        "id": "nvidia-test",
+        "vendor": "nvidia",
+        "canonicalName": "NVIDIA Test GPU",
+        "aliases": ["Test GPU"],
+        "variants": [{
+            "id": "nvidia-test-8gb",
+            "label": "8 GB desktop",
+            "memoryBytes": 8_000_000_000_u64,
+            "formFactor": "desktop",
+            "sourceUrl": "https://example.invalid/gpu/variant"
+        }],
+        "supportedBackends": ["cuda"],
+        "source": {
+            "sourceUrl": "https://example.invalid/gpu",
+            "retrievedAt": FRESH_AT,
+            "kind": "schema-constant"
+        }
+    }]);
+    baseline["compatibilityAssertions"] = json!([{
+        "artifactId": "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "productId": "ollama",
+        "engineId": "llama.cpp",
+        "status": "documented",
+        "runtimeConstraint": {
+            "minVersion": "0.5",
+            "maxVersion": "1.0.0",
+            "exactBuild": "build-123"
+        },
+        "conditions": {
+            "operatingSystems": ["windows"],
+            "cpuArchitectures": ["x86_64"],
+            "backends": ["cuda"],
+            "modelArchitectures": ["test"],
+            "packageLayouts": ["gguf-single"],
+            "quantizationSchemes": ["Q4_K_M"],
+            "requiredFiles": ["model-Q4_K_M.gguf"],
+            "limitations": ["illustrative structural fixture"]
+        },
+        "evidence": [{
+            "url": "not-runtime-validated-by-typescript",
+            "checkedAt": "declared-as-string",
+            "sourceRevision": "source-revision"
+        }]
+    }]);
+
+    let result =
+        adapt_scan_report_with_registry_at(report(Some(SHA), 4_000), &baseline.to_string(), NOW_MS);
+    assert_eq!(result.status, InventoryStatus::Ok);
+    assert!(matches!(
+        result.data.artifacts[0].resolution,
+        InventoryArtifactResolution::Verified { .. }
+    ));
+}
+
+#[test]
+fn declared_registry_fields_and_enums_fail_closed_when_malformed() {
+    let mut baseline: Value = serde_json::from_str(&snapshot(
+        vec![artifact("promoted", SHA, 4_000)],
+        FRESH_AT,
+        vec![],
+    ))
+    .unwrap();
+    baseline["accelerators"] = json!([{
+        "id": "nvidia-test",
+        "vendor": "nvidia",
+        "canonicalName": "NVIDIA Test GPU",
+        "aliases": ["Test GPU"],
+        "variants": [{
+            "id": "nvidia-test-8gb",
+            "label": "8 GB desktop",
+            "memoryBytes": 8_000_000_000_u64,
+            "formFactor": "desktop",
+            "sourceUrl": "https://example.invalid/gpu/variant"
+        }],
+        "supportedBackends": ["cuda"],
+        "source": {
+            "sourceUrl": "https://example.invalid/gpu",
+            "retrievedAt": FRESH_AT,
+            "kind": "hub-api"
+        }
+    }]);
+    baseline["compatibilityAssertions"] = json!([{
+        "artifactId": "artifact",
+        "productId": "ollama",
+        "engineId": "llama.cpp",
+        "status": "documented",
+        "runtimeConstraint": { "minVersion": "1.0" },
+        "conditions": {
+            "backends": ["cuda"],
+            "packageLayouts": ["gguf-single"]
+        },
+        "evidence": []
+    }]);
+
+    for path in ["vendor", "aliases"] {
+        let mut malformed = baseline.clone();
+        malformed["accelerators"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove(path);
+        assert_snapshot_invalid(malformed);
+    }
+    for path in ["label", "formFactor"] {
+        let mut malformed = baseline.clone();
+        malformed["accelerators"][0]["variants"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove(path);
+        assert_snapshot_invalid(malformed);
+    }
+    for path in [
+        "artifactId",
+        "productId",
+        "engineId",
+        "status",
+        "runtimeConstraint",
+        "conditions",
+        "evidence",
+    ] {
+        let mut malformed = baseline.clone();
+        malformed["compatibilityAssertions"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove(path);
+        assert_snapshot_invalid(malformed);
+    }
+    for path in ["url", "checkedAt"] {
+        let mut malformed = baseline.clone();
+        malformed["compatibilityAssertions"][0]["evidence"] = json!([{
+            "url": "source",
+            "checkedAt": "checked"
+        }]);
+        malformed["compatibilityAssertions"][0]["evidence"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove(path);
+        assert_snapshot_invalid(malformed);
+    }
+
+    for (pointer, invalid) in [
+        ("/accelerators/0/vendor", json!("unknown")),
+        ("/accelerators/0/variants/0/formFactor", json!("handheld")),
+        ("/compatibilityAssertions/0/productId", json!("unknown")),
+        ("/compatibilityAssertions/0/engineId", json!("unknown")),
+        ("/compatibilityAssertions/0/status", json!("unknown-status")),
+        (
+            "/compatibilityAssertions/0/conditions/backends",
+            json!(["unknown"]),
+        ),
+        (
+            "/compatibilityAssertions/0/conditions/packageLayouts",
+            json!(["unknown"]),
+        ),
+    ] {
+        let mut malformed = baseline.clone();
+        *malformed.pointer_mut(pointer).unwrap_or_else(|| {
+            panic!("test fixture pointer must exist before mutation: {pointer}")
+        }) = invalid;
+        assert_snapshot_invalid(malformed);
+    }
+
+    let mut null_constraint = baseline.clone();
+    null_constraint["compatibilityAssertions"][0]["runtimeConstraint"]["minVersion"] = Value::Null;
+    assert_snapshot_invalid(null_constraint);
+
+    let mut null_condition = baseline.clone();
+    null_condition["compatibilityAssertions"][0]["conditions"]["backends"] = Value::Null;
+    assert_snapshot_invalid(null_condition);
+
+    let mut numeric_version = baseline.clone();
+    numeric_version["compatibilityAssertions"][0]["runtimeConstraint"]["minVersion"] = json!(1);
+    assert_snapshot_invalid(numeric_version);
+
+    let mut scalar_condition = baseline.clone();
+    scalar_condition["compatibilityAssertions"][0]["conditions"]["operatingSystems"] =
+        json!("windows");
+    assert_snapshot_invalid(scalar_condition);
+
+    let mut null_source_revision = baseline.clone();
+    null_source_revision["compatibilityAssertions"][0]["evidence"] = json!([{
+        "url": "source",
+        "checkedAt": "checked",
+        "sourceRevision": null
+    }]);
+    assert_snapshot_invalid(null_source_revision);
+
+    let mut null_quarantine_file = baseline;
+    null_quarantine_file["quarantine"] = json!([{
+        "repository": "publisher/repository",
+        "revision": "b".repeat(40),
+        "fileName": null,
+        "code": "missing-license",
+        "reason": "License missing",
+        "sourceUrl": "https://example.invalid/quarantine",
+        "recordedAt": FRESH_AT
+    }]);
+    assert_snapshot_invalid(null_quarantine_file);
+}
+
+#[test]
 fn malformed_urls_and_non_gguf_filenames_fail_m_c_admission() {
     let mut bad_filename = artifact("promoted", SHA, 4_000);
     bad_filename["fileName"] = json!("model-Q4_K_M.bin");

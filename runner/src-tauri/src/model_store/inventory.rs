@@ -161,14 +161,18 @@ struct RegistrySnapshot {
     artifacts: Vec<RegistryArtifact>,
     quarantine: Vec<QuarantineRecord>,
     accelerators: Vec<AcceleratorRecord>,
-    compatibility_assertions: Vec<serde_json::Value>,
+    compatibility_assertions: Vec<CompatibilityAssertion>,
 }
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct AcceleratorRecord {
     id: String,
+    #[serde(rename = "vendor")]
+    _vendor: AcceleratorVendor,
     canonical_name: String,
+    #[serde(rename = "aliases")]
+    _aliases: Vec<String>,
     variants: Vec<AcceleratorVariant>,
     supported_backends: Vec<String>,
     source: FieldProvenance,
@@ -178,8 +182,163 @@ struct AcceleratorRecord {
 #[serde(rename_all = "camelCase")]
 struct AcceleratorVariant {
     id: String,
+    #[serde(rename = "label")]
+    _label: String,
     memory_bytes: u64,
+    #[serde(rename = "formFactor")]
+    _form_factor: AcceleratorFormFactor,
     source_url: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum AcceleratorVendor {
+    Nvidia,
+    Amd,
+    Apple,
+    Intel,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "kebab-case")]
+enum AcceleratorFormFactor {
+    Desktop,
+    Laptop,
+    Integrated,
+    Soc,
+    Workstation,
+    Datacenter,
+}
+
+// These DTOs intentionally mirror the complete declared TypeScript shape.
+// M-I does not interpret compatibility policy; successful deserialization is
+// the structural/type/enum admission check for this otherwise unused data.
+#[allow(dead_code)]
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CompatibilityAssertion {
+    artifact_id: String,
+    product_id: ProductId,
+    engine_id: EngineId,
+    status: CompatibilityStatus,
+    runtime_constraint: RuntimeConstraint,
+    conditions: CompatibilityConditions,
+    evidence: Vec<CompatibilityEvidence>,
+}
+
+#[allow(dead_code)]
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct RuntimeConstraint {
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    min_version: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    max_version: Option<String>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    exact_build: Option<String>,
+}
+
+#[allow(dead_code)]
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CompatibilityConditions {
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    operating_systems: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    cpu_architectures: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    backends: Option<Vec<AccelerationBackend>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    model_architectures: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    package_layouts: Option<Vec<ArtifactPackageLayout>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    quantization_schemes: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    required_files: Option<Vec<String>>,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    limitations: Option<Vec<String>>,
+}
+
+#[allow(dead_code)]
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct CompatibilityEvidence {
+    url: String,
+    checked_at: String,
+    #[serde(default, deserialize_with = "deserialize_optional_non_null")]
+    source_revision: Option<String>,
+}
+
+#[derive(Deserialize)]
+enum ProductId {
+    #[serde(rename = "llama-cpp")]
+    LlamaCpp,
+    #[serde(rename = "ollama")]
+    Ollama,
+    #[serde(rename = "lm-studio")]
+    LmStudio,
+    #[serde(rename = "jan")]
+    Jan,
+    #[serde(rename = "mlx-lm")]
+    MlxLm,
+    #[serde(rename = "vllm")]
+    Vllm,
+}
+
+#[derive(Deserialize)]
+enum EngineId {
+    #[serde(rename = "llama.cpp")]
+    LlamaCpp,
+    #[serde(rename = "mlx-lm")]
+    MlxLm,
+    #[serde(rename = "mlx-swift-lm")]
+    MlxSwiftLm,
+    #[serde(rename = "vllm-native")]
+    VllmNative,
+    #[serde(rename = "vllm-transformers")]
+    VllmTransformers,
+    #[serde(rename = "vllm-gguf-plugin")]
+    VllmGgufPlugin,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "kebab-case")]
+enum CompatibilityStatus {
+    Verified,
+    Documented,
+    Experimental,
+    Inferred,
+    Unknown,
+    Unsupported,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "lowercase")]
+enum AccelerationBackend {
+    Cpu,
+    Cuda,
+    Rocm,
+    Metal,
+    Vulkan,
+    Sycl,
+    Xpu,
+}
+
+#[derive(Deserialize)]
+enum ArtifactPackageLayout {
+    #[serde(rename = "gguf-single")]
+    GgufSingle,
+    #[serde(rename = "gguf-split")]
+    GgufSplit,
+    #[serde(rename = "hf-transformers")]
+    HfTransformers,
+    #[serde(rename = "mlx-lm")]
+    MlxLm,
+    #[serde(rename = "mlx-swift-lm")]
+    MlxSwiftLm,
+    #[serde(rename = "ollama-package")]
+    OllamaPackage,
 }
 
 #[derive(Deserialize, Clone)]
@@ -223,10 +382,24 @@ struct RegistryLicense {
 struct QuarantineRecord {
     repository: String,
     revision: String,
+    #[serde(
+        rename = "fileName",
+        default,
+        deserialize_with = "deserialize_optional_non_null"
+    )]
+    _file_name: Option<String>,
     code: String,
     reason: String,
     source_url: String,
     recorded_at: String,
+}
+
+fn deserialize_optional_non_null<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    T::deserialize(deserializer).map(Some)
 }
 
 #[derive(Clone)]
@@ -546,7 +719,7 @@ fn validate_registry_artifact(record: &RegistryArtifact) -> Result<(), String> {
         || record.publisher.trim().is_empty()
         || record.repository.trim().is_empty()
         || !record.file_name.to_ascii_lowercase().ends_with(".gguf")
-        || record.format.trim().is_empty()
+        || record.format != "GGUF"
         || record.quantization.trim().is_empty()
         || record.base_model.trim().is_empty()
         || record.family.trim().is_empty()
@@ -628,7 +801,21 @@ fn is_http_url(value: &str) -> bool {
 fn valid_field_provenance(value: &FieldProvenance) -> bool {
     is_http_url(&value.source_url)
         && parse_registry_timestamp_ms(&value.retrieved_at).is_some()
-        && !value.kind.trim().is_empty()
+        && is_known_provenance_kind(&value.kind)
+}
+
+fn is_known_provenance_kind(value: &str) -> bool {
+    matches!(
+        value,
+        "hub-api"
+            | "hub-lfs"
+            | "model-card"
+            | "gguf-metadata"
+            | "filename-derivation"
+            | "identity-derivation"
+            | "base-model-derivation"
+            | "schema-constant"
+    )
 }
 
 fn is_known_quarantine_code(value: &str) -> bool {
