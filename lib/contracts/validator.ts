@@ -1,7 +1,7 @@
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import schema from "../../docs/contracts/local-arcade-first-slice-v1.schema.json";
-import { handoffContentHash } from "./canonical";
+import { canonicalJson, handoffContentHash } from "./canonical";
 import type { BenchmarkResult, ContractEnvelope, MeasurementSeries, RecommendationPortfolio, RunnerHandoff, VerificationPlan, VerificationResult } from "./types";
 
 const validateSchema = addFormats(new Ajv2020({ allErrors: true, strict: true })).compile(schema);
@@ -23,11 +23,32 @@ function semanticErrors(value: ContractEnvelope): string[] {
   if (value.contract === "verification-plan") {
     const plan = value.data as VerificationPlan;
     if (plan.benchmarkPlan === null && plan.quickCheckPlan === null) errors.push("verification plan must contain at least one typed plan");
+    for (const nested of [plan.benchmarkPlan, plan.quickCheckPlan]) {
+      if (nested !== null && nested.candidateId !== plan.candidateId) errors.push("verification plan candidateId must match every nested plan");
+    }
+    if (plan.benchmarkPlan !== null && plan.quickCheckPlan !== null) {
+      if (plan.benchmarkPlan.artifactPath !== plan.quickCheckPlan.artifactPath
+        || plan.benchmarkPlan.expectedArtifactSha256 !== plan.quickCheckPlan.expectedArtifactSha256) {
+        errors.push("verification plan artifact path and hash must match across nested plans");
+      }
+      if (plan.benchmarkPlan.runtime.runtimeConfigurationId === plan.quickCheckPlan.runtime.runtimeConfigurationId
+        && canonicalJson(plan.benchmarkPlan.runtime) !== canonicalJson(plan.quickCheckPlan.runtime)) {
+        errors.push("one runtimeConfigurationId cannot identify different runtime values");
+      }
+    }
   }
   if (value.contract === "benchmark-result") errors.push(...measurementSeriesErrors((value.data as BenchmarkResult).series));
   if (value.contract === "verification-result") {
-    const benchmark = (value.data as VerificationResult).benchmarkResult;
+    const result = value.data as VerificationResult;
+    const benchmark = result.benchmarkResult;
     if (benchmark !== null) errors.push(...measurementSeriesErrors(benchmark.series));
+    for (const nested of [result.benchmarkResult, result.quickCheckResult]) {
+      if (nested !== null && nested.candidateId !== result.candidateId) errors.push("verification result candidateId must match every nested result");
+    }
+    if (result.domainStatus === "completed" && [result.benchmarkResult, result.quickCheckResult]
+      .some((nested) => nested !== null && nested.domainStatus !== "completed")) {
+      errors.push("completed verification result cannot contain an incomplete nested result");
+    }
   }
   return errors;
 }

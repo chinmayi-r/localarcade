@@ -167,3 +167,28 @@ fn measurement_evidence_cannot_contradict_its_raw_series() {
         json!({"lower": 170, "upper": 180});
     assert!(validate_contract_json(&fixture.to_string()).is_err());
 }
+
+#[test]
+fn verification_identities_and_nested_statuses_fail_closed() {
+    let mut plan: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/verification-plan.ok.json"
+    ))
+    .expect("verification plan fixture");
+    plan["data"]["quickCheckPlan"]["runtime"]["runtimeConfigurationId"] =
+        plan["data"]["benchmarkPlan"]["runtime"]["runtimeConfigurationId"].clone();
+    assert!(validate_contract_json(&plan.to_string()).is_err());
+
+    let mut candidate_mismatch: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/verification-plan.ok.json"
+    ))
+    .expect("verification plan fixture");
+    candidate_mismatch["data"]["quickCheckPlan"]["candidateId"] = json!("different-candidate");
+    assert!(validate_contract_json(&candidate_mismatch.to_string()).is_err());
+
+    let mut result: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/verification-result.ok.json"
+    ))
+    .expect("verification result fixture");
+    result["data"]["quickCheckResult"]["domainStatus"] = json!("failed");
+    assert!(validate_contract_json(&result.to_string()).is_err());
+}

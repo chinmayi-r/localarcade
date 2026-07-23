@@ -879,9 +879,68 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
             if item.benchmark_plan.is_none() && item.quick_check_plan.is_none() {
                 return Err("verification plan requires a typed plan".into());
             }
+            for candidate_id in [
+                item.benchmark_plan.as_ref().map(|plan| &plan.candidate_id),
+                item.quick_check_plan
+                    .as_ref()
+                    .map(|plan| &plan.candidate_id),
+            ]
+            .into_iter()
+            .flatten()
+            {
+                if candidate_id != &item.candidate_id {
+                    return Err("verification plan candidateId mismatch".into());
+                }
+            }
+            if let (Some(benchmark), Some(quick)) = (&item.benchmark_plan, &item.quick_check_plan) {
+                if benchmark.artifact_path != quick.artifact_path
+                    || benchmark.expected_artifact_sha256 != quick.expected_artifact_sha256
+                {
+                    return Err("verification plan artifact identity mismatch".into());
+                }
+                if benchmark.runtime.runtime_configuration_id
+                    == quick.runtime.runtime_configuration_id
+                    && benchmark.runtime != quick.runtime
+                {
+                    return Err(
+                        "one runtimeConfigurationId cannot identify different runtime values"
+                            .into(),
+                    );
+                }
+            }
         }
         "verification-result" => {
             let item: VerificationResult = decode(value)?;
+            for candidate_id in [
+                item.benchmark_result
+                    .as_ref()
+                    .map(|result| &result.candidate_id),
+                item.quick_check_result
+                    .as_ref()
+                    .map(|result| &result.candidate_id),
+            ]
+            .into_iter()
+            .flatten()
+            {
+                if candidate_id != &item.candidate_id {
+                    return Err("verification result candidateId mismatch".into());
+                }
+            }
+            if item.domain_status == DomainStatus::Completed
+                && [
+                    item.benchmark_result
+                        .as_ref()
+                        .map(|result| &result.domain_status),
+                    item.quick_check_result
+                        .as_ref()
+                        .map(|result| &result.domain_status),
+                ]
+                .into_iter()
+                .flatten()
+                .any(|status| status != &DomainStatus::Completed)
+            {
+                return Err("completed verification contains incomplete nested result".into());
+            }
             if let Some(benchmark) = item.benchmark_result {
                 validate_measurement_series(&benchmark.series)?;
             }

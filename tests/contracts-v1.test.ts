@@ -107,3 +107,17 @@ test("measurement evidence cannot contradict its raw series", async () => {
   assert.equal(result.ok, false);
   if (!result.ok) assert.match(result.errors.join("; "), /interval must equal the measured aggregate range/);
 });
+
+test("verification identities and nested statuses fail closed", async () => {
+  const plan = JSON.parse(await readFile(join(fixtureRoot, "verification-plan.ok.json"), "utf8"));
+  plan.data.quickCheckPlan.runtime.runtimeConfigurationId = plan.data.benchmarkPlan.runtime.runtimeConfigurationId;
+  assert.equal(validateContract(plan).ok, false, "one runtime id cannot identify different sampler settings");
+
+  const candidateMismatch = JSON.parse(await readFile(join(fixtureRoot, "verification-plan.ok.json"), "utf8"));
+  candidateMismatch.data.quickCheckPlan.candidateId = "different-candidate";
+  assert.equal(validateContract(candidateMismatch).ok, false, "nested candidate ids must match");
+
+  const result = JSON.parse(await readFile(join(fixtureRoot, "verification-result.ok.json"), "utf8"));
+  result.data.quickCheckResult.domainStatus = "failed";
+  assert.equal(validateContract(result).ok, false, "completed aggregate cannot contain a failed nested result");
+});

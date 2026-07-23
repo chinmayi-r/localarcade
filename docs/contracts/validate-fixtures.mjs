@@ -42,8 +42,32 @@ function semanticErrors(envelope) {
     if (claimed !== actual) errors.push("handoff contentHash does not match its canonical snapshot");
   }
   if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "verification-plan") {
-    if (envelope.data.benchmarkPlan === null && envelope.data.quickCheckPlan === null) {
+    const plan = envelope.data;
+    if (plan.benchmarkPlan === null && plan.quickCheckPlan === null) {
       errors.push("verification plan must contain at least one typed plan");
+    }
+    for (const nested of [plan.benchmarkPlan, plan.quickCheckPlan]) {
+      if (nested !== null && nested.candidateId !== plan.candidateId) errors.push("verification plan candidateId must match every nested plan");
+    }
+    if (plan.benchmarkPlan !== null && plan.quickCheckPlan !== null) {
+      if (plan.benchmarkPlan.artifactPath !== plan.quickCheckPlan.artifactPath
+          || plan.benchmarkPlan.expectedArtifactSha256 !== plan.quickCheckPlan.expectedArtifactSha256) {
+        errors.push("verification plan artifact path and hash must match across nested plans");
+      }
+      if (plan.benchmarkPlan.runtime.runtimeConfigurationId === plan.quickCheckPlan.runtime.runtimeConfigurationId
+          && canonicalJson(plan.benchmarkPlan.runtime) !== canonicalJson(plan.quickCheckPlan.runtime)) {
+        errors.push("one runtimeConfigurationId cannot identify different runtime values");
+      }
+    }
+  }
+  if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "verification-result") {
+    const result = envelope.data;
+    for (const nested of [result.benchmarkResult, result.quickCheckResult]) {
+      if (nested !== null && nested.candidateId !== result.candidateId) errors.push("verification result candidateId must match every nested result");
+    }
+    if (result.domainStatus === "completed" && [result.benchmarkResult, result.quickCheckResult]
+        .some((nested) => nested !== null && nested.domainStatus !== "completed")) {
+      errors.push("completed verification result cannot contain an incomplete nested result");
     }
   }
   if (envelope.status === "ok" || envelope.status === "partial") {
