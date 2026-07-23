@@ -332,6 +332,10 @@ fn preparation_hashes_only_selected_files_and_binds_exact_identity() {
         .warnings()
         .iter()
         .any(|warning| warning.contains("isolation-not-enforced")));
+    assert!(prepared
+        .warnings()
+        .iter()
+        .any(|warning| warning.contains("m-e-compatibility-proof-unavailable")));
 }
 
 #[test]
@@ -425,6 +429,43 @@ fn inventory_selection_accepts_only_verified_identity_and_rehashes_bytes() {
         .unwrap_err()
         .join(" ")
         .contains("artifact.hash-mismatch"));
+}
+
+#[test]
+fn every_verified_registry_identity_field_and_context_bound_the_candidate() {
+    let mut value = request();
+    value.candidate.model_family.model_family_id = "other-family".into();
+    value.candidate.model_family.display_name = "Other family".into();
+    value.candidate.artifact.artifact_id = "other-artifact".into();
+    value.candidate.artifact.repository = "other/repository".into();
+    value.candidate.artifact.revision = "other-revision".into();
+    value.candidate.artifact.filename = "other.gguf".into();
+    value.candidate.artifact.sha256 = "0".repeat(64);
+    value.candidate.artifact.bytes += 1;
+    value.candidate.artifact.format = "other-format".into();
+    value.candidate.artifact.quantization = "other-quant".into();
+    value.candidate.artifact.license = "other-license".into();
+    value.candidate.runtime.context_tokens = 8192;
+    value.candidate.runtime.chat_template = Some("other-template".into());
+
+    let errors = prepare_verification(&value).unwrap_err().join(" ");
+    for reason in [
+        "candidate-model-family-id-mismatch",
+        "candidate-model-family-display-mismatch",
+        "candidate-artifact-id-mismatch",
+        "candidate-repository-mismatch",
+        "candidate-revision-mismatch",
+        "candidate-filename-mismatch",
+        "candidate-hash-mismatch",
+        "candidate-byte-size-mismatch",
+        "candidate-format-mismatch",
+        "candidate-quantization-mismatch",
+        "candidate-license-mismatch",
+        "candidate-context-exceeds-registry-maximum",
+        "candidate-chat-template-mismatch",
+    ] {
+        assert!(errors.contains(reason), "missing {reason} in {errors}");
+    }
 }
 
 #[test]

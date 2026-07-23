@@ -14,7 +14,9 @@ use crate::contracts::{
     VerificationPlan, VerificationResult,
 };
 use crate::hardware_target::{HardwareResolution, ResolutionState};
-use crate::model_store::inventory::{InventoryArtifact, InventoryArtifactResolution};
+use crate::model_store::inventory::{
+    InventoryArtifact, InventoryArtifactResolution, PromotedStatus,
+};
 use sha2::{Digest, Sha256};
 use std::fs::File;
 use std::io::Read;
@@ -24,6 +26,8 @@ const SHA256_HEX_LENGTH: usize = 64;
 const MAX_STABLE_RELATIVE_RANGE: f64 = 0.20;
 const CHILD_ISOLATION_WARNING: &str =
     "m-j.child-isolation-not-enforced: the selected executable is user supplied; network isolation is not enforced by this adapter";
+const M_E_PROOF_WARNING: &str =
+    "m-j.m-e-compatibility-proof-unavailable: M-A v1 omits the M-E compatibility assertion and package OS/architecture proof; owner approval of a schema change or narrower local revalidation is required before execution integration";
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ExistingToolKind {
@@ -134,9 +138,20 @@ pub struct VerificationPreparationRequest {
 #[derive(Debug, Clone, PartialEq)]
 pub struct VerifiedInventorySelection {
     path: PathBuf,
+    model_family_id: String,
+    model_family_display_name: String,
     artifact_id: String,
+    repository: String,
+    revision: String,
+    filename: String,
     sha256: String,
     bytes: u64,
+    format: String,
+    quantization: String,
+    license: String,
+    status: PromotedStatus,
+    max_context_tokens: u64,
+    chat_template: String,
 }
 
 impl VerifiedInventorySelection {
@@ -151,7 +166,32 @@ impl VerifiedInventorySelection {
         };
         let artifact = &identity.artifact;
         require_text(&value.path, "inventory.path", &mut issues);
+        require_text(
+            &identity.model_family.model_family_id,
+            "inventory.modelFamilyId",
+            &mut issues,
+        );
+        require_text(
+            &identity.model_family.display_name,
+            "inventory.modelFamilyDisplayName",
+            &mut issues,
+        );
         require_text(&artifact.artifact_id, "inventory.artifactId", &mut issues);
+        require_text(&artifact.repository, "inventory.repository", &mut issues);
+        require_text(&artifact.revision, "inventory.revision", &mut issues);
+        require_text(&artifact.filename, "inventory.filename", &mut issues);
+        require_text(&artifact.format, "inventory.format", &mut issues);
+        require_text(
+            &artifact.quantization,
+            "inventory.quantization",
+            &mut issues,
+        );
+        require_text(&artifact.license, "inventory.license", &mut issues);
+        require_text(
+            &identity.registry_metadata.chat_template,
+            "inventory.registryMetadata.chatTemplate",
+            &mut issues,
+        );
         validate_sha256(&artifact.sha256, "inventory", &mut issues);
         if value.sha256.as_deref() != Some(artifact.sha256.as_str()) {
             issues.push("m-j.inventory.outer-hash-mismatch".into());
@@ -162,14 +202,28 @@ impl VerifiedInventorySelection {
         if artifact.bytes == 0 {
             issues.push("m-j.inventory.byte-size-invalid".into());
         }
+        if identity.registry_metadata.max_context_tokens == 0 {
+            issues.push("m-j.inventory.max-context-invalid".into());
+        }
         if !issues.is_empty() {
             return Err(issues);
         }
         Ok(Self {
             path: PathBuf::from(&value.path),
+            model_family_id: identity.model_family.model_family_id.clone(),
+            model_family_display_name: identity.model_family.display_name.clone(),
             artifact_id: artifact.artifact_id.clone(),
+            repository: artifact.repository.clone(),
+            revision: artifact.revision.clone(),
+            filename: artifact.filename.clone(),
             sha256: artifact.sha256.clone(),
             bytes: artifact.bytes,
+            format: artifact.format.clone(),
+            quantization: artifact.quantization.clone(),
+            license: artifact.license.clone(),
+            status: artifact.status.clone(),
+            max_context_tokens: identity.registry_metadata.max_context_tokens,
+            chat_template: identity.registry_metadata.chat_template.clone(),
         })
     }
 
@@ -401,15 +455,11 @@ pub fn prepare_verification(
     if request.benchmark.is_none() && request.quick_check.is_none() {
         issues.push("m-j.plan.empty: at least one typed verification plan is required".into());
     }
-    if request.inventory_selection.artifact_id != request.candidate.artifact.artifact_id {
-        issues.push("m-j.inventory.candidate-artifact-id-mismatch".into());
-    }
-    if request.inventory_selection.sha256 != request.candidate.artifact.sha256 {
-        issues.push("m-j.inventory.candidate-hash-mismatch".into());
-    }
-    if request.inventory_selection.bytes != request.candidate.artifact.bytes {
-        issues.push("m-j.inventory.candidate-byte-size-mismatch".into());
-    }
+    validate_inventory_candidate(
+        &request.inventory_selection,
+        &request.candidate,
+        &mut issues,
+    );
     if !matches!(
         request.candidate.artifact.status,
         crate::contracts::ArtifactStatus::Promoted
@@ -485,7 +535,7 @@ pub fn prepare_verification(
         artifact: artifact.expect("checked artifact exists after validation"),
         benchmark_tool,
         quick_check_tool,
-        warnings: vec![CHILD_ISOLATION_WARNING.into()],
+        warnings: vec![CHILD_ISOLATION_WARNING.into(), M_E_PROOF_WARNING.into()],
     })
 }
 
@@ -859,6 +909,86 @@ fn validate_tool_receipt_shape(value: &ObservedToolIdentityReceipt, issues: &mut
         issues,
     );
     validate_sha256(&value.expected_sha256, "tool", issues);
+}
+
+fn validate_inventory_candidate(
+    selection: &VerifiedInventorySelection,
+    candidate: &ExactConfigurationCandidate,
+    issues: &mut Vec<String>,
+) {
+    let family = &candidate.model_family;
+    let artifact = &candidate.artifact;
+    let comparisons = [
+        (
+            selection.model_family_id.as_str(),
+            family.model_family_id.as_str(),
+            "m-j.inventory.candidate-model-family-id-mismatch",
+        ),
+        (
+            selection.model_family_display_name.as_str(),
+            family.display_name.as_str(),
+            "m-j.inventory.candidate-model-family-display-mismatch",
+        ),
+        (
+            selection.artifact_id.as_str(),
+            artifact.artifact_id.as_str(),
+            "m-j.inventory.candidate-artifact-id-mismatch",
+        ),
+        (
+            selection.repository.as_str(),
+            artifact.repository.as_str(),
+            "m-j.inventory.candidate-repository-mismatch",
+        ),
+        (
+            selection.revision.as_str(),
+            artifact.revision.as_str(),
+            "m-j.inventory.candidate-revision-mismatch",
+        ),
+        (
+            selection.filename.as_str(),
+            artifact.filename.as_str(),
+            "m-j.inventory.candidate-filename-mismatch",
+        ),
+        (
+            selection.sha256.as_str(),
+            artifact.sha256.as_str(),
+            "m-j.inventory.candidate-hash-mismatch",
+        ),
+        (
+            selection.format.as_str(),
+            artifact.format.as_str(),
+            "m-j.inventory.candidate-format-mismatch",
+        ),
+        (
+            selection.quantization.as_str(),
+            artifact.quantization.as_str(),
+            "m-j.inventory.candidate-quantization-mismatch",
+        ),
+        (
+            selection.license.as_str(),
+            artifact.license.as_str(),
+            "m-j.inventory.candidate-license-mismatch",
+        ),
+    ];
+    for (verified, requested, reason) in comparisons {
+        if verified != requested {
+            issues.push(reason.into());
+        }
+    }
+    if selection.bytes != artifact.bytes {
+        issues.push("m-j.inventory.candidate-byte-size-mismatch".into());
+    }
+    if !matches!(selection.status, PromotedStatus::Promoted)
+        || !matches!(artifact.status, crate::contracts::ArtifactStatus::Promoted)
+    {
+        issues.push("m-j.inventory.candidate-status-mismatch".into());
+    }
+    if candidate.runtime.context_tokens > selection.max_context_tokens {
+        issues.push("m-j.inventory.candidate-context-exceeds-registry-maximum".into());
+    }
+    if candidate.runtime.chat_template.as_deref() != Some(selection.chat_template.as_str()) {
+        issues.push("m-j.inventory.candidate-chat-template-mismatch".into());
+    }
 }
 
 fn validate_runtime(runtime: &RuntimeConfiguration, issues: &mut Vec<String>) {
