@@ -11,6 +11,8 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 
+pub mod inventory;
+
 /// Walk guard: stores can be huge; hitting a cap is reported, never silent.
 const MAX_ENTRIES_PER_STORE: usize = 10_000;
 const MAX_WALK_DEPTH: usize = 4;

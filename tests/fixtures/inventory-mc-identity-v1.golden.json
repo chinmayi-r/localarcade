@@ -1,0 +1,60 @@
+{
+  "modelFamily": {
+    "modelFamilyId": "publisher/base-model",
+    "displayName": "base-model"
+  },
+  "artifact": {
+    "artifactId": "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "repository": "publisher/repository",
+    "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "filename": "model-Q4_K_M.gguf",
+    "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "bytes": 4000,
+    "format": "GGUF",
+    "quantization": "Q4_K_M",
+    "license": "apache-2.0",
+    "status": "promoted"
+  },
+  "provenanceRecordRefs": [
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#id",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#publisher",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#repository",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#revision",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#fileName",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#sha256",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#fileSizeBytes",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#format",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#quantization",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#baseModel",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#family",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#model",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#maxContextTokens",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#license",
+    "publisher/repository/model-Q4_K_M.gguf@aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#chatTemplate"
+  ],
+  "registryMetadata": {
+    "publisher": "publisher",
+    "baseModel": "publisher/base-model",
+    "model": "base-model",
+    "maxContextTokens": 32768,
+    "chatTemplate": "{{ messages }}",
+    "licenseSourceUrl": "https://example.invalid/license",
+    "fieldProvenanceKeys": [
+      "baseModel",
+      "chatTemplate",
+      "family",
+      "fileName",
+      "fileSizeBytes",
+      "format",
+      "id",
+      "license",
+      "maxContextTokens",
+      "model",
+      "publisher",
+      "quantization",
+      "repository",
+      "revision",
+      "sha256"
+    ]
+  }
+}
