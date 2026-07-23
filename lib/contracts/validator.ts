@@ -42,6 +42,9 @@ function semanticErrors(value: ContractEnvelope): string[] {
     const result = value.data as VerificationResult;
     const benchmark = result.benchmarkResult;
     if (benchmark !== null) errors.push(...measurementSeriesErrors(benchmark.series));
+    if (result.domainStatus === "completed" && result.benchmarkResult === null && result.quickCheckResult === null) {
+      errors.push("completed verification result must contain at least one typed result");
+    }
     for (const nested of [result.benchmarkResult, result.quickCheckResult]) {
       if (nested !== null && nested.candidateId !== result.candidateId) errors.push("verification result candidateId must match every nested result");
     }

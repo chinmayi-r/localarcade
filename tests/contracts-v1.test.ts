@@ -117,7 +117,16 @@ test("verification identities and nested statuses fail closed", async () => {
   candidateMismatch.data.quickCheckPlan.candidateId = "different-candidate";
   assert.equal(validateContract(candidateMismatch).ok, false, "nested candidate ids must match");
 
+  const artifactMismatch = JSON.parse(await readFile(join(fixtureRoot, "verification-plan.ok.json"), "utf8"));
+  artifactMismatch.data.quickCheckPlan.expectedArtifactSha256 = "b".repeat(64);
+  assert.equal(validateContract(artifactMismatch).ok, false, "nested artifact identities must match");
+
   const result = JSON.parse(await readFile(join(fixtureRoot, "verification-result.ok.json"), "utf8"));
   result.data.quickCheckResult.domainStatus = "failed";
   assert.equal(validateContract(result).ok, false, "completed aggregate cannot contain a failed nested result");
+
+  const emptyResult = JSON.parse(await readFile(join(fixtureRoot, "verification-result.ok.json"), "utf8"));
+  emptyResult.data.benchmarkResult = null;
+  emptyResult.data.quickCheckResult = null;
+  assert.equal(validateContract(emptyResult).ok, false, "completed verification requires evidence");
 });

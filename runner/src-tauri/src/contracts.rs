@@ -911,6 +911,12 @@ fn validate_data(contract: &str, value: &Value) -> Result<(), String> {
         }
         "verification-result" => {
             let item: VerificationResult = decode(value)?;
+            if item.domain_status == DomainStatus::Completed
+                && item.benchmark_result.is_none()
+                && item.quick_check_result.is_none()
+            {
+                return Err("completed verification requires a typed result".into());
+            }
             for candidate_id in [
                 item.benchmark_result
                     .as_ref()

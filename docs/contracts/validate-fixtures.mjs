@@ -18,6 +18,7 @@ function jsonFiles(folder) {
 const validFiles = jsonFiles(path.join(directory, "fixtures"));
 const invalidFiles = jsonFiles(path.join(directory, "fixtures", "invalid"));
 const failures = [];
+const semanticNegativeCases = [];
 
 function canonicalJson(value) {
   if (value === null || typeof value !== "object") return JSON.stringify(value);
@@ -62,6 +63,9 @@ function semanticErrors(envelope) {
   }
   if ((envelope.status === "ok" || envelope.status === "partial") && envelope.contract === "verification-result") {
     const result = envelope.data;
+    if (result.domainStatus === "completed" && result.benchmarkResult === null && result.quickCheckResult === null) {
+      errors.push("completed verification result must contain at least one typed result");
+    }
     for (const nested of [result.benchmarkResult, result.quickCheckResult]) {
       if (nested !== null && nested.candidateId !== result.candidateId) errors.push("verification result candidateId must match every nested result");
     }
@@ -95,6 +99,48 @@ for (const file of validFiles) {
     for (const error of semanticErrors(fixture)) failures.push(`${path.basename(file)}: ${error}`);
   }
 }
+
+const planFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "verification-plan.ok.json"), "utf8"));
+const resultFixture = JSON.parse(fs.readFileSync(path.join(directory, "fixtures", "verification-result.ok.json"), "utf8"));
+for (const [name, base, mutate] of [
+  ["runtime-id-conflict", planFixture, (value) => {
+    value.data.quickCheckPlan.runtime.runtimeConfigurationId = value.data.benchmarkPlan.runtime.runtimeConfigurationId;
+  }],
+  ["nested-candidate-mismatch", planFixture, (value) => { value.data.quickCheckPlan.candidateId = "different-candidate"; }],
+  ["nested-artifact-mismatch", planFixture, (value) => { value.data.quickCheckPlan.expectedArtifactSha256 = "b".repeat(64); }],
+  ["completed-nested-status-mismatch", resultFixture, (value) => { value.data.quickCheckResult.domainStatus = "failed"; }],
+  ["completed-empty-result", resultFixture, (value) => {
+    value.data.benchmarkResult = null;
+    value.data.quickCheckResult = null;
+  }],
+]) {
+  const value = structuredClone(base);
+  mutate(value);
+  semanticNegativeCases.push([name, value]);
+}
+for (const [name, fixture] of semanticNegativeCases) {
+  if (validate(fixture) && semanticErrors(fixture).length === 0) failures.push(`${name} semantic negative should be rejected but passed`);
+}
+
+const runtimesById = new Map();
+function recordRuntime(runtime, source) {
+  if (!runtime) return;
+  const serialized = canonicalJson(runtime);
+  const previous = runtimesById.get(runtime.runtimeConfigurationId);
+  if (previous && previous.serialized !== serialized) {
+    failures.push(`runtimeConfigurationId ${runtime.runtimeConfigurationId} differs between ${previous.source} and ${source}`);
+  } else {
+    runtimesById.set(runtime.runtimeConfigurationId, { serialized, source });
+  }
+}
+for (const file of validFiles) {
+  const envelope = JSON.parse(fs.readFileSync(file, "utf8"));
+  const data = envelope.data;
+  recordRuntime(data?.runtime, path.basename(file));
+  recordRuntime(data?.selectedCandidate?.runtime, path.basename(file));
+  recordRuntime(data?.benchmarkPlan?.runtime, path.basename(file));
+  recordRuntime(data?.quickCheckPlan?.runtime, path.basename(file));
+}
 for (const file of invalidFiles) {
   const fixture = JSON.parse(fs.readFileSync(file, "utf8"));
   if (validate(fixture) && semanticErrors(fixture).length === 0) {
@@ -107,5 +153,5 @@ if (failures.length) {
   console.error(failures.join("\n"));
   process.exitCode = 1;
 } else {
-  console.log(`Validated ${validFiles.length} positive fixtures and rejected ${invalidFiles.length} negative fixtures.`);
+  console.log(`Validated ${validFiles.length} positive fixtures, rejected ${invalidFiles.length} negative fixtures and ${semanticNegativeCases.length} semantic negative cases.`);
 }

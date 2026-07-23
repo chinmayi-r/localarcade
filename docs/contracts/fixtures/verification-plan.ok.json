@@ -12,7 +12,7 @@
       "artifactPath": "C:\\Models\\fixture.gguf",
       "expectedArtifactSha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "runtime": {
-        "runtimeConfigurationId": "runtime-fixture-benchmark",
+        "runtimeConfigurationId": "runtime-fixture",
         "product": "llama-cpp",
         "engine": "llama.cpp",
         "engineBuild": "b10061 (5d5306bf3)",

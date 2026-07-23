@@ -185,10 +185,25 @@ fn verification_identities_and_nested_statuses_fail_closed() {
     candidate_mismatch["data"]["quickCheckPlan"]["candidateId"] = json!("different-candidate");
     assert!(validate_contract_json(&candidate_mismatch.to_string()).is_err());
 
+    let mut artifact_mismatch: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/verification-plan.ok.json"
+    ))
+    .expect("verification plan fixture");
+    artifact_mismatch["data"]["quickCheckPlan"]["expectedArtifactSha256"] = json!("b".repeat(64));
+    assert!(validate_contract_json(&artifact_mismatch.to_string()).is_err());
+
     let mut result: serde_json::Value = serde_json::from_str(include_str!(
         "../../../docs/contracts/fixtures/verification-result.ok.json"
     ))
     .expect("verification result fixture");
     result["data"]["quickCheckResult"]["domainStatus"] = json!("failed");
     assert!(validate_contract_json(&result.to_string()).is_err());
+
+    let mut empty_result: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../docs/contracts/fixtures/verification-result.ok.json"
+    ))
+    .expect("verification result fixture");
+    empty_result["data"]["benchmarkResult"] = serde_json::Value::Null;
+    empty_result["data"]["quickCheckResult"] = serde_json::Value::Null;
+    assert!(validate_contract_json(&empty_result.to_string()).is_err());
 }
