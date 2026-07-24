@@ -1,5 +1,26 @@
 # Decisions
 
+## 2026-07-23 — Pin the initial live capture protocol to the proven llama.cpp build
+
+- **Decision:** The initial manual capture admits only llama.cpp build
+  `b10061 (5d5306bf3)`. Its fixed command uses the build's real `--mmap` or
+  `--no-mmap` switch; the `llama-bench`-specific `-mmp 0|1` spelling must not
+  cross into `llama-fit-params`.
+- **Evidence:** A real build-10061 invocation rejected the fixture-only
+  `-mmp` spelling. After correction, three 8K and three 32K observations
+  completed against the promoted Qwen3-4B Q4_K_M artifact on the detected RTX
+  3060 Laptop GPU with identical output in each repetition. The packaged
+  release binary also remained running through a launch smoke test.
+- **Boundary:** Other llama.cpp builds remain unsupported until their exact
+  tool grammar and output are independently proven. The observed memory output
+  remains proposed-unreviewed evidence and grants no recommendation or serving
+  authority.
+- **Why:** A build string is not proof that a command-line grammar stayed
+  compatible. Pinning the only proven build prevents fixture agreement from
+  being mistaken for live interoperability.
+- **Reversible:** Yes, by admitting another exact build after its own live
+  protocol proof.
+
 ## 2026-07-23 — Make local desktop setup primary and bundle import optional
 
 - **Decision:** D1 starts with one explicit **Check this computer** action.

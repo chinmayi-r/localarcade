@@ -33,6 +33,8 @@ and a completed old milestone does not authorize a conflicting new interface.
     gates for core logic, boundary, downstream handoff and user operation.
 14. `capability-input-output-examples.md` — concrete dummy/live inputs and
     observed outputs for every capability, including explicit non-outputs.
+15. `v1-local-test-guide.md` — owner-operated Windows package walkthrough,
+    exact local inputs, observed live capture output and test-build limitations.
 
 If these disagree, stop and record the conflict. Do not silently select the
 document that makes the requested code easiest.

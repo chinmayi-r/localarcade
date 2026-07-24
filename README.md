@@ -43,7 +43,7 @@ complete user journey.
 ```text
 Internal foundations       █████████░  strong
 Typed module boundaries    █████████░  direct local capture crosses M-D/M-I/M-E/M-O without exposing its receipts
-Desktop runner workflow    █████████░  manual onboarding is user-operable and fixture/visual-proven; no live selected-model or restart proof
+Desktop runner workflow    █████████░  packaged and real capture protocol proven; native UI receipt and restart proof remain
 Website first slice        ███░░░░░░░  blocked by reviewed portfolio data
 Private Arena              ░░░░░░░░░░  not started
 Public systems             deferred
@@ -63,7 +63,7 @@ a completed finder-to-live-verification product.
 
 The remaining critical path to the first usable V1 is:
 
-`one live U27 capture → reviewed M-F profile and capacity policy → real M-H
+`one native UI U27 receipt → reviewed M-F profile and capacity policy → real M-H
 portfolio → M-O finder handoff → W1–W4 website → one live external-model
 runner proof`.
 

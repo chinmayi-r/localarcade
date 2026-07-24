@@ -147,6 +147,7 @@ function render(state: RunnerSurfaceState): void {
     element<HTMLInputElement>("#ack-hardware").checked =
       evaluation.state === "ready";
   }
+  element("#detect-button").hidden = state.journey === "manual";
 
   if (state.inventory) renderInventory(state);
 

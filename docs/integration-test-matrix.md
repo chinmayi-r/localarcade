@@ -8,7 +8,7 @@ Observed on the preserved dirty tree, 2026-07-22. A green cell proves only the n
 |---|---|---|
 | Root `npm.cmd run typecheck` | pass | Current TS contracts compile [T1]. |
 | Root `npm.cmd run lint` | pass | Static lint over app/lib/tests/worker/design-system [T1]. |
-| Root test suite | pass, 191 tests | 155 TS/TSX + 36 MJS boundary tests on the current assembled tree [T1][T21]. |
+| Root test suite | pass, 195 tests | 158 TS/TSX + 37 MJS boundary tests on the current assembled tree [T1][T21][T27]. |
 | Registry freshness + production build | pass | Registry reported 38 hours old; vinext build completed with only chunk-size/classification warnings [T1]. |
 | Documentation UTF-8/links | pass, 80 Markdown files | `npm.cmd run docs:validate` rejects invalid UTF-8, mojibake markers, and missing relative targets [T20][T22]. |
 | Approved schema/fixtures | pass, 20 positive + 12 rejected schema negatives + 12 semantic negatives | `npm.cmd run contracts:validate` compiles Draft 2020-12, checks portfolio/handoff/import/verification/admission invariants, and proves invalid version/enum/required/hash/additional-field/semantic cases fail [T20]. |
@@ -40,7 +40,7 @@ Observed on the preserved dirty tree, 2026-07-22. A green cell proves only the n
 | M-H exhaustive universe→coverage/no-fit/unranked portfolio | 23 isolated behavior tests plus one purity/import proof | legacy website result render only | legacy empty-state E2E | boundary/pass; handoff/partial | new boundary is synthetic and surface still calls the legacy engine directly; no M-O or real U27 input | [T8][T23] |
 | M-H exact identity and producer-content isolation | post-admission M-E/M-F mutation, snapshot, hardware, evidence and familiarity binding tests | exact legacy UI flow only | none | boundary/pass | process-local brand is not a wire receipt; M-O must compose plain DTOs immediately | [T23] |
 | M-P value→badge/source display | type/UI tests | recommendation cards | component render only | covered/pass | approved W-screen integration/visual regression | [T9] |
-| M-P typed desktop D1–D6 and U27 capture flow | 21 deterministic application-facade tests; 11 runner boundary tests | exact approved import bytes plus M-O preview/start/status/stop/result and U27 opaque preview/acknowledged receipt commands through a separate composition root; full result DTO, planned-set and capture-content/binding admission | local visual inspection at desktop and 390 px; no native selected-artifact U27 or external-model run | core/pass; boundary/pass; handoff/pass with fixtures; user/partial | website remains legacy, CLI absent, no live capture is reviewed into M-F, restart recovery absent | [T25] |
+| M-P typed desktop D1–D6 and U27 capture flow | 22 deterministic application-facade tests; 12 runner boundary tests | direct-local and exact approved import paths plus M-O preview/start/status/stop/result and U27 opaque preview/acknowledged receipt commands through a separate composition root; full result DTO, planned-set and capture-content/binding admission | desktop/390 px inspection; packaged binary launch smoke; real six-observation build-10061 capture protocol | core/pass; boundary/pass; handoff/pass; user/partial | the real command works but no native UI automation or reviewed M-F admission exists; website remains legacy, CLI and restart recovery absent | [T25][T27] |
 | Consent policy→benchmark availability | policy tests | runner checkbox/preflight code | no automated desktop DOM flow | partial/pass | M-O use-case test and native UI automation | [T10] |
 | M-I request→read-only store scan | Rust helpers | fixture store integration plus M-O exact-path selection and explicit one-file hash promotion | optional live home scan | covered/pass; handoff/partial | native user walkthrough for partial/ambiguous states; strong non-Windows selected-file guard | [T11] |
 | M-J preflight→confirmation gate | Rust unit plus process-local U31/preview integration | locally sampled preview preflight | no platform matrix | covered/pass for current Windows preview | thermal and GPU load sensors; strong non-Windows identity guard | [T12] |
@@ -82,6 +82,7 @@ Preserve registry, accelerator, runtime, fit, evidence, throughput, recommendati
 
 - **[T1]** full root and runner gate output on 2026-07-22.
 - **[T25]** 2026-07-23 `execution_service` (12), `execution_transport` (4) and combined Rust `--lib` (73) output; `runner/src-tauri/src/{execution_lifecycle,execution_protocol,execution_process,execution_result_adapter,execution_service,execution_transport}.rs`; root invoke-boundary assertions.
+- **[T27]** 2026-07-23 real `llama-fit-params` build 10061 protocol against the promoted local Qwen3-4B Q4_K_M artifact: three agreeing 8K and three agreeing 32K outputs; corrected `--mmap` grammar; optimized runner launch smoke; Tauri x64 MSI and NSIS package build.
 - **[T2]** registry/importer/generated/freshness/workflow tests and scripts.
 - **[T3]** accelerator test, website configuration panel test, runner hardware source/tests.
 - **[T4]** runtime contract test and runtime source.

@@ -222,3 +222,8 @@ test("M-P frontend makes no external requests", async () => {
     assert.doesNotMatch(source, /\bfetch\s*\(|XMLHttpRequest|WebSocket/, "no request APIs in the R1 runner frontend");
   }
 });
+
+test("M-P hides imported-hardware comparison during the direct local journey", async () => {
+  const main = await readFile(new URL("../runner/src/main.ts", import.meta.url), "utf8");
+  assert.match(main, /#detect-button"\)\.hidden = state\.journey === "manual"/);
+});

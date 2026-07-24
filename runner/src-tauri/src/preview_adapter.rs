@@ -37,6 +37,8 @@ use crate::verification::{
     ValidatedCompatibilityAdmissionReceipt, VerificationPreparationRequest,
     VerifiedInventorySelection,
 };
+
+const LOCAL_CAPTURE_LLAMA_CPP_BUILD_V1: &str = "b10061 (5d5306bf3)";
 use serde::Serialize;
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -948,8 +950,8 @@ fn manual_capture_candidate(
     if tool.observed_product() != "llama-cpp" || tool.observed_engine() != "llama.cpp" {
         issues.push("u27.manual.llama-cpp-tool-required".into());
     }
-    if tool.observed_engine_build().trim().is_empty() {
-        issues.push("u27.manual.runtime-build-required".into());
+    if tool.observed_engine_build() != LOCAL_CAPTURE_LLAMA_CPP_BUILD_V1 {
+        issues.push("u27.manual.runtime-build-unsupported".into());
     }
     if hardware.effective_target().os.family != crate::contracts::OsFamily::Windows {
         issues.push("u27.manual.windows-required".into());
@@ -1390,6 +1392,35 @@ mod tests {
         assert_eq!(preview.candidate.runtime.batch_size, Some(2_048));
         assert!(!preview.grants_execution_authorization);
         assert!(!preview.grants_recommendation_authorization);
+
+        let unsupported_tool = assembler.issue_handle("tool").unwrap();
+        assembler.tools.insert(
+            unsupported_tool.clone(),
+            ObservedToolIdentityReceipt::new(
+                ExistingToolKind::FitProfileCapture,
+                "C:\\tools\\llama-fit-params.exe".into(),
+                "e".repeat(64),
+                "llama-cpp".into(),
+                "llama.cpp".into(),
+                "b10062 (6d5306bf3)".into(),
+                "llama-cpp-version-v1".into(),
+                "fixture".into(),
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            assembler
+                .prepare_fit_profile_capture_preview(PrepareFitProfileCapturePreviewRequest {
+                    flow_handle: handle(&manual.flow_handle),
+                    hardware_handle: handle(&hardware.hardware_handle),
+                    selection_handle: handle(&selection.selection_handle),
+                    tool_handle: unsupported_tool,
+                    capture_id: "unsupported-build".into(),
+                    manual_context_tokens: Some(4_096),
+                })
+                .unwrap_err(),
+            vec!["u27.manual.runtime-build-unsupported"]
+        );
     }
 
     #[test]

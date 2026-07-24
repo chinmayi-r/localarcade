@@ -326,7 +326,11 @@ pub fn resolve_fit_profile_capture_argv(
     } else {
         "off"
     };
-    let mmap = if runtime.mmap == Some(true) { "1" } else { "0" };
+    let mmap = if runtime.mmap == Some(true) {
+        "--mmap"
+    } else {
+        "--no-mmap"
+    };
     Ok(vec![
         "-m".into(),
         artifact_path.to_string_lossy().into_owned(),
@@ -346,7 +350,6 @@ pub fn resolve_fit_profile_capture_argv(
         runtime.threads.expect("validated").to_string(),
         "-fa".into(),
         flash.into(),
-        "-mmp".into(),
         mmap.into(),
         "-fitp".into(),
         "on".into(),
@@ -799,8 +802,7 @@ mod tests {
                 "8",
                 "-fa",
                 "on",
-                "-mmp",
-                "1",
+                "--mmap",
                 "-fitp",
                 "on",
                 "--offline",

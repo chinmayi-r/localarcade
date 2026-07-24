@@ -311,19 +311,19 @@ fn validate_fit_profile_capture_protocol_argv(
     artifact: &Path,
     argv: &[String],
 ) -> Result<(), ProcessBoundaryError> {
-    const PAIRS: [&str; 11] = [
-        "-m", "-c", "-ngl", "-b", "-ub", "-ctk", "-ctv", "-t", "-fa", "-mmp", "-fitp",
-    ];
-    if argv.len() != 24
-        || argv[..22]
+    const PAIRS: [&str; 9] = ["-m", "-c", "-ngl", "-b", "-ub", "-ctk", "-ctv", "-t", "-fa"];
+    if argv.len() != 23
+        || argv[..18]
             .chunks_exact(2)
             .map(|pair| pair[0].as_str())
             .ne(PAIRS)
         || argv[1] != artifact.to_string_lossy()
         || argv[5] != "999"
-        || argv[21] != "on"
-        || argv[22] != "--offline"
-        || argv[23] != "--log-disable"
+        || !matches!(argv[18].as_str(), "--mmap" | "--no-mmap")
+        || argv[19] != "-fitp"
+        || argv[20] != "on"
+        || argv[21] != "--offline"
+        || argv[22] != "--log-disable"
     {
         return Err(ProcessBoundaryError::InvalidSpec(
             "fit-profile capture argv is not the fixed supported shape".into(),

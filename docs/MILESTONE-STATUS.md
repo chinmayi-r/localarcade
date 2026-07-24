@@ -97,3 +97,14 @@ website-import route remains under **Advanced**. Focused evidence is 22/22
 surface tests, 11/11 boundary tests and 86/86 Rust library tests; desktop and
 390 px browser inspection pass. This is a user-operable setup/capture-preview
 path, not a live-model, production-recommendation or restart-recovery proof.
+
+The packaging/live-protocol checkpoint found and corrected a real
+fixture-to-tool mismatch: `llama-fit-params` build 10061 uses `--mmap`, not the
+`llama-bench` `-mmp 1` spelling. Manual capture is now pinned to the exact
+proven build and later builds fail closed. The corrected protocol completed
+three agreeing observations at 8K and three at 32K against the promoted
+Qwen3-4B Q4_K_M artifact on the detected RTX 3060 Laptop GPU. The optimized
+runner binary passed a launch smoke test and Tauri produced unsigned x64 MSI
+and NSIS test installers. This proves a real capture protocol and package
+launch, not UI automation, reviewed M-F admission, a website portfolio,
+restart recovery, signing or public-release readiness.

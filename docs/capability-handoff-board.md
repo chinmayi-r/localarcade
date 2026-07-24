@@ -147,8 +147,10 @@ and forged-result rejection;
 eleven boundary tests prevent direct lower-module or retired raw command use.
 Browser inspection proves the compact desktop and 390 px mobile manual welcome,
 hardware review and advanced import hierarchy. The direct route reaches an
-exact capture preview without JSON, but no live selected-artifact capture or
-external-model chain has been proven.
+exact capture preview without JSON. The fixed build-10061 protocol also
+completed six agreeing observations against the promoted local Qwen artifact,
+but the packaged native UI has not yet produced and retained that complete
+receipt and no external-model verification chain has been proven.
 
 ### Private local comparison
 
