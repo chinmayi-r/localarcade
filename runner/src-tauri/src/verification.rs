@@ -32,6 +32,7 @@ const CHILD_ISOLATION_WARNING: &str =
 pub enum ExistingToolKind {
     Benchmark,
     QuickCheck,
+    FitProfileCapture,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -910,6 +911,7 @@ fn validate_tool_receipt_shape(value: &ObservedToolIdentityReceipt, issues: &mut
     let expected_name = match value.kind {
         ExistingToolKind::Benchmark => "llama-bench.exe",
         ExistingToolKind::QuickCheck => "llama-cli.exe",
+        ExistingToolKind::FitProfileCapture => "llama-fit-params.exe",
     };
     let actual = value
         .path

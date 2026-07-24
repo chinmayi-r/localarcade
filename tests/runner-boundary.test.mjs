@@ -99,6 +99,7 @@ test("M-O preview IPC is local, non-authorizing, and consumed only through M-P",
     "select_inventory_preview",
     "hash_selected_inventory_file_preview",
     "probe_existing_tool_preview",
+    "prepare_fit_profile_capture_preview",
     "prepare_verification_plan_preview",
   ]) {
     assert.ok(application.includes(command), `${command} must be consumed by the M-P application adapter`);
@@ -144,6 +145,7 @@ test("M-O execution IPC accepts only opaque handles and explicit consent", async
 
   for (const command of [
     "start_verification_execution",
+    "execute_fit_profile_capture",
     "get_verification_execution_status",
     "stop_verification_execution",
     "get_verification_execution_result",
@@ -156,6 +158,18 @@ test("M-O execution IPC accepts only opaque handles and explicit consent", async
   const registered = lib.match(/generate_handler!\[([\s\S]*?)\]\)/)?.[1] ?? "";
   assert.doesNotMatch(registered, /\brun_benchmark\b/, "legacy caller-authored benchmark IPC must be retired");
   assert.doesNotMatch(registered, /\brun_quick_tasks\b/, "legacy caller-authored quick-check IPC must be retired");
+
+  const captureInput = transport.match(/pub struct ExecuteFitProfileCaptureInput \{([\s\S]*?)\n\}/)?.[1] ?? "";
+  assert.match(captureInput, /prepared_capture_handle:\s*String/);
+  assert.match(captureInput, /acknowledge_local_process_execution:\s*bool/);
+  for (const forbidden of [
+    /path/i,
+    /argv|arguments/i,
+    /observation/i,
+    /timestamp|clock/i,
+    /\bpid\b|process_id/i,
+    /authorization/i,
+  ]) assert.doesNotMatch(captureInput, forbidden);
 });
 
 test("M-P surface imports only its application adapter and has no retired execution route", async () => {
@@ -169,6 +183,12 @@ test("M-P surface imports only its application adapter and has no retired execut
   assert.doesNotMatch(frontend, /@tauri-apps|src-tauri|model_store|preview_adapter|execution_service|execution_transport|\binvoke\s*\(/);
   assert.match(composition, /new RunnerApplication\(invoke\)/);
   assert.doesNotMatch(application, /\brun_benchmark\b|\brun_quick_tasks\b/);
+  assert.match(application, /validateFitProfileCaptureForPresentation/, "M-P must validate the full U27 receipt before displaying it");
+  const capturePresentation = await readFile(new URL("../runner/src/fit-profile-capture-presentation.ts", import.meta.url), "utf8");
+  for (const forbidden of [/node:/, /fetch\s*\(/, /XMLHttpRequest|WebSocket/, /@tauri-apps|src-tauri/]) {
+    assert.doesNotMatch(capturePresentation, forbidden, "browser-side capture admission must remain pure and local");
+  }
+  assert.match(capturePresentation, /recordContentSha256/, "browser-side capture admission must verify the complete receipt digest");
   for (const surface of [frontend, application]) {
     assert.doesNotMatch(surface, /json-schema|format-constraints|fact-preservation/);
     assert.doesNotMatch(surface, /warmupRuns:\s*1|measuredRuns:\s*3/);

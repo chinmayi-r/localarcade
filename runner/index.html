@@ -121,6 +121,23 @@
         </button>
 
         <div class="divider"></div>
+        <h3>Exact memory capture (optional)</h3>
+        <p>
+          Capture the memory components for this one verified artifact and
+          confirmed machine with an existing <code>llama-fit-params</code>
+          executable. This is six bounded local observations: three at the
+          selected context and three at four times that context. It is not a
+          recommendation, a capacity policy, or serving permission.
+        </p>
+        <label for="fit-profile-path">Full path to llama-fit-params.exe</label>
+        <input id="fit-profile-path" type="text" placeholder="C:\Tools\llama-fit-params.exe" />
+        <label for="capture-id">Capture ID</label>
+        <input id="capture-id" type="text" placeholder="A new identifier you can recognize later" />
+        <button id="prepare-capture-button" type="button">
+          Review exact memory capture
+        </button>
+
+        <div class="divider"></div>
         <h3>Existing llama.cpp tools</h3>
         <p>
           Each executable is hashed and its reported build is checked. This
@@ -174,6 +191,35 @@
         </button>
       </section>
 
+      <section data-stage-section="fit-capture-permission" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step">4</span>
+          <div>
+            <h2>Review exact memory capture</h2>
+            <p>
+              The runner will read the selected model and start only the
+              checked <code>llama-fit-params</code> executable. No download,
+              upload, recommendation, or serving change is included.
+            </p>
+          </div>
+        </div>
+        <pre id="capture-summary" class="result-block">No capture prepared.</pre>
+        <details>
+          <summary>Exact command protocol, hashes, contexts, and warnings</summary>
+          <pre id="capture-expert"></pre>
+        </details>
+        <div class="permission-box">
+          <h3>Local process permission</h3>
+          <label class="check">
+            <input id="consent-capture" type="checkbox" />
+            Allow this checked local executable to capture memory components
+          </label>
+        </div>
+        <button id="execute-capture-button" class="primary danger-aware" type="button">
+          Capture exact memory components
+        </button>
+      </section>
+
       <section data-stage-section="progress" class="workspace" hidden>
         <div class="section-heading">
           <span class="step active">5</span>
@@ -209,6 +255,25 @@
         <details>
           <summary>Exact normalized result and provenance</summary>
           <pre id="result-expert"></pre>
+        </details>
+      </section>
+
+      <section data-stage-section="fit-capture-result" class="workspace" hidden>
+        <div class="section-heading">
+          <span class="step">5</span>
+          <div>
+            <h2>Memory capture result</h2>
+            <p>
+              The receipt binds the complete captured content to this artifact,
+              tool, hardware target, and runtime. Review is still required
+              before it can influence a portfolio or recommendation.
+            </p>
+          </div>
+        </div>
+        <pre id="capture-result-summary" class="result-block">No capture result.</pre>
+        <details>
+          <summary>Exact receipt and memory components</summary>
+          <pre id="capture-result-expert"></pre>
         </details>
       </section>
 

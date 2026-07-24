@@ -125,6 +125,35 @@ function render(state: RunnerSurfaceState): void {
     element("#plan-expert").textContent = expertJson(state.plan);
   }
 
+  if (state.fitProfileCapture) {
+    const capture = state.fitProfileCapture;
+    element("#capture-summary").textContent =
+      `Capture: ${capture.captureId}\n` +
+      `Artifact: ${capture.artifact.path}\n` +
+      `Artifact SHA-256: ${capture.artifact.sha256}\n` +
+      `Tool: ${capture.tool.path}\n` +
+      `Tool SHA-256: ${capture.tool.sha256}\n` +
+      `Contexts: ${capture.contextTokens.join(", ")} tokens\n` +
+      `Repetitions: ${capture.repetitionsPerContext} per context\n` +
+      "Result: proposed-unreviewed exact-scope evidence only.";
+    element("#capture-expert").textContent = expertJson(capture);
+  }
+
+  if (state.fitProfileCaptureReceipt) {
+    const receipt = state.fitProfileCaptureReceipt;
+    const attemptCount = receipt.contexts.reduce(
+      (total, context) => total + context.attempts.length,
+      0,
+    );
+    element("#capture-result-summary").textContent =
+      `Capture: ${receipt.captureId}\n` +
+      `Content SHA-256: ${receipt.contentHash}\n` +
+      `Contexts: ${receipt.contexts.map((item) => item.contextTokens).join(", ")} tokens\n` +
+      `Completed attempts: ${attemptCount}\n` +
+      "Status: proposed-unreviewed evidence. It cannot recommend or serve a model.";
+    element("#capture-result-expert").textContent = expertJson(receipt);
+  }
+
   if (state.lifecycle) {
     const lifecycle = state.lifecycle;
     element("#progress-label").textContent =
@@ -205,6 +234,14 @@ window.addEventListener("DOMContentLoaded", () => {
   element("#select-artifact-button").addEventListener("click", () =>
     run(() => application.selectArtifact(value("#artifact-path"))),
   );
+  element("#prepare-capture-button").addEventListener("click", () =>
+    run(() =>
+      application.prepareFitProfileCapture(
+        value("#fit-profile-path"),
+        value("#capture-id"),
+      ),
+    ),
+  );
   element("#probe-tools-button").addEventListener("click", () =>
     run(() =>
       application.probeTools(
@@ -215,6 +252,9 @@ window.addEventListener("DOMContentLoaded", () => {
   );
   element("#prepare-plan-button").addEventListener("click", () =>
     run(() => application.prepareVerification()),
+  );
+  element("#execute-capture-button").addEventListener("click", () =>
+    run(() => application.executeFitProfileCapture(checked("#consent-capture"))),
   );
   element("#start-button").addEventListener("click", async () => {
     const pending = application.startExecution({

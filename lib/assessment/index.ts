@@ -40,6 +40,19 @@ export type {
   UpstreamAdvisoryState,
 } from "./types";
 
+export {
+  RUNNER_FIT_PROFILE_CAPTURE_CONTRACT,
+  RUNNER_FIT_PROFILE_CAPTURE_PROTOCOL,
+  RUNNER_FIT_PROFILE_CAPTURE_SCHEMA_VERSION,
+  validateRunnerFitProfileCapture,
+} from "./runner-fit-profile-capture";
+export type {
+  RunnerFitProfileCaptureAttempt,
+  RunnerFitProfileCapturePool,
+  RunnerFitProfileCaptureV1,
+  TrustedCaptureValidation,
+} from "./runner-fit-profile-capture";
+
 type PerformanceKey = keyof FitEvidenceAssessment["performance"];
 type EvidenceKey = keyof FitEvidenceAssessment["evidence"];
 

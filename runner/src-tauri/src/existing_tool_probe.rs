@@ -28,6 +28,7 @@ const EXPECTED_ARGUMENT: &str = "--version";
 pub enum ExistingToolKind {
     Benchmark,
     QuickCheck,
+    FitProfileCapture,
 }
 
 impl ExistingToolKind {
@@ -45,6 +46,13 @@ impl ExistingToolKind {
                     "llama-cli.exe"
                 } else {
                     "llama-cli"
+                }
+            }
+            Self::FitProfileCapture => {
+                if cfg!(windows) {
+                    "llama-fit-params.exe"
+                } else {
+                    "llama-fit-params"
                 }
             }
         }

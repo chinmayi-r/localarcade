@@ -98,7 +98,13 @@ The current batch also adds an explicit user-triggered hash promotion for one
 retained size candidate. It is never an automatic scan step and returns no
 execution authority. M-O, not M-P, constructs the fixed verification plan.
 M-P accepts a completed result only when its full DTO and exact planned
-measurement/check sets match.
+measurement/check sets match. U27 now adds a separate, user-triggered
+`llama-fit-params` capture: M-O seals the selected artifact/tool/hardware and
+exact six-observation protocol behind one opaque preview handle; M-P shows the
+hashes, contexts and warnings, requires a separate local-process checkbox, and
+rejects a returned receipt whose full content hash or display-critical bindings
+do not match. The resulting evidence remains proposed-unreviewed and grants no
+recommendation or serving authority.
 
 ## Independent user demonstrations
 
@@ -130,13 +136,14 @@ preflight locally, and produces a non-authorizing Rust M-J verification-plan
 preview against the imported configuration. A separate process-local service
 proves one-use confirmation, bounded run/progress/stop/result sequencing and
 partial-result preservation with deterministic fake child outputs. The preview
-and execution IPC now have a typed D1–D6 desktop consumer. Nineteen deterministic
+and execution IPC now have a typed D1–D6 desktop consumer. Twenty-one deterministic
 surface tests prove the complete call sequence, exact bundle-byte preservation,
 blocked/unavailable/partial/error states, input immutability, stop and replay
-rejection, explicit hash selection, lifecycle monotonicity and forged-result
-rejection; eleven boundary tests prevent direct lower-module or retired raw
-command use. Browser inspection proves the compact welcome and blocked-import
-states. No native user-operated external-model chain exists.
+rejection, explicit hash selection, U27 capture acknowledgement and same-ID
+receipt-mutation rejection, lifecycle monotonicity and forged-result rejection;
+eleven boundary tests prevent direct lower-module or retired raw command use.
+Browser inspection proves the compact welcome and blocked-import states. No
+native user-operated selected-artifact U27 or external-model chain exists.
 
 ### Private local comparison
 

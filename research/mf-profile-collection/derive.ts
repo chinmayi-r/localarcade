@@ -10,14 +10,25 @@ import type {
 } from "./types";
 import { validateCollectionBundle } from "./validator";
 
-export function deriveProposedProfile(value: unknown): ProfileDerivation {
+export function deriveProposedProfile(
+  value: unknown,
+  trustedCapture: { trustedCaptureContentHash: string } | null = null,
+): ProfileDerivation {
   const validation = validateCollectionBundle(value);
   if (validation.kind === "blocked") return validation;
   const bundle = validation.value;
-  if (bundle.evidenceClassification !== "synthetic-machinery-only") {
+  if (bundle.evidenceClassification !== "synthetic-machinery-only"
+    && trustedCapture === null) {
     return derivationBlocked(
       "fit-profile-collection.trusted-capture-boundary-unavailable",
       [bundle.evidenceClassification],
+    );
+  }
+  if (trustedCapture !== null
+    && !/^[0-9a-f]{64}$/.test(trustedCapture.trustedCaptureContentHash)) {
+    return derivationBlocked(
+      "fit-profile-collection.trusted-capture-content-invalid",
+      [trustedCapture.trustedCaptureContentHash],
     );
   }
   const bundleContentSha256 = recordContentSha256(bundle);
@@ -108,7 +119,10 @@ export function deriveProposedProfile(value: unknown): ProfileDerivation {
       measurement: null,
       rawSourceRecordRef:
         `collection://${bundle.collectionId}/${bundle.collectionVersion}`
-        + `?sha256=${bundleContentSha256}`,
+        + `?sha256=${bundleContentSha256}`
+        + (trustedCapture === null
+          ? ""
+          : `&runnerCaptureSha256=${trustedCapture.trustedCaptureContentHash}`),
     }];
     const record: RuntimeScopedFitProfileRecord = {
       schemaVersion: 1,
@@ -136,8 +150,9 @@ export function deriveProposedProfile(value: unknown): ProfileDerivation {
       kind: "proposed-unreviewed",
       record,
       recordContentSha256: recordContentSha256(record),
-      warning:
-        "Synthetic collection proves machinery only. This proposed record is not reviewed, production evidence, or a capacity policy.",
+      warning: trustedCapture === null
+        ? "Synthetic collection proves machinery only. This proposed record is not reviewed, production evidence, or a capacity policy."
+        : "Runner-owned local capture is exact-scope but proposed-unreviewed. It is not a capacity policy or production recommendation.",
     };
   } catch (error) {
     return derivationBlocked(

@@ -205,7 +205,7 @@ flowchart TB
 | Track | Branch/worktree | Current state | Completion evidence |
 |---|---|---|---|
 | assembler and integration | `codex/wave1-domain-adapters` — `G:/LocalArcade` | ✅ first wave integrated | root and runner full gates green on 2026-07-22 |
-| current M-I/M-O/M-P native-handoff batch | `codex/wave1-domain-adapters` — `G:/LocalArcade` | 🟡 uncommitted shared-worktree integration | Explicit selected-file hash promotion, server-owned fixed-plan policy, full result/planned-set admission and synthetic-only U27 collection research; 80 Rust library, 19 surface and 11 boundary tests; no native live-model claim |
+| current M-I/M-O/M-P native-handoff batch | `main` — `G:/LocalArcade` | ✅ source integration; live proof remains unavailable | Explicit selected-file hash promotion, server-owned fixed-plan policy, full result/planned-set admission, and U27 exact-memory capture with a separate opaque preview and consent receipt; 84 Rust library, 21 surface and 11 boundary tests; no native selected-artifact or live-model claim |
 | M-C registry | `codex/m-c-registry` — `G:/LocalArcade-worktrees/m-c-registry` | ✅ integrated as `547d015` | adapter/equivalence tests and unchanged snapshot semantics |
 | M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ base integrated as `b788396`; U31 uncommitted in assembler | manual/detected/unknown/mismatch boundary tests; 12 U31 material-fact/acknowledgement proofs |
 | M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |

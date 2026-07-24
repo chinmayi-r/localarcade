@@ -9,6 +9,10 @@ use crate::contracts::{
     MeasurementKind, Power, Preflight, QuickCheck, RunnerImportBundle, Thermal, VerificationPlan,
 };
 use crate::existing_tool_probe;
+use crate::fit_profile_capture::{
+    prepare_fit_profile_capture, FitProfileCapturePreparationRequest, PreparedFitProfileCapture,
+    FIT_PROFILE_CAPTURE_PROTOCOL_V1, FIT_PROFILE_CAPTURE_REPETITIONS_V1,
+};
 use crate::hardware_confirmation::{
     evaluate_hardware_confirmation, HardwareConfirmationAcknowledgement,
     HardwareConfirmationEvaluation, HardwareConfirmationReceipt, HardwareConfirmationState,
@@ -183,6 +187,32 @@ pub struct VerificationPlanPreview {
     pub grants_execution_authorization: bool,
 }
 
+#[derive(Debug, Clone)]
+pub struct PrepareFitProfileCapturePreviewRequest {
+    pub import_handle: PreviewHandle,
+    pub hardware_handle: PreviewHandle,
+    pub selection_handle: PreviewHandle,
+    pub tool_handle: PreviewHandle,
+    pub capture_id: String,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FitProfileCapturePreview {
+    pub prepared_capture_handle: String,
+    pub capture_id: String,
+    pub protocol_id: String,
+    pub artifact: CheckedIdentityPreview,
+    pub tool: CheckedIdentityPreview,
+    pub context_tokens: Vec<u64>,
+    pub repetitions_per_context: u64,
+    pub warnings: Vec<String>,
+    pub preview_only: bool,
+    pub grants_execution_authorization: bool,
+    pub grants_serving_authorization: bool,
+    pub grants_recommendation_authorization: bool,
+}
+
 #[derive(Debug, Default)]
 pub struct PreviewAssembler {
     next_handle: u64,
@@ -194,6 +224,7 @@ pub struct PreviewAssembler {
     inventories: HashMap<PreviewHandle, InventoryResult>,
     selections: HashMap<PreviewHandle, InventorySelectionEntry>,
     prepared: HashMap<PreviewHandle, PreparedVerification>,
+    prepared_fit_captures: HashMap<PreviewHandle, PreparedFitProfileCapture>,
 }
 
 impl PreviewAssembler {
@@ -391,6 +422,9 @@ impl PreviewAssembler {
         let kind = match receipt.kind() {
             existing_tool_probe::ExistingToolKind::Benchmark => ExistingToolKind::Benchmark,
             existing_tool_probe::ExistingToolKind::QuickCheck => ExistingToolKind::QuickCheck,
+            existing_tool_probe::ExistingToolKind::FitProfileCapture => {
+                ExistingToolKind::FitProfileCapture
+            }
         };
         let observed = ObservedToolIdentityReceipt::new(
             kind,
@@ -686,6 +720,83 @@ impl PreviewAssembler {
         Ok(tool.clone())
     }
 
+    /// Prepares the exact U27 memory-component capture from already sealed
+    /// import, hardware, inventory and tool receipts. It starts no process.
+    pub fn prepare_fit_profile_capture_preview(
+        &mut self,
+        request: PrepareFitProfileCapturePreviewRequest,
+    ) -> Result<FitProfileCapturePreview, Vec<String>> {
+        let bundle = self
+            .imports
+            .get(&request.import_handle)
+            .ok_or_else(|| vec!["u27.preview.import-handle-invalid".into()])?
+            .clone();
+        let hardware = self
+            .hardware
+            .get(&request.hardware_handle)
+            .ok_or_else(|| vec!["u27.preview.hardware-handle-invalid".into()])?
+            .clone();
+        if hardware.import != request.import_handle {
+            return Err(vec!["u27.preview.hardware-import-handle-mismatch".into()]);
+        }
+        let selection = self
+            .selections
+            .get(&request.selection_handle)
+            .ok_or_else(|| vec!["u27.preview.selection-handle-invalid".into()])?
+            .clone();
+        if selection.import != request.import_handle {
+            return Err(vec!["u27.preview.selection-import-handle-mismatch".into()]);
+        }
+        if !self.inventories.contains_key(&selection.inventory) {
+            return Err(vec!["u27.preview.selection-inventory-handle-stale".into()]);
+        }
+        let tool = self.resolve_tool(&request.tool_handle, ExistingToolKind::FitProfileCapture)?;
+        let compatibility =
+            ValidatedCompatibilityAdmissionReceipt::new(bundle.compatibility_admission)?;
+        let prepared = prepare_fit_profile_capture(&FitProfileCapturePreparationRequest {
+            capture_id: request.capture_id,
+            candidate: bundle.handoff.selected_candidate,
+            compatibility_admission: compatibility,
+            hardware_target: hardware.target,
+            inventory_selection: selection.selection,
+            tool,
+        })?;
+        let handle = self
+            .issue_handle("fit-capture")
+            .map_err(|error| vec![error])?;
+        let preview = FitProfileCapturePreview {
+            prepared_capture_handle: handle.token().to_string(),
+            capture_id: prepared.capture_id().to_string(),
+            protocol_id: FIT_PROFILE_CAPTURE_PROTOCOL_V1.into(),
+            artifact: CheckedIdentityPreview {
+                path: prepared.artifact_path().to_string_lossy().into_owned(),
+                sha256: prepared.artifact_sha256().to_string(),
+            },
+            tool: CheckedIdentityPreview {
+                path: prepared.tool().path().to_string_lossy().into_owned(),
+                sha256: prepared.tool().expected_sha256().to_string(),
+            },
+            context_tokens: prepared
+                .invocations()
+                .iter()
+                .map(|invocation| invocation.context_tokens)
+                .collect::<std::collections::BTreeSet<_>>()
+                .into_iter()
+                .collect(),
+            repetitions_per_context: FIT_PROFILE_CAPTURE_REPETITIONS_V1,
+            warnings: vec![
+                "The selected user-owned tool and artifact will be read locally. Child network and filesystem isolation are not enforced.".into(),
+                "The result is proposed-unreviewed exact-scope evidence, not a serving authorization or recommendation.".into(),
+            ],
+            preview_only: true,
+            grants_execution_authorization: false,
+            grants_serving_authorization: false,
+            grants_recommendation_authorization: false,
+        };
+        self.prepared_fit_captures.insert(handle, prepared);
+        Ok(preview)
+    }
+
     /// Moves one sealed preparation into the separately gated execution
     /// boundary. Removal is the replay guard: preview tokens remain
     /// predictable references, never reusable authorization credentials.
@@ -696,6 +807,17 @@ impl PreviewAssembler {
         self.prepared
             .remove(handle)
             .ok_or_else(|| "m-o.execution.prepared-handle-invalid-or-consumed".into())
+    }
+
+    /// Same replay rule as verification execution: after the explicit capture
+    /// action crosses its boundary, its preview handle is consumed.
+    pub fn take_prepared_fit_profile_capture(
+        &mut self,
+        handle: &PreviewHandle,
+    ) -> Result<PreparedFitProfileCapture, String> {
+        self.prepared_fit_captures
+            .remove(handle)
+            .ok_or_else(|| "u27.capture.prepared-handle-invalid-or-consumed".into())
     }
 }
 

@@ -7,6 +7,7 @@ pub mod execution_result_adapter;
 pub mod execution_service;
 pub mod execution_transport;
 pub mod existing_tool_probe;
+pub mod fit_profile_capture;
 pub mod hardware;
 pub mod hardware_confirmation;
 pub mod hardware_target;
@@ -222,6 +223,7 @@ fn probe_existing_tool_preview(
     let kind = match kind.as_str() {
         "benchmark" => existing_tool_probe::ExistingToolKind::Benchmark,
         "quick-check" => existing_tool_probe::ExistingToolKind::QuickCheck,
+        "fit-profile-capture" => existing_tool_probe::ExistingToolKind::FitProfileCapture,
         _ => return Err(vec!["m-o.preview.tool-kind-unsupported".into()]),
     };
     let receipt = existing_tool_probe::probe_existing_tool(
@@ -240,6 +242,7 @@ fn probe_existing_tool_preview(
             kind: match receipt.kind() {
                 existing_tool_probe::ExistingToolKind::Benchmark => "benchmark",
                 existing_tool_probe::ExistingToolKind::QuickCheck => "quick-check",
+                existing_tool_probe::ExistingToolKind::FitProfileCapture => "fit-profile-capture",
             }
             .into(),
             canonical_path: receipt.canonical_path().to_string_lossy().into_owned(),
@@ -270,6 +273,35 @@ struct PreparePreviewInput {
     quick_check_tool_handle: String,
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct PrepareFitProfileCaptureInput {
+    import_handle: String,
+    hardware_handle: String,
+    selection_handle: String,
+    tool_handle: String,
+    capture_id: String,
+}
+
+#[tauri::command]
+fn prepare_fit_profile_capture_preview(
+    state: tauri::State<'_, RunnerState>,
+    request: PrepareFitProfileCaptureInput,
+) -> Result<preview_adapter::FitProfileCapturePreview, Vec<String>> {
+    with_preview_state(&state, |assembler| {
+        let parse = |value: &str| preview_adapter::parse_handle(value).map_err(|error| vec![error]);
+        assembler.prepare_fit_profile_capture_preview(
+            preview_adapter::PrepareFitProfileCapturePreviewRequest {
+                import_handle: parse(&request.import_handle)?,
+                hardware_handle: parse(&request.hardware_handle)?,
+                selection_handle: parse(&request.selection_handle)?,
+                tool_handle: parse(&request.tool_handle)?,
+                capture_id: request.capture_id,
+            },
+        )
+    })
+}
+
 #[tauri::command]
 fn prepare_verification_plan_preview(
     state: tauri::State<'_, RunnerState>,
@@ -297,6 +329,17 @@ fn start_verification_execution(
     request: execution_transport::StartVerificationExecutionInput,
 ) -> Result<execution_transport::ExecutionStartViewV1, Vec<String>> {
     with_runner_state(&state, |runner| runner.start(request))
+}
+
+/// Crosses U27's explicit consent boundary. The caller supplies only a
+/// one-use prepared handle and acknowledgement, never a path, argv, result or
+/// hardware claim.
+#[tauri::command]
+fn execute_fit_profile_capture(
+    state: tauri::State<'_, RunnerState>,
+    request: execution_transport::ExecuteFitProfileCaptureInput,
+) -> Result<execution_transport::FitProfileCaptureExecutionViewV1, Vec<String>> {
+    with_runner_state(&state, |runner| runner.execute_fit_profile_capture(request))
 }
 
 #[tauri::command]
@@ -424,7 +467,9 @@ pub fn run() {
             select_inventory_preview,
             hash_selected_inventory_file_preview,
             probe_existing_tool_preview,
+            prepare_fit_profile_capture_preview,
             prepare_verification_plan_preview,
+            execute_fit_profile_capture,
             start_verification_execution,
             get_verification_execution_status,
             stop_verification_execution,

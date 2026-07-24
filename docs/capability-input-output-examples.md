@@ -562,10 +562,13 @@ Observed: 23 behavior tests and one import/purity test pass. Evidence:
 `research/mh-portfolio/boundary.test.mjs`.
 
 **Handoff result:** the boundary and synthetic producer handoff are proven.
-U27 still prevents a real portfolio because there is no reviewed production
-M-F profile manifest or approved concrete capacity policy. M-O and the
-replacement website/desktop/CLI consumers are also absent. No result here
-demonstrates ranking superiority over llmfit.
+U27 can now produce a content-bound, proposed-unreviewed capture after a user
+selects an exact artifact and existing `llama-fit-params` executable, but it
+still prevents a real portfolio because no live capture has been reviewed into
+an M-F profile manifest or paired with an approved concrete capacity policy.
+M-O/M-P consume the capture only in the desktop path; replacement website and
+CLI consumers remain absent. No result here demonstrates ranking superiority
+over llmfit.
 
 ## M-I — Owned model inventory
 
@@ -1058,7 +1061,7 @@ retained in public state.
 | Recommendation | Compatibility-only M-H boundary proven with synthetic inputs; real data, M-O and production surfaces remain partial |
 | Rating | Synthetic-input statistical core only |
 | M-B, M-K | Nothing executable as a production/user handoff |
-| M-O | Synthetic finder/detail/handoff plus opaque typed process-local combined run/progress/stop/result; consumed unchanged by the desktop facade, while restart recovery and live proof remain missing |
+| M-O | Synthetic finder/detail/handoff plus opaque typed process-local combined run/progress/stop/result and U27 capture preview/consent/receipt; consumed unchanged by the desktop facade, while restart recovery and live proof remain missing |
 | Public capabilities | Nothing; intentionally deferred |
 
 The next team must not consume a proposed schema as though it were producer

@@ -6,6 +6,9 @@ import {
   type InvokePort,
   type LifecycleSnapshot,
 } from "../runner/src/runner-application";
+import { type FitProfileCaptureReceipt } from "../runner/src/fit-profile-capture-presentation";
+import { recordContentSha256 } from "../lib/assessment/record-digest";
+import { collectionFixture } from "../research/mf-profile-collection/fixtures";
 import {
   createVerificationPlanRequestV1,
   VERIFICATION_PLAN_POLICY_V1,
@@ -65,6 +68,85 @@ function observationEvidence(
       eligibilityReasons: [],
     },
     rawSourceRecordRef: "fixture://source-record",
+  };
+}
+
+function fitProfileCaptureReceipt(): FitProfileCaptureReceipt {
+  const collection = collectionFixture();
+  const contexts: FitProfileCaptureReceipt["contexts"] =
+    collection.contexts.map((context) => {
+      const observation = context.attempts[0]!;
+      if (observation.status !== "completed") {
+        throw new Error("fixture requires a completed observation");
+      }
+      return {
+        contextTokens: context.contextTokens,
+        attempts: [1, 2, 3].map((repetition) => ({
+          attemptId: `capture-fixture-${context.contextTokens}-${repetition}`,
+          observedAt: `2026-07-23T10:0${repetition}:00.000Z`,
+          rawSourceRecordRef:
+            `runner-fit-profile-capture://capture-fixture/`
+            + `${context.contextTokens}/${repetition}`,
+          status: "completed" as const,
+          device: structuredClone(observation.device),
+          host: structuredClone(observation.host),
+        })),
+      };
+    });
+  const receipt = {
+    schemaVersion: 1,
+    contract: "runner-fit-profile-capture",
+    captureId: "capture-fixture",
+    captureVersion: "1",
+    capturedAt: "2026-07-23T10:04:00.000Z",
+    consent: {
+      action: "capture-fit-profile" as const,
+      acknowledgedAt: "2026-07-23T10:00:00.000Z",
+      localProcessExecutionAcknowledged: true as const,
+      grantsServingAuthorization: false as const,
+      grantsRecommendationAuthorization: false as const,
+    },
+    candidate: structuredClone(collection.candidate),
+    compatibilityReceipt: structuredClone(collection.compatibilityReceipt),
+    hardwareTarget: structuredClone(collection.hardwareTarget),
+    bindings: {
+      candidateContentSha256: collection.bindings.candidateContentSha256,
+      compatibilityReceiptContentSha256:
+        collection.bindings.compatibilityReceiptContentSha256,
+      hardwareTargetContentSha256: collection.bindings.hardwareTargetContentSha256,
+      artifactSha256: collection.bindings.artifactSha256,
+      selectedArtifactSha256: collection.bindings.artifactSha256,
+    },
+    artifact: {
+      canonicalPath: "G:\\Models\\fixture.gguf",
+      sha256: collection.bindings.artifactSha256,
+      bytes: collection.candidate.artifact.bytes,
+    },
+    tool: {
+      id: "llama-fit-params" as const,
+      version: "b10061 (5d5306bf3)",
+      executableSha256: "d".repeat(64),
+      probeProtocolId: "llama-cpp-version-v1" as const,
+    },
+    command: {
+      protocolId: "llama-fit-params-memory-breakdown-v1" as const,
+      argvTemplate: [
+        "-m",
+        "G:\\Models\\fixture.gguf",
+        "-c",
+        "{contextTokens}",
+        "-fitp",
+        "on",
+        "--offline",
+        "--log-disable",
+      ],
+    },
+    runPath: "gpu" as const,
+    contexts,
+  } satisfies Omit<FitProfileCaptureReceipt, "contentHash">;
+  return {
+    ...receipt,
+    contentHash: recordContentSha256(receipt),
   };
 }
 
@@ -151,6 +233,24 @@ function successfulPort(calls: string[]): InvokePort {
               childWriteIsolationEnforced: false,
               childNetworkIsolationEnforced: false,
             }
+          : (arguments_?.kind as string) === "fit-profile-capture"
+            ? {
+                toolHandle: "tool-fit-profile-1",
+                kind: "fit-profile-capture",
+                canonicalPath: "G:\\llama\\llama-fit-params.exe",
+                sha256: "d".repeat(64),
+                sizeBytes: 100,
+                modifiedUnixNanos: "1",
+                observedProduct: "llama-cpp",
+                observedEngine: "llama.cpp",
+                observedEngineBuild: "b10061 (5d5306bf3)",
+                probeProtocolId: "llama-cpp-version-v1",
+                observedAt: "unix-milliseconds:1",
+                previewOnly: true,
+                grantsExecutionAuthorization: false,
+                childWriteIsolationEnforced: false,
+                childNetworkIsolationEnforced: false,
+              }
           : {
               toolHandle: "tool-quick-1",
               kind: "quick-check",
@@ -207,6 +307,27 @@ function successfulPort(calls: string[]): InvokePort {
         previewOnly: true,
         grantsExecutionAuthorization: false,
       },
+      prepare_fit_profile_capture_preview: {
+        preparedCaptureHandle: "prepared-capture-1",
+        captureId: "capture-fixture",
+        protocolId: "llama-fit-params-memory-breakdown-v1",
+        artifact: {
+          path: "G:\\Models\\fixture.gguf",
+          sha256: "a".repeat(64),
+        },
+        tool: {
+          path: "G:\\llama\\llama-fit-params.exe",
+          sha256: "d".repeat(64),
+        },
+        contextTokens: [4096, 16384],
+        repetitionsPerContext: 3,
+        warnings: [],
+        previewOnly: true,
+        grantsExecutionAuthorization: false,
+        grantsServingAuthorization: false,
+        grantsRecommendationAuthorization: false,
+      },
+      execute_fit_profile_capture: { receipt: fitProfileCaptureReceipt() },
       start_verification_execution: {
         executionHandle: "execution-1",
         snapshot: lifecycle("running", "model-loading"),
@@ -321,6 +442,72 @@ test("M-P consumes the M-O sequence unchanged through a completed user flow", as
     "get_verification_execution_status",
     "get_verification_execution_result",
   ]);
+});
+
+test("M-P makes U27 capture inspectable but never promotes it into a recommendation", async () => {
+  const calls: string[] = [];
+  const app = await preparedApplication(calls);
+  let state = await app.prepareFitProfileCapture(
+    "G:\\llama\\llama-fit-params.exe",
+    "capture-fixture",
+  );
+  assert.equal(state.stage, "fit-capture-permission");
+  assert.equal(state.status, "ready");
+  assert.equal(state.fitProfileCapture?.contextTokens.join(","), "4096,16384");
+  assert.equal(state.fitProfileCaptureReceipt, undefined);
+
+  const beforeConsent = calls.length;
+  state = await app.executeFitProfileCapture(false);
+  assert.equal(state.stage, "fit-capture-permission");
+  assert.equal(state.status, "blocked");
+  assert.deepEqual(state.reasonCodes, [
+    "m-p.capture.local-process-acknowledgement-required",
+  ]);
+  assert.equal(calls.length, beforeConsent);
+
+  state = await app.executeFitProfileCapture(true);
+  assert.equal(state.stage, "fit-capture-result");
+  assert.equal(state.status, "partial");
+  assert.deepEqual(state.reasonCodes, ["u27.capture.proposed-unreviewed"]);
+  assert.equal(state.fitProfileCaptureReceipt?.captureId, "capture-fixture");
+  assert.equal(
+    state.fitProfileCaptureReceipt?.consent.grantsRecommendationAuthorization,
+    false,
+  );
+  assert.deepEqual(calls.slice(-3), [
+    "probe_existing_tool_preview",
+    "prepare_fit_profile_capture_preview",
+    "execute_fit_profile_capture",
+  ]);
+});
+
+test("M-P rejects a same-ID mutation in a U27 capture receipt", async () => {
+  const calls: string[] = [];
+  const base = successfulPort(calls);
+  const app = await preparedApplication(calls, async <T>(
+    command: string,
+    payload?: Record<string, unknown>,
+  ) => {
+    if (command === "execute_fit_profile_capture") {
+      const receipt = fitProfileCaptureReceipt();
+      const runtime = receipt.candidate.runtime as { batchSize: number | null };
+      runtime.batchSize = (runtime.batchSize ?? 0) + 1;
+      const snapshot = structuredClone(receipt) as Record<string, unknown>;
+      delete snapshot.contentHash;
+      receipt.contentHash = recordContentSha256(snapshot);
+      return { receipt } as T;
+    }
+    return base<T>(command, payload);
+  });
+  await app.prepareFitProfileCapture(
+    "G:\\llama\\llama-fit-params.exe",
+    "capture-fixture",
+  );
+  const state = await app.executeFitProfileCapture(true);
+  assert.equal(state.stage, "fit-capture-permission");
+  assert.equal(state.status, "blocked");
+  assert.equal(state.reasonCodes[0], "m-p.capture.receipt-invalid");
+  assert.equal(state.fitProfileCaptureReceipt, undefined);
 });
 
 test("M-P delegates the complete fixed plan to the versioned policy below the surface", async () => {

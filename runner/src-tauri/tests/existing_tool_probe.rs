@@ -102,6 +102,13 @@ fn tool_path(kind: ExistingToolKind) -> PathBuf {
                 "llama-cli"
             }
         }
+        ExistingToolKind::FitProfileCapture => {
+            if cfg!(windows) {
+                "llama-fit-params.exe"
+            } else {
+                "llama-fit-params"
+            }
+        }
     };
     if cfg!(windows) {
         PathBuf::from(format!(r"C:\LocalArcade\tools\{basename}"))
@@ -128,7 +135,11 @@ fn snapshot() -> FileSnapshot {
 
 #[test]
 fn exact_probe_binds_canonical_file_and_strict_build_without_authorizing_work() {
-    for kind in [ExistingToolKind::Benchmark, ExistingToolKind::QuickCheck] {
+    for kind in [
+        ExistingToolKind::Benchmark,
+        ExistingToolKind::QuickCheck,
+        ExistingToolKind::FitProfileCapture,
+    ] {
         let boundary = FakeBoundary::successful(kind);
         let receipt = probe_existing_tool(&request(kind), &boundary).unwrap();
         assert_eq!(receipt.kind(), kind);

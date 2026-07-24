@@ -11,12 +11,37 @@
   result DTO, lifecycle identity, plan IDs, exact measurement kinds and sample
   counts, and exact check IDs/criteria match the retained prepared plan.
 - **Research limit:** U27 collection/derivation fixtures are
-  `synthetic-machinery-only`. Caller-asserted local measurement is blocked until
-  a trusted capture boundary exists, and production readiness remains
-  unavailable.
+  `synthetic-machinery-only`. Caller-asserted local measurement remains
+  blocked; only the separately bounded runner receipt may enter the raw
+  collection bridge. Production readiness remains unavailable.
 - **Limits:** This records the reversible implementation boundary; it does not
   approve a production M-F policy, execute a model, claim T7 isolation, or
   complete website/CLI/native user gates.
+
+## 2026-07-23 — Implement U27 as a bounded exact-scope runner capture
+
+- **Decision:** The runner may prepare and execute only an explicitly selected
+  existing `llama-fit-params` executable against one hash-verified GGUF
+  artifact after imported M-E admission, M-D confirmation and M-I selection
+  are retained behind opaque M-O handles. The Windows-first protocol fixes all
+  allocation-affecting llama.cpp flags, uses full CUDA offload, captures the
+  selected context and four times that context, and requires three completed
+  agreeing observations at each context.
+- **Binding and permission:** The content-bound v1 receipt carries complete
+  candidate, compatibility, hardware, artifact and tool content plus canonical
+  SHA-256 bindings. Its one-use preview has no execution grant; a separate
+  explicit local-process acknowledgement consumes it. The desktop surface
+  verifies the returned receipt before display and labels it
+  `proposed-unreviewed`.
+- **Limits:** A receipt grants neither recommendation nor serving authority.
+  It does not select an artifact, infer missing runtime flags, download or
+  upload data, enable network capability, add child isolation, create a
+  capacity policy or review a profile manifest. No live U27 run is claimed
+  until a person selects an exact local artifact and performs the visible
+  consent action.
+- **Reversible:** Yes. The protocol is versioned and isolated behind M-O/M-P;
+  adding a future platform adapter or capture version cannot relax v1 identity,
+  consent, or no-authorization guarantees.
 
 ## 2026-07-23 — Advance the dependency-ready desktop M-P slice before website replacement
 

@@ -25,6 +25,7 @@
     "proof:mf-admission": "tsx --test research/mf-profile-admission/admission.test.ts research/mf-profile-admission/record-digest.test.ts && node --test research/mf-profile-admission/boundary.test.mjs",
     "proof:mf-collection-contract": "tsx --test research/mf-profile-collection/collection-contract.test.ts && node --test research/mf-profile-collection/boundary.test.mjs",
     "proof:mf-profile-derivation": "tsx --test research/mf-profile-collection/profile-derivation.test.ts",
+    "proof:mf-runner-capture": "tsx --test research/mf-profile-collection/trusted-capture.test.ts && node --test research/mf-profile-collection/trusted-capture.boundary.test.mjs",
     "proof:mf-policy-evaluation": "tsx --test research/mf-profile-collection/policy-sweep.test.ts",
     "proof:mf-production-readiness": "tsx --test research/mf-profile-collection/production-readiness.test.ts",
     "proof:mh": "tsc -p research/mh-portfolio/tsconfig.json && tsx --test research/mh-portfolio/portfolio.test.ts && node --test research/mh-portfolio/boundary.test.mjs",

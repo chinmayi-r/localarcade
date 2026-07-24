@@ -31,6 +31,7 @@ const MAX_PROMPT_BYTES: usize = 64 * 1024;
 pub enum ExistingEngineProgram {
     LlamaBench,
     LlamaCli,
+    LlamaFitParams,
 }
 
 impl ExistingEngineProgram {
@@ -38,6 +39,7 @@ impl ExistingEngineProgram {
         match self {
             Self::LlamaBench => "llama-bench.exe",
             Self::LlamaCli => "llama-cli.exe",
+            Self::LlamaFitParams => "llama-fit-params.exe",
         }
     }
 }
@@ -105,6 +107,31 @@ impl ExistingEngineProcessSpec {
         validate_quick_check_protocol_argv(&artifact, &invocation.argv)?;
         let value = Self {
             program: ExistingEngineProgram::LlamaCli,
+            executable,
+            artifact,
+            expected_executable_sha256,
+            expected_artifact_sha256,
+            invocation: Invocation::SealedProtocol(
+                invocation.argv.iter().map(OsString::from).collect(),
+            ),
+        };
+        value.validate_shape()?;
+        Ok(value)
+    }
+
+    /// Consume only the U27 fixed memory-component capture invocation. The
+    /// typed capture module owns construction; this process boundary repeats
+    /// the exact argv shape before any child is created.
+    pub(crate) fn from_fit_profile_capture_protocol(
+        executable: PathBuf,
+        artifact: PathBuf,
+        expected_executable_sha256: String,
+        expected_artifact_sha256: String,
+        invocation: &crate::fit_profile_capture::FitProfileCaptureInvocation,
+    ) -> Result<Self, ProcessBoundaryError> {
+        validate_fit_profile_capture_protocol_argv(&artifact, &invocation.argv)?;
+        let value = Self {
+            program: ExistingEngineProgram::LlamaFitParams,
             executable,
             artifact,
             expected_executable_sha256,
@@ -274,6 +301,48 @@ fn validate_quick_check_protocol_argv(
     if argv[3].len() > MAX_PROMPT_BYTES {
         return Err(ProcessBoundaryError::InvalidSpec(
             "quick-check prompt exceeds the process boundary".into(),
+        ));
+    }
+    Ok(())
+}
+
+#[allow(dead_code)] // invoked by the U27 capture service
+fn validate_fit_profile_capture_protocol_argv(
+    artifact: &Path,
+    argv: &[String],
+) -> Result<(), ProcessBoundaryError> {
+    const PAIRS: [&str; 11] = [
+        "-m", "-c", "-ngl", "-b", "-ub", "-ctk", "-ctv", "-t", "-fa", "-mmp", "-fitp",
+    ];
+    if argv.len() != 24
+        || argv[..22]
+            .chunks_exact(2)
+            .map(|pair| pair[0].as_str())
+            .ne(PAIRS)
+        || argv[1] != artifact.to_string_lossy()
+        || argv[5] != "999"
+        || argv[21] != "on"
+        || argv[22] != "--offline"
+        || argv[23] != "--log-disable"
+    {
+        return Err(ProcessBoundaryError::InvalidSpec(
+            "fit-profile capture argv is not the fixed supported shape".into(),
+        ));
+    }
+    for index in [3usize, 7, 9, 15] {
+        if argv[index].parse::<u64>().is_err() || argv[index] == "0" {
+            return Err(ProcessBoundaryError::InvalidSpec(
+                "fit-profile capture numeric value is invalid".into(),
+            ));
+        }
+    }
+    if !matches!(argv[11].as_str(), "f16" | "q8_0" | "q4_0")
+        || !matches!(argv[13].as_str(), "f16" | "q8_0" | "q4_0")
+        || !matches!(argv[17].as_str(), "on" | "off")
+        || !matches!(argv[19].as_str(), "0" | "1")
+    {
+        return Err(ProcessBoundaryError::InvalidSpec(
+            "fit-profile capture runtime argument is unsupported".into(),
         ));
     }
     Ok(())

@@ -42,25 +42,26 @@ complete user journey.
 
 ```text
 Internal foundations       █████████░  strong
-Typed module boundaries    ████████░░  substantial; production portfolio handoff is blocked by U27
-Desktop runner workflow    ████████░░  CI-proven controlled lifecycle; no live external-model or restart proof
-Website first slice        ███░░░░░░░  blocked by real portfolio data
+Typed module boundaries    ████████░░  substantial; trusted U27 capture is CI-proven, but no reviewed profile reaches M-H
+Desktop runner workflow    ████████░░  CI-proven verification and exact-memory capture; no selected-artifact live proof or restart proof
+Website first slice        ███░░░░░░░  blocked by reviewed portfolio data
 Private Arena              ░░░░░░░░░░  not started
 Public systems             deferred
 Complete user product      ████░░░░░░  not nearly as green as the core map looks
 ```
 
-“Blocked by real portfolio data” means that the replacement website cannot yet
-produce a production recommendation through M-F/M-H: the repository has no
-trusted hardware/profile capture boundary, reviewed production profile manifest
-and owner-approved concrete capacity policy for the new path. Synthetic
-fixtures prove the machinery only. The existing website and desktop fixture
-workflow remain available, but neither is evidence of a completed
-finder-to-live-verification product.
+“Blocked by reviewed portfolio data” means that the replacement website cannot
+yet produce a production recommendation through M-F/M-H. The runner can now
+create a content-bound, exact-scope U27 capture only after a user selects an
+artifact and existing `llama-fit-params` executable, but no such live receipt
+has been reviewed into a production profile manifest or paired with an
+owner-approved concrete capacity policy. Synthetic fixtures prove machinery
+only. The existing website and desktop fixture workflow remain available, but
+neither is evidence of a completed finder-to-live-verification product.
 
 The remaining critical path to the first usable V1 is:
 
-`trusted U27 capture and capacity policy → reviewed M-F profile → real M-H
+`one live U27 capture → reviewed M-F profile and capacity policy → real M-H
 portfolio → M-O finder handoff → W1–W4 website → one live external-model
 runner proof`.
 

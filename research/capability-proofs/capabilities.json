@@ -92,11 +92,11 @@
       "name": "Fit and performance assessment",
       "gates": {
         "core": { "status": "passed", "evidence": ["lib/fit/", "tests/fit-golden.test.ts", "tests/fit-memory-pools.test.ts", "lib/priors/"] },
-        "boundary": { "status": "passed", "evidence": ["lib/assessment/", "research/mf-profile-admission/", "research/mf-assessment/", "research/mf-profile-collection/"] },
-        "handoff": { "status": "partial", "evidence": ["research/mf-profile-admission/admission.test.ts", "research/mf-assessment/assessment-contract.test.ts", "research/mf-profile-collection/profile-derivation.test.ts", "research/mf-profile-collection/production-readiness.test.ts", "research/mh-portfolio/portfolio.test.ts"], "gap": "M-H consumes the synthetic M-A assessment and synthetic collection machinery is executable, but caller-asserted local measurement is blocked and no trusted capture boundary, reviewed production profile manifest or owner-approved concrete capacity policy exists." },
+        "boundary": { "status": "passed", "evidence": ["lib/assessment/", "research/mf-profile-admission/", "research/mf-assessment/", "research/mf-profile-collection/", "runner/src-tauri/src/fit_profile_capture.rs", "runner/src/fit-profile-capture-presentation.ts"] },
+        "handoff": { "status": "partial", "evidence": ["research/mf-profile-admission/admission.test.ts", "research/mf-assessment/assessment-contract.test.ts", "research/mf-profile-collection/profile-derivation.test.ts", "research/mf-profile-collection/trusted-capture.test.ts", "research/mf-profile-collection/production-readiness.test.ts", "research/mh-portfolio/portfolio.test.ts", "tests/runner-surface.test.ts"], "gap": "M-P can accept a content-bound U27 capture as proposed-unreviewed evidence, but no live selected-artifact receipt has been reviewed into a production profile manifest or paired with an owner-approved concrete capacity policy; M-H therefore still consumes only synthetic M-F data." },
         "userDemo": { "status": "not-applicable", "evidence": [], "gap": "Internal capability; requires a complete input-to-assessment demonstration." }
       },
-      "proofCommands": ["npm.cmd run proof:mf-admission", "npm.cmd run proof:mf", "npm.cmd run proof:mf-profile-derivation", "npm.cmd run proof:mf-production-readiness"]
+      "proofCommands": ["npm.cmd run proof:mf-admission", "npm.cmd run proof:mf", "npm.cmd run proof:mf-profile-derivation", "npm.cmd run proof:mf-runner-capture", "npm.cmd run proof:mf-production-readiness"]
     },
     {
       "id": "evidence-normalization",
@@ -117,7 +117,7 @@
       "gates": {
         "core": { "status": "passed", "evidence": ["lib/portfolio/", "research/mh-portfolio/portfolio.test.ts"] },
         "boundary": { "status": "passed", "evidence": ["lib/portfolio/types.ts", "research/mh-portfolio/portfolio.test.ts", "research/mh-portfolio/boundary.test.mjs"] },
-        "handoff": { "status": "partial", "evidence": ["research/mh-portfolio/fixtures.ts", "research/mh-portfolio/portfolio.test.ts", "research/mo-orchestration/orchestration.test.ts"], "gap": "Synthetic M-E/M-F/M-G inputs reach M-O, an M-A portfolio and exhaustive ledger, but U27 blocks real admitted M-F data and production surfaces still bypass M-O." },
+        "handoff": { "status": "partial", "evidence": ["research/mh-portfolio/fixtures.ts", "research/mh-portfolio/portfolio.test.ts", "research/mo-orchestration/orchestration.test.ts", "research/mf-profile-collection/trusted-capture.test.ts"], "gap": "Synthetic M-E/M-F/M-G inputs reach M-O, an M-A portfolio and exhaustive ledger. U27 can now produce only proposed-unreviewed exact-scope evidence; without a reviewed live M-F profile and capacity policy, no real portfolio may be emitted and production surfaces still bypass M-O." },
         "userDemo": { "status": "partial", "evidence": ["app/arena-app.tsx", "research/interface-proofs/cli.ts"], "gap": "Finder behavior can be exercised, but it bypasses the final contracts and M-O." }
       },
       "proofCommands": ["npm.cmd run proof:mh", "npm.cmd run proof:interfaces"]

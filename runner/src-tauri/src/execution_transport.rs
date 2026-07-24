@@ -8,6 +8,9 @@
 use crate::contracts::VerificationResult;
 use crate::execution_lifecycle::LifecycleSnapshotV1;
 use crate::execution_service::ExecutionService;
+use crate::fit_profile_capture::{
+    execute_prepared_fit_profile_capture, RunnerFitProfileCaptureReceiptV1,
+};
 use crate::preview_adapter::{parse_handle, PreviewAssembler};
 use serde::{Deserialize, Serialize};
 
@@ -24,6 +27,19 @@ pub struct StartVerificationExecutionInput {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct VerificationExecutionReferenceInput {
     pub execution_handle: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ExecuteFitProfileCaptureInput {
+    pub prepared_capture_handle: String,
+    pub acknowledge_local_process_execution: bool,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct FitProfileCaptureExecutionViewV1 {
+    pub receipt: RunnerFitProfileCaptureReceiptV1,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -74,6 +90,27 @@ impl RunnerProcessState {
             execution_handle: receipt.authorization.execution_id().to_string(),
             snapshot: receipt.snapshot,
         })
+    }
+
+    /// U27 has its own explicit consent boundary. The opaque preview handle
+    /// is consumed before the local process begins, so stale or replayed
+    /// previews cannot run a later capture.
+    pub(crate) fn execute_fit_profile_capture(
+        &mut self,
+        input: ExecuteFitProfileCaptureInput,
+    ) -> Result<FitProfileCaptureExecutionViewV1, Vec<String>> {
+        if !input.acknowledge_local_process_execution {
+            return Err(vec![
+                "u27.capture.local-process-acknowledgement-required".into()
+            ]);
+        }
+        let handle = parse_handle(&input.prepared_capture_handle).map_err(|error| vec![error])?;
+        let prepared = self
+            .preview
+            .take_prepared_fit_profile_capture(&handle)
+            .map_err(|error| vec![error])?;
+        let receipt = execute_prepared_fit_profile_capture(&prepared, true)?;
+        Ok(FitProfileCaptureExecutionViewV1 { receipt })
     }
 
     pub(crate) fn status(

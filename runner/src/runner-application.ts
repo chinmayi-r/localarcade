@@ -1,4 +1,8 @@
 import { createVerificationPlanRequestV1 } from "./verification-plan-policy-v1";
+import {
+  validateFitProfileCaptureForPresentation,
+  type FitProfileCaptureReceipt,
+} from "./fit-profile-capture-presentation";
 
 export type InvokePort = <T>(
   command: string,
@@ -77,6 +81,21 @@ export type VerificationPlanPreview = {
   grantsExecutionAuthorization: boolean;
 };
 
+export type FitProfileCapturePreview = {
+  preparedCaptureHandle: string;
+  captureId: string;
+  protocolId: "llama-fit-params-memory-breakdown-v1";
+  artifact: { path: string; sha256: string };
+  tool: { path: string; sha256: string };
+  contextTokens: number[];
+  repetitionsPerContext: number;
+  warnings: string[];
+  previewOnly: boolean;
+  grantsExecutionAuthorization: boolean;
+  grantsServingAuthorization: boolean;
+  grantsRecommendationAuthorization: boolean;
+};
+
 export type LifecycleSnapshot = {
   version: number;
   executionId: string;
@@ -150,6 +169,8 @@ export type RunnerSurfaceState = {
     | "inventory"
     | "plan"
     | "permission"
+    | "fit-capture-permission"
+    | "fit-capture-result"
     | "progress"
     | "result"
     | "failure";
@@ -163,7 +184,10 @@ export type RunnerSurfaceState = {
   selectionHandle?: string;
   benchmarkToolHandle?: string;
   quickCheckToolHandle?: string;
+  fitProfileCaptureToolHandle?: string;
   plan?: VerificationPlanPreview;
+  fitProfileCapture?: FitProfileCapturePreview;
+  fitProfileCaptureReceipt?: FitProfileCaptureReceipt;
   executionHandle?: string;
   lifecycle?: LifecycleSnapshot;
   result?: VerificationResult;
@@ -171,7 +195,7 @@ export type RunnerSurfaceState = {
 
 type ToolProbe = {
   toolHandle: string;
-  kind: "benchmark" | "quick-check";
+  kind: "benchmark" | "quick-check" | "fit-profile-capture";
   canonicalPath: string;
   sha256: string;
   sizeBytes: number;
@@ -513,6 +537,102 @@ export class RunnerApplication {
       this.#state.message =
         "Executable paths, hashes, and reported builds were checked. This is not execution authorization.";
     });
+  }
+
+  /**
+   * Seals a narrow, inspectable U27 capture plan from the already confirmed
+   * handoff, machine and artifact. It only probes the explicitly named tool;
+   * no process starts until the next explicit action.
+   */
+  async prepareFitProfileCapture(
+    fitProfileToolPath: string,
+    captureId: string,
+  ): Promise<RunnerSurfaceState> {
+    return this.#attempt(
+      "inventory",
+      "Checking the selected memory-capture tool without running it…",
+      async () => {
+        if (!fitProfileToolPath.trim()) {
+          throw ["m-p.capture.tool-path-required"];
+        }
+        if (!captureId.trim()) throw ["m-p.capture.capture-id-required"];
+        const tool = await this.#invoke<ToolProbe>(
+          "probe_existing_tool_preview",
+          { kind: "fit-profile-capture", selectedPath: fitProfileToolPath },
+        );
+        this.#assertToolProbe(tool, "fit-profile-capture");
+        const preview = await this.#invoke<FitProfileCapturePreview>(
+          "prepare_fit_profile_capture_preview",
+          {
+            request: {
+              importHandle: this.#required("importHandle"),
+              hardwareHandle: this.#required("hardwareHandle"),
+              selectionHandle: this.#required("selectionHandle"),
+              toolHandle: tool.toolHandle,
+              captureId,
+            },
+          },
+        );
+        this.#assertFitProfileCapturePreview(preview);
+        this.#state.fitProfileCaptureToolHandle = tool.toolHandle;
+        this.#state.fitProfileCapture = structuredClone(preview);
+        this.#state.stage = "fit-capture-permission";
+        this.#state.status = "ready";
+        this.#state.reasonCodes = preview.warnings;
+        this.#state.message =
+          "Review the exact local memory capture. It produces proposed evidence, not a recommendation.";
+      },
+    );
+  }
+
+  /**
+   * Crosses the independent one-use local-process boundary for the sealed
+   * U27 capture plan. The surface supplies no paths, argv, timestamps or
+   * observed values; it validates the returned content-bound receipt.
+   */
+  async executeFitProfileCapture(
+    acknowledgeLocalProcessExecution: boolean,
+  ): Promise<RunnerSurfaceState> {
+    return this.#attempt(
+      "fit-capture-permission",
+      "Starting the explicitly approved local memory capture…",
+      async () => {
+        if (!acknowledgeLocalProcessExecution) {
+          throw ["m-p.capture.local-process-acknowledgement-required"];
+        }
+        const preparedCaptureHandle = this.#state.fitProfileCapture
+          ?.preparedCaptureHandle;
+        if (!preparedCaptureHandle) {
+          throw ["m-p.capture.prepared-preview-required"];
+        }
+        const response = await this.#invoke<{ receipt: unknown }>(
+          "execute_fit_profile_capture",
+          {
+            request: {
+              preparedCaptureHandle,
+              acknowledgeLocalProcessExecution,
+            },
+          },
+        );
+        const root = runtimeRecord(
+          response,
+          "m-p.capture.execution-response-invalid",
+        );
+        if (!hasOnlyKeys(root, ["receipt"])) {
+          throw ["m-p.capture.execution-response-invalid"];
+        }
+        const receipt = validateFitProfileCaptureForPresentation(root.receipt);
+        if (receipt.kind !== "ok") {
+          throw ["m-p.capture.receipt-invalid", ...receipt.issues];
+        }
+        this.#state.fitProfileCaptureReceipt = structuredClone(receipt.value);
+        this.#state.stage = "fit-capture-result";
+        this.#state.status = "partial";
+        this.#state.reasonCodes = ["u27.capture.proposed-unreviewed"];
+        this.#state.message =
+          "Memory components were captured under the displayed exact setup. They remain proposed-unreviewed evidence, not a recommendation or serving authorization.";
+      },
+    );
   }
 
   async prepareVerification(): Promise<RunnerSurfaceState> {
@@ -943,6 +1063,51 @@ export class RunnerApplication {
       typeof value.childNetworkIsolationEnforced !== "boolean"
     ) {
       throw ["m-p.tools.probe-preview-invalid"];
+    }
+  }
+
+  #assertFitProfileCapturePreview(value: FitProfileCapturePreview): void {
+    const root = runtimeRecord(value, "m-p.capture.preview-invalid");
+    const identity = (item: unknown): boolean => {
+      const record = runtimeRecord(item, "m-p.capture.preview-invalid");
+      return hasOnlyKeys(record, ["path", "sha256"])
+        && nonemptyString(record.path)
+        && lowercaseSha256(record.sha256);
+    };
+    const contexts = value.contextTokens;
+    if (
+      !hasOnlyKeys(root, [
+        "preparedCaptureHandle",
+        "captureId",
+        "protocolId",
+        "artifact",
+        "tool",
+        "contextTokens",
+        "repetitionsPerContext",
+        "warnings",
+        "previewOnly",
+        "grantsExecutionAuthorization",
+        "grantsServingAuthorization",
+        "grantsRecommendationAuthorization",
+      ]) ||
+      !nonemptyString(value.preparedCaptureHandle) ||
+      !nonemptyString(value.captureId) ||
+      value.protocolId !== "llama-fit-params-memory-breakdown-v1" ||
+      !identity(value.artifact) ||
+      !identity(value.tool) ||
+      !Array.isArray(contexts) ||
+      contexts.length !== 2 ||
+      contexts.some((context) =>
+        !Number.isSafeInteger(context) || context <= 0) ||
+      contexts[1] !== contexts[0]! * 4 ||
+      value.repetitionsPerContext !== 3 ||
+      !stringList(value.warnings) ||
+      !value.previewOnly ||
+      value.grantsExecutionAuthorization ||
+      value.grantsServingAuthorization ||
+      value.grantsRecommendationAuthorization
+    ) {
+      throw ["m-p.capture.preview-invalid"];
     }
   }
 
