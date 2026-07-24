@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Local Arcade's explicit-permission desktop verification tool."
+      content="Find and check local AI models on this computer."
     />
     <link rel="stylesheet" href="/src/styles.css" />
-    <title>Local Arcade Runner</title>
+    <title>Local Arcade</title>
     <script type="module" src="/src/main.ts" defer></script>
   </head>
   <body data-stage="welcome">
@@ -16,10 +16,10 @@
     <main class="shell">
       <header class="app-header">
         <div>
-          <p class="eyebrow">Local-only verification</p>
-          <h1>Local Arcade Runner</h1>
+          <p class="eyebrow">Local Arcade</p>
+          <h1>Find what works on this PC</h1>
         </div>
-        <span class="local-badge">No network capability</span>
+        <span class="local-badge">Runs locally</span>
       </header>
 
       <div
@@ -29,32 +29,33 @@
         aria-live="polite"
         tabindex="-1"
       ></div>
-      <details class="reason-panel">
-        <summary>Reason codes and expert state</summary>
+      <details id="technical-status" class="reason-panel" hidden>
+        <summary>Technical details</summary>
         <pre id="reason-codes">None.</pre>
       </details>
 
       <section data-stage-section="welcome" class="workspace">
         <div class="section-heading">
-          <span class="step">1</span>
           <div>
-            <h2>Check a model on this computer</h2>
+            <h2>See what this computer can run</h2>
             <p>
-              Start with a read-only hardware check. You will review the result
-              before choosing any model folder, and nothing runs automatically.
+              Local Arcade checks your processor, memory, and graphics hardware
+              so it can help you choose a local model. It will not open model
+              files or run anything yet.
             </p>
           </div>
         </div>
         <button id="manual-start-button" class="primary" type="button">
-          Check this computer
+          Check my PC
         </button>
-        <details>
-          <summary>Advanced: import a website recommendation</summary>
+        <p class="privacy-note">Read-only hardware check · stays on this PC</p>
+        <details class="advanced-panel">
+          <summary>Already chose a model on the Local Arcade website?</summary>
           <p>
             If the Local Arcade website gave you a runner-import JSON bundle,
             paste it here. Most people can ignore this option.
           </p>
-          <label for="bundle-json">Runner-import bundle JSON</label>
+          <label for="bundle-json">Paste the recommendation file contents</label>
           <textarea
             id="bundle-json"
             rows="8"
@@ -63,154 +64,157 @@
           ></textarea>
           <label class="check">
             <input id="confirm-expired" type="checkbox" />
-            Inspect an expired handoff after showing its warning
+            Continue with this older recommendation after showing its warning
           </label>
           <p id="expired-warning" class="callout warning" hidden>
             Expiry is informational only. Importing an expired handoff never
             grants permission to execute.
           </p>
           <button id="import-button" type="button">
-            Validate imported recommendation
+            Open recommendation
           </button>
         </details>
       </section>
 
       <section data-stage-section="hardware" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step">2</span>
           <div>
-            <h2>Confirm this machine</h2>
+            <h2>This PC</h2>
             <p>
-              Detection is read-only. If you imported a recommendation, its
-              hardware facts remain visible when they disagree with this PC.
+              Check that this looks right before Local Arcade looks for models
+              you already own.
             </p>
           </div>
         </div>
         <button id="detect-button" class="primary" type="button">
-          Compare this computer with the imported recommendation
+          Check this PC against the recommendation
         </button>
-        <dl class="summary-grid">
-          <div><dt>Confirmation state</dt><dd id="hardware-state">Not detected</dd></div>
-        </dl>
-        <pre id="hardware-summary" class="result-block">No hardware result.</pre>
-        <pre id="hardware-differences" class="result-block">No detection result.</pre>
-        <label class="check">
+        <p id="hardware-state" class="status-label">Waiting for hardware check</p>
+        <pre id="hardware-summary" class="hardware-card">No hardware result.</pre>
+        <div id="hardware-review" class="review-box">
+          <pre id="hardware-differences">No detection result.</pre>
+        </div>
+        <label id="hardware-ack-row" class="check">
           <input id="ack-hardware" type="checkbox" disabled />
-          I reviewed every listed hardware difference
+          <span id="hardware-ack-label">I reviewed the hardware note above</span>
         </label>
-        <button id="confirm-hardware-button" type="button">
-          Confirm this hardware target
+        <button id="confirm-hardware-button" class="primary" type="button">
+          Continue
         </button>
       </section>
 
       <section data-stage-section="inventory" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step">3</span>
           <div>
-            <h2>Select an owned artifact</h2>
+            <h2>Models on this PC</h2>
             <p>
-              The scan is read-only and local. Only an exact verified artifact
-              can continue; size-only candidates remain unavailable.
+              Look in common local-model folders. Local Arcade only reads file
+              names and sizes during this step.
             </p>
           </div>
         </div>
-        <label for="extra-dir">Optional additional local folder</label>
-        <input id="extra-dir" type="text" placeholder="G:\Models" />
         <button id="scan-button" class="primary" type="button">
-          Scan named model stores
+          Find my models
         </button>
+        <details class="advanced-panel folder-panel">
+          <summary>Look in another folder</summary>
+          <label for="extra-dir">Model folder</label>
+          <input id="extra-dir" type="text" placeholder="G:\Models" />
+        </details>
         <p id="inventory-empty" class="empty-state">
-          No inventory scan has run.
+          No scan yet. Local Arcade will check common Ollama and LM Studio
+          folders, plus the folder above if you add one.
         </p>
-        <pre id="inventory-results" class="result-block"></pre>
-        <label for="artifact-path">Verified artifact</label>
+        <pre id="inventory-results" class="model-list"></pre>
+        <label for="artifact-path">Choose a model</label>
         <select id="artifact-path">
-          <option value="">Choose a verified artifact</option>
+          <option value="">Choose a model found on this PC</option>
         </select>
-        <button id="select-artifact-button" type="button">
-          Verify and bind selected artifact
+        <button id="select-artifact-button" type="button" disabled>
+          Use this model
         </button>
 
-        <div class="divider"></div>
-        <h3>Exact memory capture (optional)</h3>
-        <p>
-          Capture the memory components for this one verified artifact and
-          confirmed machine with an existing <code>llama-fit-params</code>
-          executable. This is six bounded local observations: three at the
-          selected context and three at four times that context. It is not a
-          recommendation, a capacity policy, or serving permission.
-        </p>
-        <label for="fit-profile-path">Full path to llama-fit-params.exe</label>
-        <input id="fit-profile-path" type="text" placeholder="C:\Tools\llama-fit-params.exe" />
-        <label for="capture-context">Context for this initial measurement</label>
-        <select id="capture-context">
-          <option value="4096">4K — short chat and simple tasks</option>
-          <option value="8192" selected>8K — everyday chat and coding</option>
-          <option value="16384">16K — longer documents and sessions</option>
-        </select>
-        <button id="prepare-capture-button" type="button">
-          Review exact memory capture
-        </button>
+        <details id="model-check-panel" class="advanced-panel model-check-panel" hidden>
+          <summary>Check this model</summary>
+          <div class="advanced-section">
+            <h3>Measure memory use</h3>
+            <p>
+              For the currently supported llama.cpp setup, Local Arcade can
+              measure how much memory this model uses. You need an existing
+              <code>llama-fit-params.exe</code>; nothing is downloaded.
+            </p>
+            <label for="fit-profile-path">llama-fit-params.exe location</label>
+            <input id="fit-profile-path" type="text" placeholder="C:\Tools\llama-fit-params.exe" />
+            <label for="capture-context">How you plan to use it</label>
+            <select id="capture-context">
+              <option value="4096">Short chat and simple tasks (4K)</option>
+              <option value="8192" selected>Everyday chat and coding (8K)</option>
+              <option value="16384">Longer documents and sessions (16K)</option>
+            </select>
+            <button id="prepare-capture-button" type="button">
+              Review memory check
+            </button>
+          </div>
 
-        <div class="divider"></div>
-        <h3>Existing llama.cpp tools</h3>
-        <p>
-          Each executable is hashed and its reported build is checked. This
-          inspection is not proof of the backend selected during a later run.
-        </p>
-        <label for="benchmark-path">Full path to llama-bench.exe</label>
-        <input id="benchmark-path" type="text" placeholder="G:\llama\llama-bench.exe" />
-        <label for="quick-check-path">Full path to llama-cli.exe</label>
-        <input id="quick-check-path" type="text" placeholder="G:\llama\llama-cli.exe" />
-        <button id="probe-tools-button" type="button">
-          Inspect both executable identities
-        </button>
-        <button id="prepare-plan-button" class="primary" type="button">
-          Prepare verification preview
-        </button>
+          <div class="advanced-section">
+            <h3>Run compatibility checks</h3>
+            <p>
+              Use existing llama.cpp tools to measure speed and run three small
+              mechanical checks. Local Arcade checks both programs before use.
+            </p>
+            <label for="benchmark-path">llama-bench.exe location</label>
+            <input id="benchmark-path" type="text" placeholder="G:\llama\llama-bench.exe" />
+            <label for="quick-check-path">llama-cli.exe location</label>
+            <input id="quick-check-path" type="text" placeholder="G:\llama\llama-cli.exe" />
+            <button id="probe-tools-button" type="button">
+              Check these programs
+            </button>
+            <button id="prepare-plan-button" class="primary" type="button">
+              Review compatibility check
+            </button>
+          </div>
+        </details>
       </section>
 
       <section data-stage-section="plan permission" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step">4</span>
           <div>
-            <h2>Review the exact verification plan</h2>
+            <h2>Ready to check this model</h2>
             <p>
-              One warmup and three measured benchmark runs occur first. Three
-              fixed mechanical checks follow only after admitted load evidence.
+              Local Arcade will load the model, measure it three times, then run
+              three small compatibility checks.
             </p>
           </div>
         </div>
         <pre id="plan-summary" class="result-block">No plan prepared.</pre>
         <details>
-          <summary>Exact plan, hashes, settings, and warnings</summary>
+          <summary>Technical plan, file hashes, and settings</summary>
           <pre id="plan-expert"></pre>
         </details>
         <div class="permission-box">
-          <h3>Execution permission</h3>
+          <h3>Before starting</h3>
           <label class="check">
             <input id="consent-process" type="checkbox" />
-            Allow these checked local executables to start
+            Allow the checked llama.cpp programs to start
           </label>
           <label class="check">
             <input id="consent-load" type="checkbox" />
-            Allow the selected model to load
+            Allow this model to load into memory
           </label>
           <label class="check">
             <input id="consent-busy" type="checkbox" />
-            I understand this machine may be busy
+            I understand the PC may be slow or busy during the check
           </label>
         </div>
         <button id="start-button" class="primary danger-aware" type="button">
-          Run this verification
+          Start check
         </button>
       </section>
 
       <section data-stage-section="fit-capture-permission" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step">4</span>
           <div>
-            <h2>Review exact memory capture</h2>
+            <h2>Ready to measure memory use</h2>
             <p>
               The runner will read the selected model and start only the
               checked <code>llama-fit-params</code> executable. No download,
@@ -220,26 +224,26 @@
         </div>
         <pre id="capture-summary" class="result-block">No capture prepared.</pre>
         <details>
-          <summary>Exact command protocol, hashes, contexts, and warnings</summary>
+          <summary>Technical command, file hashes, and settings</summary>
           <pre id="capture-expert"></pre>
         </details>
         <div class="permission-box">
-          <h3>Local process permission</h3>
+          <h3>Before starting</h3>
           <label class="check">
             <input id="consent-capture" type="checkbox" />
-            Allow this checked local executable to capture memory components
+            Allow the checked llama.cpp program to load this model and measure
+            memory use
           </label>
         </div>
         <button id="execute-capture-button" class="primary danger-aware" type="button">
-          Capture exact memory components
+          Start memory check
         </button>
       </section>
 
       <section data-stage-section="progress" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step active">5</span>
           <div>
-            <h2>Verification in progress</h2>
+            <h2>Checking your model</h2>
             <p id="progress-label">Waiting for runner progress…</p>
           </div>
         </div>
@@ -257,9 +261,8 @@
 
       <section data-stage-section="result failure" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step">6</span>
           <div>
-            <h2 id="result-heading">Verification result</h2>
+            <h2 id="result-heading">Model check result</h2>
             <p>
               Measurements and mechanical checks remain separate. Missing or
               failed work is never converted into a score.
@@ -268,33 +271,31 @@
         </div>
         <pre id="result-summary" class="result-block">No terminal result.</pre>
         <details>
-          <summary>Exact normalized result and provenance</summary>
+          <summary>Technical results and evidence details</summary>
           <pre id="result-expert"></pre>
         </details>
       </section>
 
       <section data-stage-section="fit-capture-result" class="workspace" hidden>
         <div class="section-heading">
-          <span class="step">5</span>
           <div>
-            <h2>Memory capture result</h2>
+            <h2>Memory check result</h2>
             <p>
-              The receipt binds the complete captured content to this artifact,
-              tool, hardware target, and runtime. Review is still required
-              before it can influence a portfolio or recommendation.
+              These measurements apply only to this model, this PC, and the
+              settings shown below.
             </p>
           </div>
         </div>
         <pre id="capture-result-summary" class="result-block">No capture result.</pre>
         <details>
-          <summary>Exact receipt and memory components</summary>
+          <summary>Technical measurements and file identity</summary>
           <pre id="capture-result-expert"></pre>
         </details>
       </section>
 
       <footer>
-        Local Arcade does not download models, upload results, or provide a
-        general prompt runner in this checkpoint.
+        Nothing leaves this PC. This test build does not download models or
+        upload results.
       </footer>
     </main>
   </body>

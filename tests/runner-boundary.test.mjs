@@ -231,3 +231,18 @@ test("M-P hides imported-hardware comparison during the direct local journey", a
     /#confirm-hardware-button"\)\.disabled =\s*evaluation\.state === "blocked" \|\|\s*evaluation\.state === "unavailable"/,
   );
 });
+
+test("M-P presents the runner as a guided local utility, not a contract harness", async () => {
+  const html = await readFile(new URL("../runner/index.html", import.meta.url), "utf8");
+  assert.match(html, /Check my PC/);
+  assert.match(html, /Find my models/);
+  assert.match(html, /Use this model/);
+  assert.match(html, /<summary>Check this model<\/summary>/);
+  assert.match(
+    html,
+    /<summary>Already chose a model on the Local Arcade website\?<\/summary>/,
+  );
+  assert.doesNotMatch(html, />Select an owned artifact</);
+  assert.doesNotMatch(html, />Verify and bind selected artifact</);
+  assert.doesNotMatch(html, />Reason codes and expert state</);
+});

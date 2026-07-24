@@ -1,5 +1,37 @@
 # Decisions
 
+## 2026-07-24 — Apply llmfit's immediate-utility hierarchy to the desktop shell
+
+- **Decision:** The ordinary desktop path is presented as
+  **Check my PC → review this PC → find my models → choose one → check it**.
+  Internal records, hashes, protocols, reason codes and tool mechanics remain
+  available through progressive disclosure, but they are not the navigation
+  or primary vocabulary.
+- **Upstream evidence:** `AlexsJones/llmfit` main commit
+  `3c8c611bad8222430ae6e302ee04ca9501b9d5c9` was inspected on 2026-07-24.
+  Its desktop app opens with detected CPU/RAM/GPU facts and a model
+  compatibility list; model details open on demand. Its TUI similarly makes
+  detected hardware and useful models the default view while planning,
+  downloads, benchmarking, community results and advanced configuration are
+  secondary modes.
+- **Borrowed principles:** immediate utility; hardware summarized before
+  mechanics; choices before configuration internals; one obvious next action;
+  plain-language empty and failure states; details on demand.
+- **Not copied:** llmfit branding, layout, components, automatic launch-time
+  permission, composite score, broad ranking claims, network/provider access,
+  downloads or community leaderboard. Local Arcade retains its Forest
+  foundation and stronger M-O permission and identity boundaries.
+- **Honesty boundary:** The runner cannot yet show llmfit's broad populated
+  compatibility list because Local Arcade has no reviewed real M-F/M-H
+  portfolio for that surface. It shows only owned artifacts admitted by the
+  current local registry and leaves missing coverage visible.
+- **Why:** The prior numbered shell was a useful interface proof but required a
+  person to understand module boundaries such as artifact binding and
+  authority receipts. Those remain engineering responsibilities, not user
+  jobs.
+- **Reversible:** Yes. This is an M-P presentation change over the unchanged
+  M-O facade and contracts.
+
 ## 2026-07-23 — Scope a single CUDA target independently of excluded display adapters
 
 - **Decision:** When detection finds exactly one materially complete CUDA

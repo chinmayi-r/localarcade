@@ -340,3 +340,171 @@ footer {
     transition: none !important;
   }
 }
+
+/* Utility-first shell: machine facts and the next useful action are primary;
+   configuration mechanics stay subordinate. */
+.configuration-field {
+  opacity: 0.16;
+}
+
+.shell {
+  width: min(1080px, calc(100% - 40px));
+  padding-top: 18px;
+}
+
+.app-header {
+  padding: 0 2px 16px;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+h2 {
+  font-size: 1.35rem;
+}
+
+.local-badge {
+  align-self: center;
+  border-color: rgb(111 155 82 / 45%);
+  background: var(--la-forest-soft);
+}
+
+.state-banner {
+  margin: 12px 0 0;
+  border: 0;
+  border-radius: 0;
+  border-left: 3px solid var(--la-lavender);
+  background: transparent;
+  color: var(--la-muted);
+}
+
+.reason-panel {
+  margin: 4px 0 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.8rem;
+}
+
+.workspace {
+  min-height: 260px;
+  padding: 30px 2px;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--la-line);
+  background: transparent;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading p {
+  margin-bottom: 0;
+}
+
+button {
+  min-height: 42px;
+}
+
+button.primary {
+  border-color: var(--la-forest);
+  background: var(--la-forest);
+  color: #0d1209;
+}
+
+.privacy-note {
+  margin: 8px 0 24px;
+  font-size: 0.78rem;
+}
+
+.status-label {
+  display: inline-flex;
+  margin: 0 0 10px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--la-forest-soft);
+  color: var(--la-sage);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.hardware-card {
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--la-line);
+  border-radius: 8px;
+  background: var(--la-surface);
+  color: var(--la-text);
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.review-box {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-left: 3px solid var(--la-tobacco);
+  background: var(--la-raised);
+  color: var(--la-muted);
+}
+
+.review-box pre {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+}
+
+.advanced-panel {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--la-line);
+  border-radius: 6px;
+  background: rgb(23 26 17 / 65%);
+  color: var(--la-muted);
+}
+
+.advanced-panel > summary {
+  cursor: pointer;
+  color: var(--la-text);
+  font-weight: 600;
+}
+
+.folder-panel {
+  max-width: 620px;
+}
+
+.model-list {
+  margin: 14px 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--la-muted);
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+}
+
+.advanced-section {
+  padding-top: 18px;
+}
+
+.advanced-section + .advanced-section {
+  margin-top: 20px;
+  border-top: 1px solid var(--la-line);
+}
+
+.permission-box {
+  max-width: 720px;
+}
+
+@media (max-width: 620px) {
+  .shell {
+    width: min(100% - 20px, 1080px);
+  }
+
+  .workspace {
+    padding: 22px 2px;
+  }
+
+  .local-badge {
+    align-self: flex-start;
+  }
+}

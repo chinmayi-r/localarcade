@@ -856,7 +856,7 @@ test("M-P keeps an empty inventory empty and does not fabricate a selection", as
   assert.equal(state.status, "ready");
   assert.deepEqual(state.inventory?.result.data.artifacts, []);
   assert.equal(state.selectionHandle, undefined);
-  assert.match(state.message, /No supported local model artifact/);
+  assert.match(state.message, /No supported models were found/);
 });
 
 test("M-P hashes only an explicitly selected size candidate and preserves preview authority", async () => {
@@ -924,7 +924,7 @@ test("M-P hashes only an explicitly selected size candidate and preserves previe
   );
   assert.equal(state.status, "ready");
   assert.equal(state.selectionHandle, "selection-hashed");
-  assert.match(state.message, /explicitly selected file was hashed/);
+  assert.match(state.message, /Model file checked and ready/);
   assert.deepEqual(payloads, [
     {
       importHandle: "import-1",

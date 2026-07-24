@@ -107,6 +107,16 @@ only to excluded adapters and disables confirmation for genuinely blocked
 states. The exact owner-machine regression, surface and boundary suites cover
 the correction. This does not admit missing or multiple CUDA targets.
 
+The next owner review found that the corrected mechanics were still presented
+as a numbered contract harness. The M-P usability correction adopts the
+immediate-utility hierarchy verified against llmfit main commit `3c8c611`:
+check this PC, show understandable machine facts, find owned models, choose one,
+then reveal model checks. Website-import JSON, named folders, executable paths,
+hashes, protocols and reason codes are secondary disclosures. The M-O calls,
+separate consent actions and fail-closed behavior are unchanged. This improves
+the owned-model verification user gate; it does not claim the still-blocked
+broad real M-F/M-H compatibility portfolio.
+
 The packaging/live-protocol checkpoint found and corrected a real
 fixture-to-tool mismatch: `llama-fit-params` build 10061 uses `--mmap`, not the
 `llama-bench` `-mmp 1` spelling. Manual capture is now pinned to the exact

@@ -300,13 +300,39 @@ export function statusForReasons(reasons: string[]): SurfaceStatus {
   return "error";
 }
 
+function messageForReasons(reasons: string[]): string {
+  const joined = reasons.join(" ").toLowerCase();
+  if (joined.includes("selection-required")) {
+    return "Choose a model before continuing.";
+  }
+  if (joined.includes("scan-required")) {
+    return "Find models on this PC before choosing one.";
+  }
+  if (
+    joined.includes("tool-path-required") ||
+    joined.includes("both-paths-required")
+  ) {
+    return "Add the required llama.cpp program location before continuing.";
+  }
+  if (joined.includes("acknowledgement-required")) {
+    return "Review the note and check the confirmation box before continuing.";
+  }
+  if (joined.includes("confirmation-blocked")) {
+    return "This hardware needs more information before Local Arcade can continue.";
+  }
+  if (joined.includes("unavailable")) {
+    return "This option is not available for the current setup.";
+  }
+  return "We couldn't complete that step. Nothing else was started.";
+}
+
 export class RunnerApplication {
   readonly #invoke: InvokePort;
   #state: RunnerSurfaceState = {
     status: "idle",
     stage: "welcome",
     reasonCodes: [],
-    message: "Nothing is scanned or run until you choose it.",
+    message: "Ready to check this PC.",
   };
 
   constructor(invoke: InvokePort) {
@@ -347,10 +373,10 @@ export class RunnerApplication {
           reasonCodes: result.evaluation.reasonCodes,
           message:
             result.evaluation.state === "ready"
-              ? "Hardware detected. Review it before continuing."
+              ? "This PC is ready. Review the details before continuing."
               : result.evaluation.state === "confirmation-required"
-                ? "Hardware detected with facts that need your confirmation."
-                : "Hardware detection could not produce a usable local target.",
+                ? "This PC was detected. Review one detail before continuing."
+                : "Local Arcade needs more hardware information before it can continue.",
           journey: "manual",
           importHandle: result.flowHandle,
           hardwareEvaluation: structuredClone(result.evaluation),
@@ -450,7 +476,7 @@ export class RunnerApplication {
       this.#state.stage = "inventory";
       this.#state.status = "ready";
       this.#state.reasonCodes = [];
-      this.#state.message = "Hardware target confirmed. No model files have been opened.";
+      this.#state.message = "PC confirmed. No model files have been opened.";
     });
   }
 
@@ -466,8 +492,8 @@ export class RunnerApplication {
       this.#state.status =
         inventory.result.status === "ok" ? "ready" : inventory.result.status;
       this.#state.message = inventory.result.data.artifacts.length
-        ? "Inventory results are local and read-only. Select one verified artifact."
-        : "No supported local model artifact was found.";
+        ? "Models found. Choose one to continue."
+        : "No supported models were found in the folders checked.";
     });
   }
 
@@ -546,8 +572,8 @@ export class RunnerApplication {
       this.#state.status = "ready";
       this.#state.message =
         artifact.resolution.status === "candidateBySize"
-          ? "The explicitly selected file was hashed and exactly matched the promoted artifact."
-          : "Exact artifact identity verified for this handoff.";
+          ? "Model file checked and ready."
+          : "Model selected and ready.";
     });
   }
 
@@ -862,7 +888,7 @@ export class RunnerApplication {
       const reasons = reasonCodes(error);
       this.#state.status = statusForReasons(reasons);
       this.#state.reasonCodes = reasons;
-      this.#state.message = "This step could not continue. No later permission was granted.";
+      this.#state.message = messageForReasons(reasons);
     }
     return this.snapshot();
   }

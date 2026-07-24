@@ -12,11 +12,11 @@ policy.
 
 Prefer the NSIS installer:
 
-`runner/src-tauri/target/release/bundle/nsis/Local Arcade Runner_0.1.1_x64-setup.exe`
+`runner/src-tauri/target/release/bundle/nsis/Local Arcade Runner_0.1.2_x64-setup.exe`
 
 The MSI alternative is:
 
-`runner/src-tauri/target/release/bundle/msi/Local Arcade Runner_0.1.1_x64_en-US.msi`
+`runner/src-tauri/target/release/bundle/msi/Local Arcade Runner_0.1.2_x64_en-US.msi`
 
 These local artifacts are intentionally unsigned. Windows may show an
 unrecognized-app warning. Do not redistribute them as a trusted public release;
@@ -27,12 +27,15 @@ Version `0.1.1` corrects the integrated-display-adapter confirmation defect in
 the earlier `0.1.0` owner-test package. Close the earlier runner before
 installing this package.
 
+Version `0.1.2` replaces the numbered developer harness with the guided
+**Check my PC → find my models → choose one → check it** desktop journey.
+
 Validated SHA-256 values for this test build:
 
 ```text
-NSIS  141b7b6be38233933fb7856738218ad8430c2a4c85e46b5a5bdd004726ee25f4
-MSI   c9e3cbe4b23892eaba8af022b6ea79eb3a03ffe425e120d95013bab1bcc7d35c
-EXE   c4efa05473eb87a45a079a2897f66b58382367ac4881c76179fbd601c67e0f52
+NSIS  e2d0b5ee106d47f49a2b481682a4f5d56415a6e1c07351f559bcbe04b30a0cd9
+MSI   53fd3199f12e4f68184f01c4ceed8507b6b6ab9567a1cafe1a4d5a8aeb0792c7
+EXE   d5567021e0149177bb84d859cd07e40a20d42d00ad9d342155b8b10ec4b374ac
 ```
 
 ## Test the direct local journey on this machine

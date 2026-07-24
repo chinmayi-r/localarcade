@@ -34,6 +34,36 @@ function textList(values: string[]): string {
   return values.length ? values.join("\n") : "None.";
 }
 
+function hardwareStateLabel(
+  state: NonNullable<RunnerSurfaceState["hardwareEvaluation"]>["state"],
+): string {
+  switch (state) {
+    case "ready":
+      return "Ready";
+    case "confirmation-required":
+      return "Please review one detail";
+    case "blocked":
+      return "Needs more hardware information";
+    case "unavailable":
+      return "Hardware check unavailable";
+  }
+}
+
+function inventoryStatusLabel(
+  status: InventoryArtifact["resolution"]["status"],
+): string {
+  switch (status) {
+    case "verified":
+      return "Ready to check";
+    case "candidateBySize":
+      return "Found · one-time file check needed";
+    case "ambiguousIdentity":
+      return "Needs review";
+    case "unavailable":
+      return "Not supported";
+  }
+}
+
 function expertJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
@@ -70,18 +100,14 @@ function renderHardwareTarget(value: Record<string, unknown> | null): string {
 
 function renderInventory(state: RunnerSurfaceState): void {
   const select = element<HTMLSelectElement>("#artifact-path");
-  select.replaceChildren(new Option("Choose a verified artifact", ""));
+  select.replaceChildren(new Option("Choose a model found on this PC", ""));
   const artifacts = state.inventory?.result.data.artifacts ?? [];
   for (const artifact of artifacts) {
     const selectable =
       artifact.resolution.status === "verified" ||
       artifact.resolution.status === "candidateBySize";
     const option = new Option(
-      `${artifact.label} — ${artifact.resolution.status}${
-        artifact.resolution.status === "candidateBySize"
-          ? " (explicit hash required)"
-          : ""
-      }`,
+      `${artifact.label} — ${inventoryStatusLabel(artifact.resolution.status)}`,
       artifact.path,
     );
     option.disabled = !selectable;
@@ -90,12 +116,20 @@ function renderInventory(state: RunnerSurfaceState): void {
   element("#inventory-empty").hidden = artifacts.length > 0;
   element("#inventory-results").textContent = artifacts.length
     ? artifacts.map(renderArtifact).join("\n")
-    : "No artifacts were returned. No model was substituted.";
+    : "No supported models were found in the folders checked.";
+  element<HTMLButtonElement>("#select-artifact-button").disabled =
+    select.value.length === 0;
+  const checkPanel = element<HTMLDetailsElement>("#model-check-panel");
+  checkPanel.hidden = !state.selectionHandle;
+  if (state.selectionHandle && checkPanel.dataset.revealed !== "true") {
+    checkPanel.open = true;
+    checkPanel.dataset.revealed = "true";
+  }
 }
 
 function renderArtifact(artifact: InventoryArtifact): string {
   const size = (artifact.fileSizeBytes / 2 ** 30).toFixed(2);
-  return `${artifact.resolution.status.toUpperCase()} · ${artifact.label} · ${size} GiB\n${artifact.path}`;
+  return `${artifact.label}\n${size} GiB · ${inventoryStatusLabel(artifact.resolution.status)}`;
 }
 
 function render(state: RunnerSurfaceState): void {
@@ -103,6 +137,7 @@ function render(state: RunnerSurfaceState): void {
   const banner = element("#state-banner");
   banner.dataset.status = state.status;
   banner.textContent = state.message;
+  banner.hidden = state.status === "idle";
   banner.setAttribute(
     "aria-live",
     state.status === "blocked" || state.status === "error"
@@ -117,6 +152,7 @@ function render(state: RunnerSurfaceState): void {
   }
   renderedStatus = state.status;
   element("#reason-codes").textContent = textList(state.reasonCodes);
+  element("#technical-status").hidden = state.reasonCodes.length === 0;
 
   for (const section of document.querySelectorAll<HTMLElement>("[data-stage-section]")) {
     const stages = section.dataset.stageSection?.split(" ") ?? [];
@@ -128,7 +164,7 @@ function render(state: RunnerSurfaceState): void {
 
   if (state.hardwareEvaluation) {
     const evaluation = state.hardwareEvaluation;
-    element("#hardware-state").textContent = evaluation.state;
+    element("#hardware-state").textContent = hardwareStateLabel(evaluation.state);
     element("#hardware-summary").textContent = renderHardwareTarget(
       evaluation.resolvedTarget,
     );
@@ -142,12 +178,21 @@ function render(state: RunnerSurfaceState): void {
       : evaluation.warnings.length
         ? evaluation.warnings.join("\n")
         : "No material differences.";
+    const acknowledgementRequired =
+      evaluation.state === "confirmation-required";
     element<HTMLInputElement>("#ack-hardware").disabled =
-      evaluation.state !== "confirmation-required";
+      !acknowledgementRequired;
     element<HTMLInputElement>("#ack-hardware").checked =
       evaluation.state === "ready";
     element<HTMLButtonElement>("#confirm-hardware-button").disabled =
       evaluation.state === "blocked" || evaluation.state === "unavailable";
+    element("#hardware-ack-row").hidden = !acknowledgementRequired;
+    element("#hardware-review").hidden =
+      evaluation.differences.length === 0 && evaluation.warnings.length === 0;
+    element("#hardware-ack-label").textContent =
+      state.journey === "manual"
+        ? "Use the one CUDA graphics card shown above for this check"
+        : "I reviewed the hardware difference shown above";
   }
   element("#detect-button").hidden = state.journey === "manual";
 
@@ -155,11 +200,10 @@ function render(state: RunnerSurfaceState): void {
 
   if (state.plan) {
     element("#plan-summary").textContent =
-      `Artifact: ${state.plan.artifact.path}\n` +
-      `SHA-256: ${state.plan.artifact.sha256}\n` +
-      `Benchmark tool: ${state.plan.benchmarkTool?.path ?? "unavailable"}\n` +
-      `Quick-check tool: ${state.plan.quickCheckTool?.path ?? "unavailable"}\n` +
-      "Order: benchmark first, then three fixed mechanical checks.";
+      `Model: ${state.plan.artifact.path}\n` +
+      `Speed measurement: ${state.plan.benchmarkTool ? "ready" : "unavailable"}\n` +
+      `Compatibility checks: ${state.plan.quickCheckTool ? "ready" : "unavailable"}\n` +
+      "The speed measurement runs first, followed by three small checks.";
     element("#plan-expert").textContent = expertJson(state.plan);
   }
 
@@ -171,20 +215,12 @@ function render(state: RunnerSurfaceState): void {
         ? (candidate.runtime as Record<string, unknown>)
         : {};
     element("#capture-summary").textContent =
-      `Capture: ${capture.captureId}\n` +
-      `Artifact: ${capture.artifact.path}\n` +
-      `Artifact SHA-256: ${capture.artifact.sha256}\n` +
-      `Tool: ${capture.tool.path}\n` +
-      `Tool SHA-256: ${capture.tool.sha256}\n` +
-      `Runtime build: ${String(runtime.engineBuild ?? "unavailable")}\n` +
-      `Backend: ${String(runtime.backend ?? "unavailable")}\n` +
-      `KV cache: ${JSON.stringify(runtime.kvCache ?? "unavailable")}\n` +
-      `GPU layers: ${JSON.stringify(runtime.gpuLayers ?? "unavailable")}\n` +
-      `Batch / micro-batch: ${String(runtime.batchSize ?? "unavailable")} / ${String(runtime.microBatchSize ?? "unavailable")}\n` +
-      `Configuration source: ${capture.configurationSource === "website-handoff" ? "website recommendation" : "visible local initial-capture policy v1"}\n` +
-      `Contexts: ${capture.contextTokens.join(", ")} tokens\n` +
-      `Repetitions: ${capture.repetitionsPerContext} per context\n` +
-      "Result: proposed-unreviewed exact-scope evidence only.";
+      `Model: ${capture.artifact.path}\n` +
+      `Runtime: llama.cpp ${String(runtime.engineBuild ?? "unavailable")}\n` +
+      `Graphics: ${String(runtime.backend ?? "unavailable")}\n` +
+      `Work sizes: ${capture.contextTokens.join(" and ")} tokens\n` +
+      `${capture.repetitionsPerContext} measurements at each work size\n` +
+      "This measures memory use only; it does not change or serve the model.";
     element("#capture-expert").textContent = expertJson(capture);
   }
 
@@ -195,11 +231,10 @@ function render(state: RunnerSurfaceState): void {
       0,
     );
     element("#capture-result-summary").textContent =
-      `Capture: ${receipt.captureId}\n` +
-      `Content SHA-256: ${receipt.contentHash}\n` +
-      `Contexts: ${receipt.contexts.map((item) => item.contextTokens).join(", ")} tokens\n` +
-      `Completed attempts: ${attemptCount}\n` +
-      "Status: proposed-unreviewed evidence. It cannot recommend or serve a model.";
+      `Memory check completed\n` +
+      `Work sizes: ${receipt.contexts.map((item) => item.contextTokens).join(" and ")} tokens\n` +
+      `Completed measurements: ${attemptCount}\n` +
+      "These results are saved only in this running session.";
     element("#capture-result-expert").textContent = expertJson(receipt);
   }
 
@@ -224,13 +259,12 @@ function render(state: RunnerSurfaceState): void {
     const result = state.result;
     element("#result-heading").textContent =
       result.domainStatus === "completed"
-        ? "Verification result"
-        : "Verification ended with retained evidence";
+        ? "Model check completed"
+        : "Model check ended early";
     element("#result-summary").textContent =
       `Status: ${result.domainStatus}\n` +
-      `Candidate: ${result.candidateId}\n` +
-      `Benchmark: ${result.benchmarkResult ? "present" : "not available"}\n` +
-      `Mechanical checks: ${result.quickCheckResult ? "present" : "not available"}`;
+      `Speed measurement: ${result.benchmarkResult ? "completed" : "not available"}\n` +
+      `Compatibility checks: ${result.quickCheckResult ? "completed" : "not available"}`;
     element("#result-expert").textContent = expertJson(result);
   }
 
@@ -283,6 +317,10 @@ window.addEventListener("DOMContentLoaded", () => {
   element("#scan-button").addEventListener("click", () =>
     run(() => application.scanInventory([value("#extra-dir")])),
   );
+  element("#artifact-path").addEventListener("change", () => {
+    element<HTMLButtonElement>("#select-artifact-button").disabled =
+      value("#artifact-path").length === 0;
+  });
   element("#select-artifact-button").addEventListener("click", () =>
     run(() => application.selectArtifact(value("#artifact-path"))),
   );
