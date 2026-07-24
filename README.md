@@ -42,8 +42,8 @@ complete user journey.
 
 ```text
 Internal foundations       █████████░  strong
-Typed module boundaries    ███████░░░  substantial, handoffs still partial
-Desktop runner workflow    ███████░░░  fixture-proven, not live-proven
+Typed module boundaries    ████████░░  substantial; production portfolio handoff is blocked by U27
+Desktop runner workflow    ████████░░  CI-proven controlled lifecycle; no live external-model or restart proof
 Website first slice        ███░░░░░░░  blocked by real portfolio data
 Private Arena              ░░░░░░░░░░  not started
 Public systems             deferred
@@ -57,6 +57,16 @@ and owner-approved concrete capacity policy for the new path. Synthetic
 fixtures prove the machinery only. The existing website and desktop fixture
 workflow remain available, but neither is evidence of a completed
 finder-to-live-verification product.
+
+The remaining critical path to the first usable V1 is:
+
+`trusted U27 capture and capacity policy → reviewed M-F profile → real M-H
+portfolio → M-O finder handoff → W1–W4 website → one live external-model
+runner proof`.
+
+The desktop-specific remainder is restart recovery and a user-observable run
+against a pinned real model. Private Arena follows this path; public systems
+remain deferred.
 
 The executable gate-by-gate view is maintained in the
 [capability handoff board](docs/capability-handoff-board.md), while the
