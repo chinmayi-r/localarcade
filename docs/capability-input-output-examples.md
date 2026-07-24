@@ -929,7 +929,10 @@ cannot become a verified selection.
 **Process-local verification preview example**
 
 ```text
-validated runner-import-bundle
+primary: explicit Check this computer
+→ process-local manual flow handle
+
+advanced alternative: validated runner-import-bundle
 → import handle; expired bundle requires explicit confirmation
 
 consent-triggered local hardware detection + imported target
@@ -937,15 +940,15 @@ consent-triggered local hardware detection + imported target
 → exact acknowledgement when required
 → sealed hardware handle
 
-explicit local inventory scan + exact verified artifact path
+explicit local inventory scan + exact registry-verified artifact path
 → M-I selection handle
 
-explicit allowlisted llama.cpp path + fixed --version probe
+explicit existing llama-fit-params path + fixed --version probe
 → sealed tool handle; no backend or authorization claim
 
 prepare preview
-→ locally sampled preflight
-→ M-J plan bound to hardware/candidate/artifact/runtime/tool
+→ exact M-E candidate + experimental admission constructed below M-O
+→ visible fixed capture policy, selected context and second 4× context
 → grantsExecutionAuthorization: false
 ```
 
@@ -972,13 +975,13 @@ node --test tests/runner-boundary.test.mjs
 
 Or run `npm.cmd run proof:mo-checkpoint` for the complete authorized subset.
 
-**Handoff result:** missing at the frontend consumer boundary. U28–U37, import semantics,
-permission preview,
+**Handoff result:** partial at the live user boundary. U28–U37, import semantics,
+direct-local onboarding, permission preview,
 process-local hardware/tool producers, verified inventory selection, the exact
 M-J preview, deterministic combined benchmark/fixed-check execution and typed
-opaque run/progress/stop/result transport are present. Frontend wiring,
-restart recovery, live external-model proof and every production surface
-consumer remain absent; T7 is not claimed.
+opaque run/progress/stop/result transport are present and consumed by the
+desktop facade. Restart recovery, live external-model proof, website and CLI
+consumers remain absent; T7 is not claimed.
 
 ## M-P — Website, desktop and CLI
 
@@ -1003,25 +1006,30 @@ npm.cmd run dev
 
 ### Current desktop
 
-**User inputs:** pasted versioned runner-import bundle; optional expired-bundle
-confirmation; explicit hardware detection and exact-difference acknowledgement;
-read-only inventory scan and verified artifact selection; separately selected
-`llama-bench.exe` and `llama-cli.exe`; non-authorizing plan preview; three
-independent execution acknowledgements; stop or refresh.
+**Primary user inputs:** **Check this computer**; explicit hardware confirmation;
+read-only inventory scan and exact artifact selection; an existing
+`llama-fit-params` path; a plain-language 4K/8K/16K context choice; exact capture
+preview; and a separate local-process acknowledgement. The website-created
+runner-import bundle and optional expired-bundle confirmation remain under an
+advanced disclosure. Existing-engine verification separately accepts
+`llama-bench.exe` and `llama-cli.exe`, a non-authorizing plan preview, three
+execution acknowledgements, and stop or refresh.
 
-**Observed outputs:** the M-P application facade consumes only the typed M-O
-preview and execution commands. It preserves import expiry, hardware
-differences, inventory `ok`/`partial`/`unavailable`, checked paths and hashes,
-the exact benchmark-then-fixed-check plan, runner-owned progress, idempotent
-stop, retained partial observations and normalized terminal result/status.
-Reason codes remain inspectable rather than being replaced with surface text.
+**Observed outputs:** the M-P application facade consumes only typed M-O
+commands. It displays detected OS/CPU/RAM/accelerators, hardware differences,
+inventory `ok`/`partial`/`unavailable`, checked paths and hashes, and the exact
+capture runtime/build/backend/KV/GPU-layer/batch/thread/context settings before
+consent. For verification it preserves the exact benchmark-then-fixed-check
+plan, runner-owned progress, idempotent stop, retained partial observations and
+normalized terminal result/status. Reason codes remain inspectable.
 
-**Limits:** nineteen deterministic tests prove machinery and an unchanged M-O
-handoff; they do not prove a native external-model run. The approved handoff
-fixture does not itself establish a complete sampler plus live matching
-artifact/tool path. Restart recovery, persistence, download, network, upload,
-arbitrary prompts and streaming Arena remain absent. Preserved legacy source is
-not registered or imported by the M-P entry point.
+**Limits:** twenty-two deterministic tests prove machinery and unchanged M-O
+handoffs; they do not prove a live selected-model capture or native
+external-model run. The manual route currently requires an existing
+registry-exact artifact and `llama-fit-params` executable; it does not download
+either. Restart recovery, persistence, download, network, upload, arbitrary
+prompts and streaming Arena remain absent. Preserved legacy source is not
+registered or imported by the M-P entry point.
 
 **Run**
 

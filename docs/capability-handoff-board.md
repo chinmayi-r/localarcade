@@ -99,11 +99,13 @@ retained size candidate. It is never an automatic scan step and returns no
 execution authority. M-O, not M-P, constructs the fixed verification plan.
 M-P accepts a completed result only when its full DTO and exact planned
 measurement/check sets match. U27 now adds a separate, user-triggered
-`llama-fit-params` capture: M-O seals the selected artifact/tool/hardware and
-exact six-observation protocol behind one opaque preview handle; M-P shows the
-hashes, contexts and warnings, requires a separate local-process checkbox, and
-rejects a returned receipt whose full content hash or display-critical bindings
-do not match. The resulting evidence remains proposed-unreviewed and grants no
+`llama-fit-params` capture. The primary D1 route begins with local detection and
+needs no website bundle; the unchanged bundle route is an advanced alternative.
+M-O seals the selected artifact/tool/hardware and exact six-observation protocol
+behind one opaque preview handle. M-P shows the hardware, exact configuration,
+contexts and warnings, requires a separate local-process checkbox, and rejects
+a returned receipt whose full content hash or display-critical bindings do not
+match. The resulting evidence remains proposed-unreviewed and grants no
 recommendation or serving authority.
 
 ## Independent user demonstrations
@@ -136,14 +138,17 @@ preflight locally, and produces a non-authorizing Rust M-J verification-plan
 preview against the imported configuration. A separate process-local service
 proves one-use confirmation, bounded run/progress/stop/result sequencing and
 partial-result preservation with deterministic fake child outputs. The preview
-and execution IPC now have a typed D1–D6 desktop consumer. Twenty-one deterministic
-surface tests prove the complete call sequence, exact bundle-byte preservation,
-blocked/unavailable/partial/error states, input immutability, stop and replay
-rejection, explicit hash selection, U27 capture acknowledgement and same-ID
-receipt-mutation rejection, lifecycle monotonicity and forged-result rejection;
+and execution IPC now have a typed D1–D6 desktop consumer. Twenty-two deterministic
+surface tests prove both direct-local and imported call sequences, exact
+bundle-byte preservation, blocked/unavailable/partial/error states, input
+immutability, stop and replay rejection, explicit hash selection, U27 capture
+acknowledgement and same-ID receipt-mutation rejection, lifecycle monotonicity
+and forged-result rejection;
 eleven boundary tests prevent direct lower-module or retired raw command use.
-Browser inspection proves the compact welcome and blocked-import states. No
-native user-operated selected-artifact U27 or external-model chain exists.
+Browser inspection proves the compact desktop and 390 px mobile manual welcome,
+hardware review and advanced import hierarchy. The direct route reaches an
+exact capture preview without JSON, but no live selected-artifact capture or
+external-model chain has been proven.
 
 ### Private local comparison
 

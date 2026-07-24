@@ -1,5 +1,37 @@
 # Decisions
 
+## 2026-07-23 — Make local desktop setup primary and bundle import optional
+
+- **Decision:** D1 starts with one explicit **Check this computer** action.
+  Website-created runner-import JSON remains supported under an advanced
+  disclosure, but it is not required for local capture and is not presented as
+  a normal user's starting point.
+- **Boundary:** After explicit detection and confirmation, M-O may retain a
+  process-local manual-flow handle. A user-selected registry-exact artifact,
+  observed `llama-fit-params` build, and visible context choice may be assembled
+  below M-O into the existing exact-configuration candidate and experimental
+  compatibility-admission receipt. Those records authorize only the separately
+  consented U27 capture; they grant no recommendation, serving, download,
+  network, upload or public-evidence authority.
+- **Hardware rule:** One detected CUDA device may be scoped visibly even when
+  integrated display adapters are also present. The user must acknowledge that
+  scope. Multiple CUDA devices, missing CUDA facts and unsupported platforms
+  remain blocked rather than receiving an invented selection.
+- **Fixed capture policy:** The v1 local-capture policy exposes its exact
+  runtime/backend, F16 KV cache, full GPU-layer target, batch and micro-batch,
+  parallelism, detected thread count, flash-attention, memory-map and two
+  context targets in the preview. M-P collects the visible context choice but
+  cannot author or silently replace the remaining policy.
+- **Why:** The approved D1 contract already permits manual setup, and normal
+  local-AI desktop products begin with local model/hardware setup rather than
+  requiring a pasted transport envelope. Security receipts remain necessary
+  internal evidence, not user concepts.
+- **Remainder:** The path is process-local and fixture/visual-proven. It still
+  needs one live selected-model capture, reviewed M-F admission, restart
+  recovery and a separately approved distribution/runtime strategy.
+- **Reversible:** Yes. The unchanged import path and versioned contracts remain
+  available.
+
 ## 2026-07-23 — Keep native handoff authority below the surface
 
 - **Implementation record:** Hashing a size-only inventory candidate requires

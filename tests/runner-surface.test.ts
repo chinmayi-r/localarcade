@@ -153,6 +153,9 @@ function fitProfileCaptureReceipt(): FitProfileCaptureReceipt {
 function successfulPort(calls: string[]): InvokePort {
   return async <T>(command: string, arguments_?: Record<string, unknown>) => {
     calls.push(command);
+    const captureRequest = arguments_?.request as
+      | Record<string, unknown>
+      | undefined;
     const responses: Record<string, unknown> = {
       admit_runner_import_bundle_preview: {
         importHandle: "import-1",
@@ -168,6 +171,12 @@ function successfulPort(calls: string[]): InvokePort {
         confirmationFields: [],
         differences: [],
         warnings: [],
+        resolvedTarget: {
+          os: { family: "windows" },
+          cpu: { displayName: "Fixture CPU" },
+          memory: { totalRamBytes: 32 * 2 ** 30 },
+          accelerators: [],
+        },
         previewOnly: true,
         grantsExecutionAuthorization: false,
       },
@@ -307,6 +316,25 @@ function successfulPort(calls: string[]): InvokePort {
         previewOnly: true,
         grantsExecutionAuthorization: false,
       },
+      begin_manual_hardware_confirmation_preview: {
+        flowHandle: "local-session-1",
+        evaluation: {
+          evaluationHandle: "hardware-evaluation-manual-1",
+          state: "ready",
+          reasonCodes: [],
+          confirmationFields: [],
+          differences: [],
+          warnings: [],
+          resolvedTarget: {
+            os: { family: "windows" },
+            cpu: { displayName: "Fixture CPU" },
+            memory: { totalRamBytes: 32 * 2 ** 30 },
+            accelerators: [],
+          },
+          previewOnly: true,
+          grantsExecutionAuthorization: false,
+        },
+      },
       prepare_fit_profile_capture_preview: {
         preparedCaptureHandle: "prepared-capture-1",
         captureId: "capture-fixture",
@@ -321,6 +349,11 @@ function successfulPort(calls: string[]): InvokePort {
         },
         contextTokens: [4096, 16384],
         repetitionsPerContext: 3,
+        candidate: fitProfileCaptureReceipt().candidate,
+        configurationSource:
+          captureRequest?.manualContextTokens === undefined
+            ? "website-handoff"
+            : "local-initial-capture-policy-v1",
         warnings: [],
         previewOnly: true,
         grantsExecutionAuthorization: false,
@@ -441,6 +474,40 @@ test("M-P consumes the M-O sequence unchanged through a completed user flow", as
     "start_verification_execution",
     "get_verification_execution_status",
     "get_verification_execution_result",
+  ]);
+});
+
+test("M-P starts an ordinary local journey without a website bundle", async () => {
+  const calls: string[] = [];
+  const app = new RunnerApplication(successfulPort(calls));
+
+  let state = await app.startManualSetup();
+  assert.equal(state.stage, "hardware");
+  assert.equal(state.journey, "manual");
+  assert.equal(state.importHandle, "local-session-1");
+  assert.equal(state.hardwareEvaluation?.state, "ready");
+
+  state = await app.confirmHardware(false);
+  assert.equal(state.stage, "inventory");
+  await app.scanInventory([]);
+  await app.selectArtifact("G:\\Models\\fixture.gguf");
+  state = await app.prepareFitProfileCapture(
+    "G:\\llama\\llama-fit-params.exe",
+    "manual-capture-1",
+    8192,
+  );
+  assert.equal(state.stage, "fit-capture-permission");
+  assert.equal(
+    state.fitProfileCapture?.configurationSource,
+    "local-initial-capture-policy-v1",
+  );
+  assert.deepEqual(calls, [
+    "begin_manual_hardware_confirmation_preview",
+    "confirm_hardware_confirmation_preview",
+    "scan_inventory_preview",
+    "select_inventory_preview",
+    "probe_existing_tool_preview",
+    "prepare_fit_profile_capture_preview",
   ]);
 });
 
@@ -598,6 +665,7 @@ test("M-P never asks M-O to confirm blocked or unavailable hardware", async () =
           confirmationFields: [],
           differences: [],
           warnings: [],
+          resolvedTarget: null,
           previewOnly: true,
           grantsExecutionAuthorization: false,
         } as T;
@@ -634,6 +702,7 @@ test("M-P rejects a hardware preview that crosses the authorization boundary", a
       confirmationFields: [],
       differences: [],
       warnings: [],
+      resolvedTarget: null,
       previewOnly: false,
       grantsExecutionAuthorization: true,
     } as T;
@@ -671,6 +740,7 @@ test("M-P rejects unknown hardware difference enums before confirmation", async 
           },
         ],
         warnings: [],
+        resolvedTarget: null,
         previewOnly: true,
         grantsExecutionAuthorization: false,
       } as T;

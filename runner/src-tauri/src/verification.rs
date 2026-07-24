@@ -167,6 +167,7 @@ pub struct VerifiedInventorySelection {
     status: PromotedStatus,
     max_context_tokens: u64,
     chat_template: String,
+    provenance: Vec<crate::contracts::Provenance>,
 }
 
 impl VerifiedInventorySelection {
@@ -239,6 +240,7 @@ impl VerifiedInventorySelection {
             status: artifact.status.clone(),
             max_context_tokens: identity.registry_metadata.max_context_tokens,
             chat_template: identity.registry_metadata.chat_template.clone(),
+            provenance: identity.provenance.clone(),
         })
     }
 
@@ -256,6 +258,50 @@ impl VerifiedInventorySelection {
 
     pub fn bytes(&self) -> u64 {
         self.bytes
+    }
+
+    pub fn model_family_id(&self) -> &str {
+        &self.model_family_id
+    }
+
+    pub fn model_family_display_name(&self) -> &str {
+        &self.model_family_display_name
+    }
+
+    pub fn repository(&self) -> &str {
+        &self.repository
+    }
+
+    pub fn revision(&self) -> &str {
+        &self.revision
+    }
+
+    pub fn filename(&self) -> &str {
+        &self.filename
+    }
+
+    pub fn format(&self) -> &str {
+        &self.format
+    }
+
+    pub fn quantization(&self) -> &str {
+        &self.quantization
+    }
+
+    pub fn license(&self) -> &str {
+        &self.license
+    }
+
+    pub fn max_context_tokens(&self) -> u64 {
+        self.max_context_tokens
+    }
+
+    pub fn chat_template(&self) -> &str {
+        &self.chat_template
+    }
+
+    pub fn provenance(&self) -> &[crate::contracts::Provenance] {
+        &self.provenance
     }
 }
 

@@ -93,6 +93,7 @@ test("M-O preview IPC is local, non-authorizing, and consumed only through M-P",
   }
   for (const command of [
     "admit_runner_import_bundle_preview",
+    "begin_manual_hardware_confirmation_preview",
     "evaluate_hardware_confirmation_preview",
     "confirm_hardware_confirmation_preview",
     "scan_inventory_preview",
@@ -105,6 +106,7 @@ test("M-O preview IPC is local, non-authorizing, and consumed only through M-P",
     assert.ok(application.includes(command), `${command} must be consumed by the M-P application adapter`);
     assert.ok(!frontend.includes(command), `${command} must not bypass the M-P application adapter`);
   }
+  assert.match(adapter, /local-initial-capture-policy-v1/);
 });
 
 test("M-O execution IPC accepts only opaque handles and explicit consent", async () => {
@@ -188,6 +190,8 @@ test("M-P surface imports only its application adapter and has no retired execut
   for (const forbidden of [/node:/, /fetch\s*\(/, /XMLHttpRequest|WebSocket/, /@tauri-apps|src-tauri/]) {
     assert.doesNotMatch(capturePresentation, forbidden, "browser-side capture admission must remain pure and local");
   }
+  assert.match(frontend, /manual-start-button/);
+  assert.match(application, /startManualSetup/);
   assert.match(capturePresentation, /recordContentSha256/, "browser-side capture admission must verify the complete receipt digest");
   for (const surface of [frontend, application]) {
     assert.doesNotMatch(surface, /json-schema|format-constraints|fact-preservation/);

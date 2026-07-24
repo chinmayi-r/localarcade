@@ -42,22 +42,24 @@ complete user journey.
 
 ```text
 Internal foundations       █████████░  strong
-Typed module boundaries    ████████░░  substantial; trusted U27 capture is CI-proven, but no reviewed profile reaches M-H
-Desktop runner workflow    ████████░░  CI-proven verification and exact-memory capture; no selected-artifact live proof or restart proof
+Typed module boundaries    █████████░  direct local capture crosses M-D/M-I/M-E/M-O without exposing its receipts
+Desktop runner workflow    █████████░  manual onboarding is user-operable and fixture/visual-proven; no live selected-model or restart proof
 Website first slice        ███░░░░░░░  blocked by reviewed portfolio data
 Private Arena              ░░░░░░░░░░  not started
 Public systems             deferred
-Complete user product      ████░░░░░░  not nearly as green as the core map looks
+Complete user product      █████░░░░░  runner setup is usable; finder data and live-model proof remain
 ```
 
 “Blocked by reviewed portfolio data” means that the replacement website cannot
-yet produce a production recommendation through M-F/M-H. The runner can now
-create a content-bound, exact-scope U27 capture only after a user selects an
-artifact and existing `llama-fit-params` executable, but no such live receipt
-has been reviewed into a production profile manifest or paired with an
-owner-approved concrete capacity policy. Synthetic fixtures prove machinery
-only. The existing website and desktop fixture workflow remain available, but
-neither is evidence of a completed finder-to-live-verification product.
+yet produce a production recommendation through M-F/M-H. The runner no longer
+requires a website-created JSON bundle for its primary journey: a person can
+start with **Check this computer**, review detected hardware, choose an existing
+local model and `llama-fit-params` executable, select a plain-language context
+target, and preview the exact local capture. Website bundle import is preserved
+under an advanced disclosure. No live receipt has yet been reviewed into a
+production profile manifest or paired with an owner-approved concrete capacity
+policy. Synthetic fixtures prove machinery only; neither surface is evidence of
+a completed finder-to-live-verification product.
 
 The remaining critical path to the first usable V1 is:
 

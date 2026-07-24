@@ -443,6 +443,18 @@ synthetic-only collection, derivation and policy-sweep proofs, but production
 admission remains unavailable pending a trusted capture boundary and owner
 approval of one concrete capacity policy. No external model was executed.
 
+**2026-07-23 manual-onboarding result:** The approved D1 manual alternative is
+now the primary desktop route. **Check this computer** performs only the
+explicitly described read-only detection, then the person reviews the detected
+machine before separately choosing inventory scan, exact artifact, existing
+`llama-fit-params` executable, context target and capture consent. M-O creates
+the exact candidate and experimental compatibility receipt below the surface
+from those confirmed inputs and its visible fixed v1 capture policy. No website
+bundle or user-authored capture ID is required. The unchanged import path is
+preserved under an advanced disclosure. Surface, boundary and Rust proofs plus
+desktop/390 px browser inspection pass; live-model execution, restart recovery,
+downloads, network, upload and website/CLI wiring remain excluded.
+
 ## Deferred checkpoints
 
 - CLI implementation: states C1–C5 are frozen as parity requirements, but implementation follows website/desktop unless separately prioritized.

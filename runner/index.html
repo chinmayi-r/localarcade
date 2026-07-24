@@ -38,31 +38,41 @@
         <div class="section-heading">
           <span class="step">1</span>
           <div>
-            <h2>Open a website handoff</h2>
+            <h2>Check a model on this computer</h2>
             <p>
-              Paste a Local Arcade runner-import bundle. Validation reads only
-              this text. It does not detect hardware, scan files, or run a model.
+              Start with a read-only hardware check. You will review the result
+              before choosing any model folder, and nothing runs automatically.
             </p>
           </div>
         </div>
-        <label for="bundle-json">Runner-import bundle JSON</label>
-        <textarea
-          id="bundle-json"
-          rows="10"
-          spellcheck="false"
-          placeholder="Paste the versioned runner-import bundle"
-        ></textarea>
-        <label class="check">
-          <input id="confirm-expired" type="checkbox" />
-          Inspect an expired handoff after showing its warning
-        </label>
-        <p id="expired-warning" class="callout warning" hidden>
-          Expiry is informational only. Importing an expired handoff never
-          grants permission to execute.
-        </p>
-        <button id="import-button" class="primary" type="button">
-          Validate handoff
+        <button id="manual-start-button" class="primary" type="button">
+          Check this computer
         </button>
+        <details>
+          <summary>Advanced: import a website recommendation</summary>
+          <p>
+            If the Local Arcade website gave you a runner-import JSON bundle,
+            paste it here. Most people can ignore this option.
+          </p>
+          <label for="bundle-json">Runner-import bundle JSON</label>
+          <textarea
+            id="bundle-json"
+            rows="8"
+            spellcheck="false"
+            placeholder="Paste the versioned runner-import bundle"
+          ></textarea>
+          <label class="check">
+            <input id="confirm-expired" type="checkbox" />
+            Inspect an expired handoff after showing its warning
+          </label>
+          <p id="expired-warning" class="callout warning" hidden>
+            Expiry is informational only. Importing an expired handoff never
+            grants permission to execute.
+          </p>
+          <button id="import-button" type="button">
+            Validate imported recommendation
+          </button>
+        </details>
       </section>
 
       <section data-stage-section="hardware" class="workspace" hidden>
@@ -71,8 +81,8 @@
           <div>
             <h2>Confirm this machine</h2>
             <p>
-              Detection is a separate, read-only action. Imported and detected
-              material facts remain visible when they disagree.
+              Detection is read-only. If you imported a recommendation, its
+              hardware facts remain visible when they disagree with this PC.
             </p>
           </div>
         </div>
@@ -82,6 +92,7 @@
         <dl class="summary-grid">
           <div><dt>Confirmation state</dt><dd id="hardware-state">Not detected</dd></div>
         </dl>
+        <pre id="hardware-summary" class="result-block">No hardware result.</pre>
         <pre id="hardware-differences" class="result-block">No detection result.</pre>
         <label class="check">
           <input id="ack-hardware" type="checkbox" disabled />
@@ -131,8 +142,12 @@
         </p>
         <label for="fit-profile-path">Full path to llama-fit-params.exe</label>
         <input id="fit-profile-path" type="text" placeholder="C:\Tools\llama-fit-params.exe" />
-        <label for="capture-id">Capture ID</label>
-        <input id="capture-id" type="text" placeholder="A new identifier you can recognize later" />
+        <label for="capture-context">Context for this initial measurement</label>
+        <select id="capture-context">
+          <option value="4096">4K — short chat and simple tasks</option>
+          <option value="8192" selected>8K — everyday chat and coding</option>
+          <option value="16384">16K — longer documents and sessions</option>
+        </select>
         <button id="prepare-capture-button" type="button">
           Review exact memory capture
         </button>

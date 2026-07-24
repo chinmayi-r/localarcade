@@ -38,6 +38,36 @@ function expertJson(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
+function renderHardwareTarget(value: Record<string, unknown> | null): string {
+  if (!value) return "Hardware details are unavailable.";
+  const os = value.os as Record<string, unknown> | undefined;
+  const cpu = value.cpu as Record<string, unknown> | undefined;
+  const memory = value.memory as Record<string, unknown> | undefined;
+  const accelerators = Array.isArray(value.accelerators)
+    ? (value.accelerators as Array<Record<string, unknown>>)
+    : [];
+  const totalRam = Number(memory?.totalRamBytes);
+  const ram = Number.isFinite(totalRam)
+    ? `${(totalRam / 2 ** 30).toFixed(1)} GiB RAM`
+    : "RAM unavailable";
+  const devices = accelerators.length
+    ? accelerators
+        .map((item) => {
+          const bytes = Number(item.deviceMemoryBytes);
+          const capacity = Number.isFinite(bytes)
+            ? ` · ${(bytes / 2 ** 30).toFixed(1)} GiB`
+            : "";
+          return `${String(item.displayName ?? "Unknown accelerator")}${capacity} · ${String(item.backend ?? "backend unknown")}`;
+        })
+        .join("\n")
+    : "No accelerator reported";
+  return [
+    `${String(os?.family ?? "Unknown OS")} · ${String(cpu?.displayName ?? "Unknown CPU")}`,
+    ram,
+    devices,
+  ].join("\n");
+}
+
 function renderInventory(state: RunnerSurfaceState): void {
   const select = element<HTMLSelectElement>("#artifact-path");
   select.replaceChildren(new Option("Choose a verified artifact", ""));
@@ -99,6 +129,9 @@ function render(state: RunnerSurfaceState): void {
   if (state.hardwareEvaluation) {
     const evaluation = state.hardwareEvaluation;
     element("#hardware-state").textContent = evaluation.state;
+    element("#hardware-summary").textContent = renderHardwareTarget(
+      evaluation.resolvedTarget,
+    );
     element("#hardware-differences").textContent = evaluation.differences.length
       ? evaluation.differences
           .map(
@@ -106,7 +139,9 @@ function render(state: RunnerSurfaceState): void {
               `${difference.kind.toUpperCase()} · ${difference.field}\nimported: ${difference.imported ?? "unknown"}\nresolved: ${difference.resolved ?? "unknown"}\n${difference.reasonCode}`,
           )
           .join("\n\n")
-      : "No material differences.";
+      : evaluation.warnings.length
+        ? evaluation.warnings.join("\n")
+        : "No material differences.";
     element<HTMLInputElement>("#ack-hardware").disabled =
       evaluation.state !== "confirmation-required";
     element<HTMLInputElement>("#ack-hardware").checked =
@@ -127,12 +162,23 @@ function render(state: RunnerSurfaceState): void {
 
   if (state.fitProfileCapture) {
     const capture = state.fitProfileCapture;
+    const candidate = capture.candidate;
+    const runtime =
+      typeof candidate.runtime === "object" && candidate.runtime !== null
+        ? (candidate.runtime as Record<string, unknown>)
+        : {};
     element("#capture-summary").textContent =
       `Capture: ${capture.captureId}\n` +
       `Artifact: ${capture.artifact.path}\n` +
       `Artifact SHA-256: ${capture.artifact.sha256}\n` +
       `Tool: ${capture.tool.path}\n` +
       `Tool SHA-256: ${capture.tool.sha256}\n` +
+      `Runtime build: ${String(runtime.engineBuild ?? "unavailable")}\n` +
+      `Backend: ${String(runtime.backend ?? "unavailable")}\n` +
+      `KV cache: ${JSON.stringify(runtime.kvCache ?? "unavailable")}\n` +
+      `GPU layers: ${JSON.stringify(runtime.gpuLayers ?? "unavailable")}\n` +
+      `Batch / micro-batch: ${String(runtime.batchSize ?? "unavailable")} / ${String(runtime.microBatchSize ?? "unavailable")}\n` +
+      `Configuration source: ${capture.configurationSource === "website-handoff" ? "website recommendation" : "visible local initial-capture policy v1"}\n` +
       `Contexts: ${capture.contextTokens.join(", ")} tokens\n` +
       `Repetitions: ${capture.repetitionsPerContext} per context\n` +
       "Result: proposed-unreviewed exact-scope evidence only.";
@@ -217,6 +263,9 @@ function startPolling(): void {
 window.addEventListener("DOMContentLoaded", () => {
   render(application.snapshot());
 
+  element("#manual-start-button").addEventListener("click", () =>
+    run(() => application.startManualSetup()),
+  );
   element("#import-button").addEventListener("click", () =>
     run(() =>
       application.importBundle(value("#bundle-json"), checked("#confirm-expired")),
@@ -238,7 +287,8 @@ window.addEventListener("DOMContentLoaded", () => {
     run(() =>
       application.prepareFitProfileCapture(
         value("#fit-profile-path"),
-        value("#capture-id"),
+        `local-capture-${crypto.randomUUID()}`,
+        Number(value("#capture-context")),
       ),
     ),
   );

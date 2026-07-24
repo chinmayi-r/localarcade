@@ -79,8 +79,8 @@ flowchart LR
     MLN["M-L/M-M/M-N public systems ⛔"]
     U28["U28 import bundle ✅\nv1 handoff unchanged + admission receipt"]
     U30["U30 task→context policy ✅\nversioned planning heuristic"]
-    MO["M-O orchestration partial ✅\nserver-owned plan policy ✅\ntyped execution transport ✅\nrestart recovery ⬜"]
-    MP["M-P surfaces partial\nwebsite legacy ⚠\nD1–D6 desktop + adverse DTO gates ✅\nCLI ⬜"]
+    MO["M-O orchestration partial ✅\ndirect local capture assembly ✅\ntyped execution transport ✅\nrestart recovery ⬜"]
+    MP["M-P surfaces partial\nwebsite legacy ⚠\nD1 manual + D1–D6 imported flow ✅\nCLI ⬜"]
   end
 
   L0 -. "versioned translation" .-> MA
@@ -194,7 +194,7 @@ flowchart TB
   EXEC --> IPC["M-O opaque start/status/stop/result ✅\ntyped desktop consumer ✅"]
   IPC --> MO
   MO --> WEB["M-P website ⬜"]
-  MO --> DESK["M-P desktop D1–D6 ✅ fixtures\nfull DTO + planned-set admission ✅\nnative live run ⬜"]
+  MO --> DESK["M-P desktop direct-local + imported D1–D6 ✅\nfull DTO + exact capture preview ✅\nnative live run ⬜"]
   MO --> CLI["CLI parity ⬜"]
   DESK --> ARENA["M-K private Arena ⬜ later"]
   PUBLIC["Public Arena / upload / service ⛔"]
@@ -205,7 +205,7 @@ flowchart TB
 | Track | Branch/worktree | Current state | Completion evidence |
 |---|---|---|---|
 | assembler and integration | `codex/wave1-domain-adapters` — `G:/LocalArcade` | ✅ first wave integrated | root and runner full gates green on 2026-07-22 |
-| current M-I/M-O/M-P native-handoff batch | `main` — `G:/LocalArcade` | ✅ source integration; live proof remains unavailable | Explicit selected-file hash promotion, server-owned fixed-plan policy, full result/planned-set admission, and U27 exact-memory capture with a separate opaque preview and consent receipt; 84 Rust library, 21 surface and 11 boundary tests; no native selected-artifact or live-model claim |
+| current M-I/M-O/M-P native-handoff batch | `main` — `G:/LocalArcade` | ✅ direct-local and imported source integration; live proof remains unavailable | Primary local hardware onboarding, explicit selected-file hash promotion, server-owned fixed capture/verification policies, full result/planned-set admission, and U27 exact-memory preview/consent; 86 Rust library, 22 surface and 11 boundary tests; no live selected-artifact or external-model claim |
 | M-C registry | `codex/m-c-registry` — `G:/LocalArcade-worktrees/m-c-registry` | ✅ integrated as `547d015` | adapter/equivalence tests and unchanged snapshot semantics |
 | M-D hardware | `codex/m-d-hardware` — `G:/LocalArcade-worktrees/m-d-hardware` | ✅ base integrated as `b788396`; U31 uncommitted in assembler | manual/detected/unknown/mismatch boundary tests; 12 U31 material-fact/acknowledgement proofs |
 | M-E runtime | `codex/m-e-runtime` — `G:/LocalArcade-worktrees/m-e-runtime` | ✅ integrated as `884dac2`, `1d0ddfb`, `0f53fb9` | exact candidate rejection tests and reviewed M-C→M-E seam |

@@ -5,8 +5,14 @@
 //! M-J preparation. It never grants execution authority or starts a model.
 
 use crate::contracts::{
-    contract_timestamp_seconds, validate_contract_json, ConcurrentGpu, HardwareTarget,
-    MeasurementKind, Power, Preflight, QuickCheck, RunnerImportBundle, Thermal, VerificationPlan,
+    contract_timestamp_seconds, validate_contract_json, AcceleratorBackend, Artifact,
+    ArtifactPackageLayout, ArtifactStatus, CompatibilityAdmissionAssertion,
+    CompatibilityAdmissionConditions, CompatibilityAdmissionDecision,
+    CompatibilityAdmissionEvidence, CompatibilityAdmissionPolicy, CompatibilityAdmissionReceipt,
+    CompatibilityAdmissionTarget, CompatibilityAssertionStatus, CompatibilityRuntimeConstraint,
+    ConcurrentGpu, CpuArchitecture, ExactConfigurationCandidate, GpuLayers, GpuLayersAll,
+    HardwareTarget, KvCache, MeasurementKind, ModelFamily, Power, Preflight, QuickCheck,
+    RunnerImportBundle, RuntimeConfiguration, Sampler, Thermal, VerificationPlan,
 };
 use crate::existing_tool_probe;
 use crate::fit_profile_capture::{
@@ -46,13 +52,13 @@ impl PreviewHandle {
 
 #[derive(Debug, Clone)]
 struct ConfirmedHardwareEntry {
-    import: PreviewHandle,
+    flow: PreviewHandle,
     target: ConfirmedHardwareTarget,
 }
 
 #[derive(Debug, Clone)]
 struct HardwareEvaluationEntry {
-    import: PreviewHandle,
+    flow: PreviewHandle,
     evaluation: HardwareConfirmationEvaluation,
 }
 
@@ -65,6 +71,7 @@ pub struct HardwareEvaluationPreview {
     pub confirmation_fields: Vec<String>,
     pub differences: Vec<HardwareDifferencePreview>,
     pub warnings: Vec<String>,
+    pub resolved_target: Option<HardwareTarget>,
     pub preview_only: bool,
     pub grants_execution_authorization: bool,
 }
@@ -104,9 +111,16 @@ pub struct ImportBundlePreview {
     pub grants_execution_authorization: bool,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ManualHardwareEvaluationPreview {
+    pub flow_handle: String,
+    pub evaluation: HardwareEvaluationPreview,
+}
+
 #[derive(Debug, Clone)]
 struct InventorySelectionEntry {
-    import: PreviewHandle,
+    flow: PreviewHandle,
     inventory: PreviewHandle,
     selection: VerifiedInventorySelection,
 }
@@ -189,11 +203,12 @@ pub struct VerificationPlanPreview {
 
 #[derive(Debug, Clone)]
 pub struct PrepareFitProfileCapturePreviewRequest {
-    pub import_handle: PreviewHandle,
+    pub flow_handle: PreviewHandle,
     pub hardware_handle: PreviewHandle,
     pub selection_handle: PreviewHandle,
     pub tool_handle: PreviewHandle,
     pub capture_id: String,
+    pub manual_context_tokens: Option<u64>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq)]
@@ -206,6 +221,8 @@ pub struct FitProfileCapturePreview {
     pub tool: CheckedIdentityPreview,
     pub context_tokens: Vec<u64>,
     pub repetitions_per_context: u64,
+    pub candidate: ExactConfigurationCandidate,
+    pub configuration_source: String,
     pub warnings: Vec<String>,
     pub preview_only: bool,
     pub grants_execution_authorization: bool,
@@ -217,6 +234,7 @@ pub struct FitProfileCapturePreview {
 pub struct PreviewAssembler {
     next_handle: u64,
     imports: HashMap<PreviewHandle, RunnerImportBundle>,
+    manual_flows: HashMap<PreviewHandle, HardwareTarget>,
     hardware_evaluations: HashMap<PreviewHandle, HardwareEvaluationEntry>,
     hardware_receipts: HardwareConfirmationStore,
     hardware: HashMap<PreviewHandle, ConfirmedHardwareEntry>,
@@ -296,24 +314,70 @@ impl PreviewAssembler {
 
     pub fn imported_hardware_target(
         &self,
-        import_handle: &PreviewHandle,
+        flow_handle: &PreviewHandle,
     ) -> Result<crate::contracts::HardwareTarget, String> {
         self.imports
-            .get(import_handle)
+            .get(flow_handle)
             .map(|bundle| bundle.handoff.hardware_target.clone())
+            .or_else(|| self.manual_flows.get(flow_handle).cloned())
             .ok_or_else(|| "m-o.preview.import-handle-invalid".into())
+    }
+
+    pub fn begin_manual_hardware_evaluation(
+        &mut self,
+        resolution: &HardwareResolution,
+    ) -> Result<ManualHardwareEvaluationPreview, Vec<String>> {
+        let mut scoped_resolution = resolution.clone();
+        let target = scoped_resolution
+            .target
+            .as_ref()
+            .ok_or_else(|| vec!["m-o.manual.hardware-target-unavailable".into()])?;
+        let cuda_count = target
+            .accelerators
+            .iter()
+            .filter(|accelerator| accelerator.backend == AcceleratorBackend::Cuda)
+            .count();
+        if cuda_count == 1 && target.accelerators.len() > 1 {
+            scoped_resolution
+                .target
+                .as_mut()
+                .expect("target checked above")
+                .accelerators
+                .retain(|accelerator| accelerator.backend == AcceleratorBackend::Cuda);
+            scoped_resolution.state = crate::hardware_target::ResolutionState::ConfirmationRequired;
+            scoped_resolution.reason_codes = vec!["hardware.manual-cuda-device-selected".into()];
+            scoped_resolution.confirmation_fields = vec!["/accelerators".into()];
+            scoped_resolution.warnings.push(
+                "This initial capture is scoped to the one detected CUDA GPU. Other detected adapters remain outside this measurement."
+                    .into(),
+            );
+        }
+        let target = scoped_resolution
+            .target
+            .clone()
+            .expect("target checked above");
+        let flow = self
+            .issue_handle("local-session")
+            .map_err(|error| vec![error])?;
+        self.manual_flows.insert(flow.clone(), target);
+        let evaluation = self
+            .evaluate_hardware(&flow, &scoped_resolution)
+            .map_err(|error| vec![error])?;
+        Ok(ManualHardwareEvaluationPreview {
+            flow_handle: flow.token().to_string(),
+            evaluation,
+        })
     }
 
     pub fn retain_hardware_confirmation(
         &mut self,
-        import_handle: &PreviewHandle,
+        flow_handle: &PreviewHandle,
         receipt: &HardwareConfirmationReceipt,
     ) -> Result<PreviewHandle, Vec<String>> {
-        let bundle = self
-            .imports
-            .get(import_handle)
-            .ok_or_else(|| vec!["m-o.preview.import-handle-invalid".into()])?;
-        if receipt.imported_target() != &bundle.handoff.hardware_target {
+        let expected = self
+            .imported_hardware_target(flow_handle)
+            .map_err(|error| vec![error])?;
+        if receipt.imported_target() != &expected {
             return Err(vec!["m-o.preview.hardware-import-binding-mismatch".into()]);
         }
         let target =
@@ -322,7 +386,7 @@ impl PreviewAssembler {
         self.hardware.insert(
             handle.clone(),
             ConfirmedHardwareEntry {
-                import: import_handle.clone(),
+                flow: flow_handle.clone(),
                 target,
             },
         );
@@ -331,16 +395,16 @@ impl PreviewAssembler {
 
     pub fn evaluate_hardware(
         &mut self,
-        import_handle: &PreviewHandle,
+        flow_handle: &PreviewHandle,
         resolution: &HardwareResolution,
     ) -> Result<HardwareEvaluationPreview, String> {
-        let imported = self.imported_hardware_target(import_handle)?;
+        let imported = self.imported_hardware_target(flow_handle)?;
         let evaluation = evaluate_hardware_confirmation(&imported, resolution);
         let handle = self.issue_handle("hardware-evaluation")?;
         self.hardware_evaluations.insert(
             handle.clone(),
             HardwareEvaluationEntry {
-                import: import_handle.clone(),
+                flow: flow_handle.clone(),
                 evaluation: evaluation.clone(),
             },
         );
@@ -361,6 +425,7 @@ impl PreviewAssembler {
                 .map(hardware_difference_preview)
                 .collect(),
             warnings: evaluation.warnings().to_vec(),
+            resolved_target: evaluation.resolved_target().cloned(),
             preview_only: true,
             grants_execution_authorization: false,
         })
@@ -396,7 +461,7 @@ impl PreviewAssembler {
             .collect();
         let acknowledged_reason_codes = receipt.acknowledged_reason_codes().to_vec();
         let acknowledged_confirmation_fields = receipt.acknowledged_confirmation_fields().to_vec();
-        let handle = self.retain_hardware_confirmation(&entry.import, &receipt)?;
+        let handle = self.retain_hardware_confirmation(&entry.flow, &receipt)?;
         self.hardware_evaluations.remove(evaluation_handle);
         Ok(HardwareConfirmationPreview {
             hardware_handle: handle.token().to_string(),
@@ -462,17 +527,24 @@ impl PreviewAssembler {
 
     pub fn select_inventory_path(
         &mut self,
-        import_handle: &PreviewHandle,
+        flow_handle: &PreviewHandle,
         inventory_handle: &PreviewHandle,
         selected_path: &str,
     ) -> Result<InventorySelectionPreview, Vec<String>> {
         if selected_path.trim().is_empty() {
             return Err(vec!["m-o.preview.selection-path-empty".into()]);
         }
-        let bundle = self
-            .imports
-            .get(import_handle)
-            .ok_or_else(|| vec!["m-o.preview.import-handle-invalid".into()])?;
+        let expected_artifact_id = self.imports.get(flow_handle).map(|bundle| {
+            bundle
+                .handoff
+                .selected_candidate
+                .artifact
+                .artifact_id
+                .as_str()
+        });
+        if expected_artifact_id.is_none() && !self.manual_flows.contains_key(flow_handle) {
+            return Err(vec!["m-o.preview.flow-handle-invalid".into()]);
+        }
         let inventory = self
             .inventories
             .get(inventory_handle)
@@ -491,7 +563,7 @@ impl PreviewAssembler {
             }]);
         }
         let selection = VerifiedInventorySelection::from_inventory_artifact(matches[0])?;
-        if selection.artifact_id() != bundle.handoff.selected_candidate.artifact.artifact_id {
+        if expected_artifact_id.is_some_and(|expected| selection.artifact_id() != expected) {
             return Err(vec![
                 "m-o.preview.selection-candidate-artifact-mismatch".into()
             ]);
@@ -508,7 +580,7 @@ impl PreviewAssembler {
         self.selections.insert(
             handle.clone(),
             InventorySelectionEntry {
-                import: import_handle.clone(),
+                flow: flow_handle.clone(),
                 inventory: inventory_handle.clone(),
                 selection,
             },
@@ -523,12 +595,12 @@ impl PreviewAssembler {
     /// the resulting opaque handle grants no execution authorization.
     pub fn hash_and_select_inventory_path(
         &mut self,
-        import_handle: &PreviewHandle,
+        flow_handle: &PreviewHandle,
         inventory_handle: &PreviewHandle,
         selected_path: &str,
     ) -> Result<InventoryHashPromotionPreview, Vec<String>> {
         self.hash_and_select_inventory_path_with_boundary(
-            import_handle,
+            flow_handle,
             inventory_handle,
             selected_path,
             &SystemSelectedFileHashBoundary,
@@ -578,22 +650,29 @@ impl PreviewAssembler {
 
     fn hash_and_select_inventory_path_with_boundary<B: SelectedFileHashBoundary>(
         &mut self,
-        import_handle: &PreviewHandle,
+        flow_handle: &PreviewHandle,
         inventory_handle: &PreviewHandle,
         selected_path: &str,
         boundary: &B,
     ) -> Result<InventoryHashPromotionPreview, Vec<String>> {
-        let bundle = self
-            .imports
-            .get(import_handle)
-            .ok_or_else(|| vec!["m-o.preview.import-handle-invalid".into()])?;
+        let expected_artifact_id = self.imports.get(flow_handle).map(|bundle| {
+            bundle
+                .handoff
+                .selected_candidate
+                .artifact
+                .artifact_id
+                .as_str()
+        });
+        if expected_artifact_id.is_none() && !self.manual_flows.contains_key(flow_handle) {
+            return Err(vec!["m-o.preview.flow-handle-invalid".into()]);
+        }
         let inventory = self
             .inventories
             .get(inventory_handle)
             .ok_or_else(|| vec!["m-o.preview.inventory-handle-invalid".into()])?;
         let promoted = promote_selected_file_with_boundary(inventory, selected_path, boundary)?;
         let selection = VerifiedInventorySelection::from_inventory_artifact(&promoted)?;
-        if selection.artifact_id() != bundle.handoff.selected_candidate.artifact.artifact_id {
+        if expected_artifact_id.is_some_and(|expected| selection.artifact_id() != expected) {
             return Err(vec![
                 "m-o.preview.selection-candidate-artifact-mismatch".into()
             ]);
@@ -614,7 +693,7 @@ impl PreviewAssembler {
         self.selections.insert(
             handle,
             InventorySelectionEntry {
-                import: import_handle.clone(),
+                flow: flow_handle.clone(),
                 inventory: inventory_handle.clone(),
                 selection,
             },
@@ -646,7 +725,7 @@ impl PreviewAssembler {
             .get(&request.hardware_handle)
             .ok_or_else(|| vec!["m-o.preview.hardware-handle-invalid".into()])?
             .clone();
-        if hardware.import != request.import_handle {
+        if hardware.flow != request.import_handle {
             return Err(vec!["m-o.preview.hardware-import-handle-mismatch".into()]);
         }
         let selection_entry = self
@@ -654,7 +733,7 @@ impl PreviewAssembler {
             .get(&request.selection_handle)
             .ok_or_else(|| vec!["m-o.preview.selection-handle-invalid".into()])?
             .clone();
-        if selection_entry.import != request.import_handle {
+        if selection_entry.flow != request.import_handle {
             return Err(vec!["m-o.preview.selection-import-handle-mismatch".into()]);
         }
         if !self.inventories.contains_key(&selection_entry.inventory) {
@@ -726,36 +805,61 @@ impl PreviewAssembler {
         &mut self,
         request: PrepareFitProfileCapturePreviewRequest,
     ) -> Result<FitProfileCapturePreview, Vec<String>> {
-        let bundle = self
-            .imports
-            .get(&request.import_handle)
-            .ok_or_else(|| vec!["u27.preview.import-handle-invalid".into()])?
-            .clone();
         let hardware = self
             .hardware
             .get(&request.hardware_handle)
             .ok_or_else(|| vec!["u27.preview.hardware-handle-invalid".into()])?
             .clone();
-        if hardware.import != request.import_handle {
-            return Err(vec!["u27.preview.hardware-import-handle-mismatch".into()]);
+        if hardware.flow != request.flow_handle {
+            return Err(vec!["u27.preview.hardware-flow-handle-mismatch".into()]);
         }
         let selection = self
             .selections
             .get(&request.selection_handle)
             .ok_or_else(|| vec!["u27.preview.selection-handle-invalid".into()])?
             .clone();
-        if selection.import != request.import_handle {
-            return Err(vec!["u27.preview.selection-import-handle-mismatch".into()]);
+        if selection.flow != request.flow_handle {
+            return Err(vec!["u27.preview.selection-flow-handle-mismatch".into()]);
         }
         if !self.inventories.contains_key(&selection.inventory) {
             return Err(vec!["u27.preview.selection-inventory-handle-stale".into()]);
         }
         let tool = self.resolve_tool(&request.tool_handle, ExistingToolKind::FitProfileCapture)?;
-        let compatibility =
-            ValidatedCompatibilityAdmissionReceipt::new(bundle.compatibility_admission)?;
+        let (candidate, receipt, configuration_source) =
+            if let Some(bundle) = self.imports.get(&request.flow_handle) {
+                if request.manual_context_tokens.is_some() {
+                    return Err(vec![
+                        "u27.preview.imported-context-override-prohibited".into()
+                    ]);
+                }
+                (
+                    bundle.handoff.selected_candidate.clone(),
+                    bundle.compatibility_admission.clone(),
+                    "website-handoff".to_string(),
+                )
+            } else if self.manual_flows.contains_key(&request.flow_handle) {
+                let context_tokens = request
+                    .manual_context_tokens
+                    .ok_or_else(|| vec!["u27.manual.context-required".into()])?;
+                let (candidate, receipt) = manual_capture_candidate(
+                    &selection.selection,
+                    &hardware.target,
+                    &tool,
+                    context_tokens,
+                    request.capture_id.as_str(),
+                )?;
+                (
+                    candidate,
+                    receipt,
+                    "local-initial-capture-policy-v1".to_string(),
+                )
+            } else {
+                return Err(vec!["u27.preview.flow-handle-invalid".into()]);
+            };
+        let compatibility = ValidatedCompatibilityAdmissionReceipt::new(receipt)?;
         let prepared = prepare_fit_profile_capture(&FitProfileCapturePreparationRequest {
             capture_id: request.capture_id,
-            candidate: bundle.handoff.selected_candidate,
+            candidate,
             compatibility_admission: compatibility,
             hardware_target: hardware.target,
             inventory_selection: selection.selection,
@@ -784,6 +888,8 @@ impl PreviewAssembler {
                 .into_iter()
                 .collect(),
             repetitions_per_context: FIT_PROFILE_CAPTURE_REPETITIONS_V1,
+            candidate: prepared.candidate().clone(),
+            configuration_source,
             warnings: vec![
                 "The selected user-owned tool and artifact will be read locally. Child network and filesystem isolation are not enforced.".into(),
                 "The result is proposed-unreviewed exact-scope evidence, not a serving authorization or recommendation.".into(),
@@ -819,6 +925,168 @@ impl PreviewAssembler {
             .remove(handle)
             .ok_or_else(|| "u27.capture.prepared-handle-invalid-or-consumed".into())
     }
+}
+
+fn manual_capture_candidate(
+    selection: &VerifiedInventorySelection,
+    hardware: &ConfirmedHardwareTarget,
+    tool: &ObservedToolIdentityReceipt,
+    context_tokens: u64,
+    capture_id: &str,
+) -> Result<(ExactConfigurationCandidate, CompatibilityAdmissionReceipt), Vec<String>> {
+    let mut issues = Vec::new();
+    if !selection.format().eq_ignore_ascii_case("gguf") {
+        issues.push("u27.manual.gguf-required".into());
+    }
+    if context_tokens < 1
+        || context_tokens
+            .checked_mul(4)
+            .is_none_or(|expanded| expanded > selection.max_context_tokens())
+    {
+        issues.push("u27.manual.context-outside-artifact-limit".into());
+    }
+    if tool.observed_product() != "llama-cpp" || tool.observed_engine() != "llama.cpp" {
+        issues.push("u27.manual.llama-cpp-tool-required".into());
+    }
+    if tool.observed_engine_build().trim().is_empty() {
+        issues.push("u27.manual.runtime-build-required".into());
+    }
+    if hardware.effective_target().os.family != crate::contracts::OsFamily::Windows {
+        issues.push("u27.manual.windows-required".into());
+    }
+    if !cfg!(target_arch = "x86_64") {
+        issues.push("u27.manual.x86-64-required".into());
+    }
+    if !hardware
+        .effective_target()
+        .accelerators
+        .iter()
+        .any(|accelerator| accelerator.backend == AcceleratorBackend::Cuda)
+    {
+        issues.push("u27.manual.cuda-hardware-required".into());
+    }
+    let Some(threads) = hardware.effective_target().cpu.logical_cores else {
+        issues.push("u27.manual.logical-cores-required".into());
+        return Err(issues);
+    };
+    if !issues.is_empty() {
+        issues.sort();
+        issues.dedup();
+        return Err(issues);
+    }
+
+    let candidate_id = format!("local-capture-candidate-{capture_id}");
+    let runtime_configuration_id = format!("local-capture-runtime-{capture_id}");
+    let build = tool.observed_engine_build().to_string();
+    let candidate = ExactConfigurationCandidate {
+        candidate_id: candidate_id.clone(),
+        model_family: ModelFamily {
+            model_family_id: selection.model_family_id().to_string(),
+            display_name: selection.model_family_display_name().to_string(),
+        },
+        artifact: Artifact {
+            artifact_id: selection.artifact_id().to_string(),
+            repository: selection.repository().to_string(),
+            revision: selection.revision().to_string(),
+            filename: selection.filename().to_string(),
+            sha256: selection.sha256().to_string(),
+            bytes: selection.bytes(),
+            format: selection.format().to_string(),
+            quantization: selection.quantization().to_string(),
+            license: selection.license().to_string(),
+            status: ArtifactStatus::Promoted,
+        },
+        runtime: RuntimeConfiguration {
+            runtime_configuration_id: runtime_configuration_id.clone(),
+            product: "llama-cpp".into(),
+            engine: "llama.cpp".into(),
+            engine_build: Some(build.clone()),
+            backend: AcceleratorBackend::Cuda,
+            chat_template: Some(selection.chat_template().to_string()),
+            context_tokens,
+            kv_cache: KvCache {
+                key: Some("f16".into()),
+                value: Some("f16".into()),
+            },
+            gpu_layers: Some(GpuLayers::All(GpuLayersAll::All)),
+            batch_size: Some(2_048),
+            micro_batch_size: Some(512),
+            parallelism: Some(1),
+            threads: Some(threads),
+            flash_attention: Some(true),
+            mmap: Some(true),
+            sampler: Sampler {
+                temperature: None,
+                top_p: None,
+                top_k: None,
+                min_p: None,
+                seed: None,
+            },
+            additional_flags: vec![],
+        },
+        provenance: selection.provenance().to_vec(),
+    };
+    let receipt = CompatibilityAdmissionReceipt {
+        compatibility_admission_id: format!("local-capture-admission-{capture_id}"),
+        receipt_version: 1,
+        policy: CompatibilityAdmissionPolicy {
+            id: "m-e.compatibility".into(),
+            version: "1".into(),
+        },
+        candidate_id,
+        artifact_id: selection.artifact_id().to_string(),
+        artifact_sha256: selection.sha256().to_string(),
+        runtime_configuration_id,
+        decision: CompatibilityAdmissionDecision::Admitted,
+        target: CompatibilityAdmissionTarget {
+            product: "llama-cpp".into(),
+            engine: "llama.cpp".into(),
+            engine_build: build.clone(),
+            runtime_version: None,
+            exact_build: Some(build.clone()),
+            operating_system: crate::contracts::OsFamily::Windows,
+            cpu_architecture: CpuArchitecture::X86_64,
+            backend: AcceleratorBackend::Cuda,
+            feature_flags: vec![],
+            package_layout: ArtifactPackageLayout::GgufSingle,
+            declared_package_files: vec![selection.filename().to_string()],
+            model_architecture: None,
+            quantization_scheme: selection.quantization().to_string(),
+        },
+        assertion: CompatibilityAdmissionAssertion {
+            artifact_id: selection.artifact_id().to_string(),
+            product_id: "llama-cpp".into(),
+            engine_id: "llama.cpp".into(),
+            status: CompatibilityAssertionStatus::Experimental,
+            runtime_constraint: CompatibilityRuntimeConstraint {
+                min_version: None,
+                max_version: None,
+                exact_build: Some(build),
+            },
+            conditions: CompatibilityAdmissionConditions {
+                operating_systems: Some(vec!["windows".into()]),
+                cpu_architectures: Some(vec!["x86_64".into()]),
+                backends: Some(vec!["cuda".into()]),
+                model_architectures: None,
+                package_layouts: Some(vec!["gguf-single".into()]),
+                quantization_schemes: Some(vec![selection.quantization().to_string()]),
+                required_files: Some(vec![selection.filename().to_string()]),
+                limitations: Some(vec![
+                    "Initial local memory capture only; successful tool parsing is still required."
+                        .into(),
+                    "Does not authorize recommendation, serving, or any additional capability."
+                        .into(),
+                ]),
+            },
+            evidence: vec![CompatibilityAdmissionEvidence {
+                url: "https://github.com/ggml-org/llama.cpp/blob/master/tools/fit-params/README.md"
+                    .into(),
+                checked_at: "2026-07-23T00:00:00Z".into(),
+                source_revision: None,
+            }],
+        },
+    };
+    Ok((candidate, receipt))
 }
 
 fn hardware_difference_preview(
@@ -1053,6 +1321,122 @@ mod tests {
         assert!(preview.preview_only);
         assert!(!preview.grants_execution_authorization);
         assert_eq!(preview.warnings.len(), 1);
+    }
+
+    #[test]
+    fn manual_flow_builds_an_inspectable_capture_without_a_website_bundle() {
+        let mut assembler = PreviewAssembler::default();
+        let fixture_bundle = assembler
+            .admit_import_bundle_at(BUNDLE, 1_784_725_200, false)
+            .unwrap();
+        let target = assembler
+            .imported_hardware_target(&handle(&fixture_bundle.import_handle))
+            .unwrap();
+        let manual = assembler
+            .begin_manual_hardware_evaluation(&HardwareResolution {
+                state: ResolutionState::Ready,
+                target: Some(target),
+                reason_codes: vec![],
+                confirmation_fields: vec![],
+                memory_variant_options: vec![],
+                warnings: vec![],
+            })
+            .unwrap();
+        let hardware = assembler
+            .confirm_hardware_evaluation(&handle(&manual.evaluation.evaluation_handle), None)
+            .unwrap();
+        let inventory = assembler
+            .retain_adapted_inventory(verified_inventory("C:\\models\\fixture-Q4_K_M.gguf"))
+            .unwrap();
+        let selection = assembler
+            .select_inventory_path(
+                &handle(&manual.flow_handle),
+                &handle(&inventory.inventory_handle),
+                "C:\\models\\fixture-Q4_K_M.gguf",
+            )
+            .unwrap();
+        let tool = assembler.issue_handle("tool").unwrap();
+        assembler.tools.insert(
+            tool.clone(),
+            ObservedToolIdentityReceipt::new(
+                ExistingToolKind::FitProfileCapture,
+                "C:\\tools\\llama-fit-params.exe".into(),
+                "d".repeat(64),
+                "llama-cpp".into(),
+                "llama.cpp".into(),
+                "b10061 (5d5306bf3)".into(),
+                "llama-cpp-version-v1".into(),
+                "fixture".into(),
+            )
+            .unwrap(),
+        );
+
+        let preview = assembler
+            .prepare_fit_profile_capture_preview(PrepareFitProfileCapturePreviewRequest {
+                flow_handle: handle(&manual.flow_handle),
+                hardware_handle: handle(&hardware.hardware_handle),
+                selection_handle: handle(&selection.selection_handle),
+                tool_handle: tool,
+                capture_id: "manual-fixture".into(),
+                manual_context_tokens: Some(4_096),
+            })
+            .unwrap();
+
+        assert_eq!(
+            preview.configuration_source,
+            "local-initial-capture-policy-v1"
+        );
+        assert_eq!(preview.context_tokens, vec![4_096, 16_384]);
+        assert_eq!(preview.candidate.runtime.batch_size, Some(2_048));
+        assert!(!preview.grants_execution_authorization);
+        assert!(!preview.grants_recommendation_authorization);
+    }
+
+    #[test]
+    fn manual_flow_visibly_scopes_one_cuda_gpu_from_an_integrated_adapter() {
+        let mut assembler = PreviewAssembler::default();
+        let fixture_bundle = assembler
+            .admit_import_bundle_at(BUNDLE, 1_784_725_200, false)
+            .unwrap();
+        let mut target = assembler
+            .imported_hardware_target(&handle(&fixture_bundle.import_handle))
+            .unwrap();
+        let mut integrated = target.accelerators[0].clone();
+        integrated.accelerator_id = None;
+        integrated.display_name = "Integrated graphics".into();
+        integrated.backend = AcceleratorBackend::Other;
+        target.accelerators.push(integrated);
+        let manual = assembler
+            .begin_manual_hardware_evaluation(&HardwareResolution {
+                state: ResolutionState::ConfirmationRequired,
+                target: Some(target),
+                reason_codes: vec!["hardware.multiple-device-selection-required".into()],
+                confirmation_fields: vec!["/accelerators".into()],
+                memory_variant_options: vec![],
+                warnings: vec!["Integrated adapter requires scoping.".into()],
+            })
+            .unwrap();
+
+        assert_eq!(manual.evaluation.state, "confirmation-required");
+        assert_eq!(
+            manual.evaluation.reason_codes,
+            vec!["hardware.manual-cuda-device-selected"]
+        );
+        assert!(manual
+            .evaluation
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("scoped to the one detected CUDA GPU")));
+        let confirmation = HardwareConfirmationAcknowledgement {
+            reason_codes: manual.evaluation.reason_codes.clone(),
+            confirmation_fields: manual.evaluation.confirmation_fields.clone(),
+        };
+        assert!(assembler
+            .confirm_hardware_evaluation(
+                &handle(&manual.evaluation.evaluation_handle),
+                Some(&confirmation),
+            )
+            .is_ok());
     }
 
     #[test]

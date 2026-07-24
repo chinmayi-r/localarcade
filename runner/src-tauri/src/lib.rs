@@ -66,32 +66,58 @@ fn evaluate_hardware_confirmation_preview(
         let imported = assembler
             .imported_hardware_target(&handle)
             .map_err(|error| vec![error])?;
-        let report = hardware::detect();
-        let mut system = sysinfo::System::new();
-        system.refresh_memory();
-        let resolution = hardware_target::resolve_detected_hardware(
-            &report,
-            hardware_target::DetectedHardwareContext {
-                hardware_target_id: imported.hardware_target_id,
-                os_family: if cfg!(windows) {
-                    contracts::OsFamily::Windows
-                } else if cfg!(target_os = "macos") {
-                    contracts::OsFamily::Macos
-                } else if cfg!(target_os = "linux") {
-                    contracts::OsFamily::Linux
-                } else {
-                    contracts::OsFamily::Other
-                },
-                os_version: Some(report.os.clone()),
-                logical_cores: None,
-                available_ram_bytes: Some(system.available_memory()),
-                unified: detected_unified_memory(&report),
-            },
-        );
+        let resolution = detect_hardware_resolution(imported.hardware_target_id, false);
         assembler
             .evaluate_hardware(&handle, &resolution)
             .map_err(|error| vec![error])
     })
+}
+
+#[tauri::command]
+fn begin_manual_hardware_confirmation_preview(
+    state: tauri::State<'_, RunnerState>,
+) -> Result<preview_adapter::ManualHardwareEvaluationPreview, Vec<String>> {
+    with_preview_state(&state, |assembler| {
+        let target_id = format!(
+            "local-session-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .map_err(|_| vec!["m-o.manual.system-clock-before-epoch".into()])?
+                .as_millis()
+        );
+        assembler.begin_manual_hardware_evaluation(&detect_hardware_resolution(target_id, true))
+    })
+}
+
+fn detect_hardware_resolution(
+    hardware_target_id: String,
+    include_logical_cores: bool,
+) -> hardware_target::HardwareResolution {
+    let report = hardware::detect();
+    let mut system = sysinfo::System::new();
+    system.refresh_memory();
+    hardware_target::resolve_detected_hardware(
+        &report,
+        hardware_target::DetectedHardwareContext {
+            hardware_target_id,
+            os_family: if cfg!(windows) {
+                contracts::OsFamily::Windows
+            } else if cfg!(target_os = "macos") {
+                contracts::OsFamily::Macos
+            } else if cfg!(target_os = "linux") {
+                contracts::OsFamily::Linux
+            } else {
+                contracts::OsFamily::Other
+            },
+            os_version: Some(report.os.clone()),
+            logical_cores: include_logical_cores
+                .then(std::thread::available_parallelism)
+                .and_then(Result::ok)
+                .and_then(|value| u64::try_from(value.get()).ok()),
+            available_ram_bytes: Some(system.available_memory()),
+            unified: detected_unified_memory(&report),
+        },
+    )
 }
 
 fn detected_unified_memory(report: &hardware::HardwareReport) -> Option<bool> {
@@ -281,6 +307,7 @@ struct PrepareFitProfileCaptureInput {
     selection_handle: String,
     tool_handle: String,
     capture_id: String,
+    manual_context_tokens: Option<u64>,
 }
 
 #[tauri::command]
@@ -292,11 +319,12 @@ fn prepare_fit_profile_capture_preview(
         let parse = |value: &str| preview_adapter::parse_handle(value).map_err(|error| vec![error]);
         assembler.prepare_fit_profile_capture_preview(
             preview_adapter::PrepareFitProfileCapturePreviewRequest {
-                import_handle: parse(&request.import_handle)?,
+                flow_handle: parse(&request.import_handle)?,
                 hardware_handle: parse(&request.hardware_handle)?,
                 selection_handle: parse(&request.selection_handle)?,
                 tool_handle: parse(&request.tool_handle)?,
                 capture_id: request.capture_id,
+                manual_context_tokens: request.manual_context_tokens,
             },
         )
     })
@@ -461,6 +489,7 @@ pub fn run() {
             scan_model_stores,
             benchmark_preflight,
             admit_runner_import_bundle_preview,
+            begin_manual_hardware_confirmation_preview,
             evaluate_hardware_confirmation_preview,
             confirm_hardware_confirmation_preview,
             scan_inventory_preview,

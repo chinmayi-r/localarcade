@@ -33,6 +33,7 @@ export type HardwareEvaluation = {
   confirmationFields: string[];
   differences: HardwareDifference[];
   warnings: string[];
+  resolvedTarget: Record<string, unknown> | null;
   previewOnly: boolean;
   grantsExecutionAuthorization: boolean;
 };
@@ -89,6 +90,10 @@ export type FitProfileCapturePreview = {
   tool: { path: string; sha256: string };
   contextTokens: number[];
   repetitionsPerContext: number;
+  candidate: Record<string, unknown>;
+  configurationSource:
+    | "website-handoff"
+    | "local-initial-capture-policy-v1";
   warnings: string[];
   previewOnly: boolean;
   grantsExecutionAuthorization: boolean;
@@ -176,6 +181,7 @@ export type RunnerSurfaceState = {
     | "failure";
   reasonCodes: string[];
   message: string;
+  journey?: "manual" | "website-import";
   importHandle?: string;
   expired?: boolean;
   hardwareEvaluation?: HardwareEvaluation;
@@ -311,6 +317,48 @@ export class RunnerApplication {
     return structuredClone(this.#state);
   }
 
+  async startManualSetup(): Promise<RunnerSurfaceState> {
+    return this.#attempt(
+      "welcome",
+      "Reading hardware only after this action…",
+      async () => {
+        const result = await this.#invoke<{
+          flowHandle: string;
+          evaluation: HardwareEvaluation;
+        }>("begin_manual_hardware_confirmation_preview");
+        if (!nonemptyString(result.flowHandle)) {
+          throw ["m-p.manual.flow-handle-invalid"];
+        }
+        this.#assertHardwareEvaluation(result.evaluation);
+        if (
+          !result.evaluation.previewOnly ||
+          result.evaluation.grantsExecutionAuthorization
+        ) {
+          throw ["m-p.manual.hardware-preview-authority-invalid"];
+        }
+        this.#state = {
+          status:
+            result.evaluation.state === "ready"
+              ? "ready"
+              : result.evaluation.state === "confirmation-required"
+                ? "partial"
+                : result.evaluation.state,
+          stage: "hardware",
+          reasonCodes: result.evaluation.reasonCodes,
+          message:
+            result.evaluation.state === "ready"
+              ? "Hardware detected. Review it before continuing."
+              : result.evaluation.state === "confirmation-required"
+                ? "Hardware detected with facts that need your confirmation."
+                : "Hardware detection could not produce a usable local target.",
+          journey: "manual",
+          importHandle: result.flowHandle,
+          hardwareEvaluation: structuredClone(result.evaluation),
+        };
+      },
+    );
+  }
+
   async importBundle(bundleJson: string, confirmExpired = false): Promise<RunnerSurfaceState> {
     return this.#attempt("welcome", "Validating the handoff without scanning this machine…", async () => {
       if (!bundleJson.trim()) throw ["m-p.import.bundle-required"];
@@ -333,6 +381,7 @@ export class RunnerApplication {
           ? "The handoff is expired. It may be inspected, but it authorizes no execution."
           : "Handoff accepted for inspection. The website has not checked this machine.",
         importHandle: preview.importHandle,
+        journey: "website-import",
         expired: preview.expired,
       };
     });
@@ -547,6 +596,7 @@ export class RunnerApplication {
   async prepareFitProfileCapture(
     fitProfileToolPath: string,
     captureId: string,
+    manualContextTokens?: number,
   ): Promise<RunnerSurfaceState> {
     return this.#attempt(
       "inventory",
@@ -570,6 +620,9 @@ export class RunnerApplication {
               selectionHandle: this.#required("selectionHandle"),
               toolHandle: tool.toolHandle,
               captureId,
+              ...(this.#state.journey === "manual"
+                ? { manualContextTokens }
+                : {}),
             },
           },
         );
@@ -892,6 +945,7 @@ export class RunnerApplication {
         "confirmationFields",
         "differences",
         "warnings",
+        "resolvedTarget",
         "previewOnly",
         "grantsExecutionAuthorization",
       ]) ||
@@ -901,6 +955,9 @@ export class RunnerApplication {
       !stringList(value.confirmationFields) ||
       !differencesValid ||
       !stringList(value.warnings) ||
+      (value.resolvedTarget !== null &&
+        (typeof value.resolvedTarget !== "object" ||
+          Array.isArray(value.resolvedTarget))) ||
       typeof value.previewOnly !== "boolean" ||
       typeof value.grantsExecutionAuthorization !== "boolean"
     ) {
@@ -1084,7 +1141,10 @@ export class RunnerApplication {
         "tool",
         "contextTokens",
         "repetitionsPerContext",
+        "candidate",
+        "configurationSource",
         "warnings",
+        "resolvedTarget",
         "previewOnly",
         "grantsExecutionAuthorization",
         "grantsServingAuthorization",
@@ -1101,6 +1161,12 @@ export class RunnerApplication {
         !Number.isSafeInteger(context) || context <= 0) ||
       contexts[1] !== contexts[0]! * 4 ||
       value.repetitionsPerContext !== 3 ||
+      typeof value.candidate !== "object" ||
+      value.candidate === null ||
+      ![
+        "website-handoff",
+        "local-initial-capture-policy-v1",
+      ].includes(value.configurationSource) ||
       !stringList(value.warnings) ||
       !value.previewOnly ||
       value.grantsExecutionAuthorization ||
