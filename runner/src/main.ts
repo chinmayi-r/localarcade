@@ -146,6 +146,8 @@ function render(state: RunnerSurfaceState): void {
       evaluation.state !== "confirmation-required";
     element<HTMLInputElement>("#ack-hardware").checked =
       evaluation.state === "ready";
+    element<HTMLButtonElement>("#confirm-hardware-button").disabled =
+      evaluation.state === "blocked" || evaluation.state === "unavailable";
   }
   element("#detect-button").hidden = state.journey === "manual";
 

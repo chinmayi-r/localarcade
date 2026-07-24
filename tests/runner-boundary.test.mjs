@@ -226,4 +226,8 @@ test("M-P frontend makes no external requests", async () => {
 test("M-P hides imported-hardware comparison during the direct local journey", async () => {
   const main = await readFile(new URL("../runner/src/main.ts", import.meta.url), "utf8");
   assert.match(main, /#detect-button"\)\.hidden = state\.journey === "manual"/);
+  assert.match(
+    main,
+    /#confirm-hardware-button"\)\.disabled =\s*evaluation\.state === "blocked" \|\|\s*evaluation\.state === "unavailable"/,
+  );
 });

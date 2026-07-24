@@ -1,5 +1,26 @@
 # Decisions
 
+## 2026-07-23 — Scope a single CUDA target independently of excluded display adapters
+
+- **Decision:** When detection finds exactly one materially complete CUDA
+  accelerator plus non-CUDA display adapters, the manual runner flow may scope
+  the capture target to that CUDA accelerator after visible acknowledgement.
+  The scoped target records `memory.unified: false`; warnings and unknown facts
+  belonging only to excluded adapters do not block confirmation.
+- **Evidence:** The owner-reported RTX 3060 Laptop plus unknown Intel integrated
+  adapter shape is covered by
+  `manual_flow_visibly_scopes_one_cuda_gpu_from_an_integrated_adapter`. The
+  regression begins with unknown unified-memory state and excluded-adapter
+  warnings, then proves the resolved target contains only the CUDA adapter,
+  requires the CUDA-scope acknowledgement and can be confirmed.
+- **Boundary:** Missing CUDA identity or capacity, no CUDA accelerator, and
+  multiple CUDA accelerators remain blocked. The surface disables confirmation
+  controls for genuinely blocked or unavailable states.
+- **Packaging:** The corrected owner-test package is version `0.1.1`, so it can
+  be distinguished from the affected `0.1.0` package.
+- **Reversible:** Yes. This is a manual-flow scoping policy, not a change to the
+  shared hardware contract or imported-handoff semantics.
+
 ## 2026-07-23 — Pin the initial live capture protocol to the proven llama.cpp build
 
 - **Decision:** The initial manual capture admits only llama.cpp build

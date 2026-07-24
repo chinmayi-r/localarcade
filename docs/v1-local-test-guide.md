@@ -12,23 +12,27 @@ policy.
 
 Prefer the NSIS installer:
 
-`runner/src-tauri/target/release/bundle/nsis/Local Arcade Runner_0.1.0_x64-setup.exe`
+`runner/src-tauri/target/release/bundle/nsis/Local Arcade Runner_0.1.1_x64-setup.exe`
 
 The MSI alternative is:
 
-`runner/src-tauri/target/release/bundle/msi/Local Arcade Runner_0.1.0_x64_en-US.msi`
+`runner/src-tauri/target/release/bundle/msi/Local Arcade Runner_0.1.1_x64_en-US.msi`
 
 These local artifacts are intentionally unsigned. Windows may show an
 unrecognized-app warning. Do not redistribute them as a trusted public release;
 the repository release workflow supplies signing and provenance for a future
 tagged release.
 
+Version `0.1.1` corrects the integrated-display-adapter confirmation defect in
+the earlier `0.1.0` owner-test package. Close the earlier runner before
+installing this package.
+
 Validated SHA-256 values for this test build:
 
 ```text
-NSIS  cfb0a25e223203badbf5472405bd0c6b8d81d3be47bb75b3495d95e6fa83f204
-MSI   01bb265dd654310d3bda85e7bda4e790a08c7c1c5d1de72707488147fa05dd9d
-EXE   41089f70b9ab1434832c212ff493da46d3412804a204d7c4a2c2cac152468ab2
+NSIS  141b7b6be38233933fb7856738218ad8430c2a4c85e46b5a5bdd004726ee25f4
+MSI   c9e3cbe4b23892eaba8af022b6ea79eb3a03ffe425e120d95013bab1bcc7d35c
+EXE   c4efa05473eb87a45a079a2897f66b58382367ac4881c76179fbd601c67e0f52
 ```
 
 ## Test the direct local journey on this machine
@@ -36,7 +40,8 @@ EXE   41089f70b9ab1434832c212ff493da46d3412804a204d7c4a2c2cac152468ab2
 1. Open Local Arcade Runner and choose **Check this computer**.
 2. Review the detected Windows, CPU, RAM and accelerator facts. This machine is
    expected to require acknowledgement that the one CUDA GPU is selected while
-   the integrated display adapter is excluded from the capture scope.
+   the integrated display adapter is excluded from the capture scope. The state
+   must be **confirmation required**, not **blocked**.
 3. Confirm the hardware target.
 4. Enter `H:\llama\models` as the additional local folder and choose
    **Scan named model stores**.

@@ -11,7 +11,7 @@ use crate::contracts::{
     CompatibilityAdmissionEvidence, CompatibilityAdmissionPolicy, CompatibilityAdmissionReceipt,
     CompatibilityAdmissionTarget, CompatibilityAssertionStatus, CompatibilityRuntimeConstraint,
     ConcurrentGpu, CpuArchitecture, ExactConfigurationCandidate, GpuLayers, GpuLayersAll,
-    HardwareTarget, KvCache, MeasurementKind, ModelFamily, Power, Preflight, QuickCheck,
+    HardwareTarget, KvCache, MeasurementKind, ModelFamily, Origin, Power, Preflight, QuickCheck,
     RunnerImportBundle, RuntimeConfiguration, Sampler, Thermal, VerificationPlan,
 };
 use crate::existing_tool_probe;
@@ -340,19 +340,29 @@ impl PreviewAssembler {
             .filter(|accelerator| accelerator.backend == AcceleratorBackend::Cuda)
             .count();
         if cuda_count == 1 && target.accelerators.len() > 1 {
-            scoped_resolution
+            let scoped_target = scoped_resolution
                 .target
                 .as_mut()
-                .expect("target checked above")
+                .expect("target checked above");
+            scoped_target
                 .accelerators
                 .retain(|accelerator| accelerator.backend == AcceleratorBackend::Cuda);
+            // Once the user-visible manual policy scopes this target to one
+            // known CUDA adapter, integrated/shared-memory adapters are no
+            // longer part of the measurement. Preserve that derived fact
+            // explicitly so the confirmation core does not inherit `unknown`
+            // from an excluded adapter.
+            scoped_target.memory.unified = Some(false);
+            scoped_target
+                .field_origins
+                .insert("/memory/unified".into(), Origin::Detected);
             scoped_resolution.state = crate::hardware_target::ResolutionState::ConfirmationRequired;
             scoped_resolution.reason_codes = vec!["hardware.manual-cuda-device-selected".into()];
             scoped_resolution.confirmation_fields = vec!["/accelerators".into()];
-            scoped_resolution.warnings.push(
+            scoped_resolution.warnings = vec![
                 "This initial capture is scoped to the one detected CUDA GPU. Other detected adapters remain outside this measurement."
-                    .into(),
-            );
+                    .into()
+            ];
         }
         let target = scoped_resolution
             .target
@@ -1437,14 +1447,27 @@ mod tests {
         integrated.display_name = "Integrated graphics".into();
         integrated.backend = AcceleratorBackend::Other;
         target.accelerators.push(integrated);
+        target.memory.unified = None;
+        target
+            .field_origins
+            .insert("/memory/unified".into(), Origin::Unknown);
         let manual = assembler
             .begin_manual_hardware_evaluation(&HardwareResolution {
                 state: ResolutionState::ConfirmationRequired,
                 target: Some(target),
-                reason_codes: vec!["hardware.multiple-device-selection-required".into()],
-                confirmation_fields: vec!["/accelerators".into()],
+                reason_codes: vec![
+                    "hardware.unknown-accelerator".into(),
+                    "hardware.multiple-device-selection-required".into(),
+                ],
+                confirmation_fields: vec![
+                    "/accelerators/1/acceleratorId".into(),
+                    "/accelerators/1/deviceMemoryBytes".into(),
+                    "/accelerators".into(),
+                ],
                 memory_variant_options: vec![],
-                warnings: vec!["Integrated adapter requires scoping.".into()],
+                warnings: vec![
+                    "No vendor-sourced registry entry for this device; memory and identity must be entered and confirmed manually.".into(),
+                ],
             })
             .unwrap();
 
@@ -1458,6 +1481,21 @@ mod tests {
             .warnings
             .iter()
             .any(|warning| warning.contains("scoped to the one detected CUDA GPU")));
+        assert!(!manual
+            .evaluation
+            .warnings
+            .iter()
+            .any(|warning| warning.contains("No vendor-sourced registry entry")));
+        assert_eq!(
+            manual
+                .evaluation
+                .resolved_target
+                .as_ref()
+                .expect("scoped target")
+                .memory
+                .unified,
+            Some(false)
+        );
         let confirmation = HardwareConfirmationAcknowledgement {
             reason_codes: manual.evaluation.reason_codes.clone(),
             confirmation_fields: manual.evaluation.confirmation_fields.clone(),

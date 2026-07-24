@@ -98,6 +98,15 @@ surface tests, 11/11 boundary tests and 86/86 Rust library tests; desktop and
 390 px browser inspection pass. This is a user-operable setup/capture-preview
 path, not a live-model, production-recommendation or restart-recovery proof.
 
+The owner test of package `0.1.0` exposed a manual-flow integration defect:
+the detected RTX 3060 Laptop target remained blocked because an excluded
+unknown Intel display adapter left the scoped target's unified-memory fact
+unknown. Package `0.1.1` scopes an exactly-one-CUDA target independently,
+requires the existing visible acknowledgement, removes warnings that belong
+only to excluded adapters and disables confirmation for genuinely blocked
+states. The exact owner-machine regression, surface and boundary suites cover
+the correction. This does not admit missing or multiple CUDA targets.
+
 The packaging/live-protocol checkpoint found and corrected a real
 fixture-to-tool mismatch: `llama-fit-params` build 10061 uses `--mmap`, not the
 `llama-bench` `-mmp 1` spelling. Manual capture is now pinned to the exact

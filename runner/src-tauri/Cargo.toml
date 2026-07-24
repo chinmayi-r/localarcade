@@ -1,6 +1,6 @@
 [package]
 name = "runner"
-version = "0.1.0"
+version = "0.1.1"
 description = "Local Arcade Runner — desktop companion for hardware-truth benchmarks"
 authors = ["Local Arcade"]
 edition = "2021"
